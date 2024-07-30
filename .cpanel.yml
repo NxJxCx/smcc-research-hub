@@ -1,0 +1,14 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/smccrese/public_html/
+    - export MYSQL_HOST=localhost
+    - export MYSQL_PORT=3306
+    - export MYSQL_DATABASE=smccrese_researchhub
+    - export MYSQL_USER=smccrese_smcc
+    - export MYSQL_PASSWORD=smccMySql
+    - /bin/cp .htaccess $DEPLOYPATH
+    - /bin/cp index.php $DEPLOYPATH
+    - /bin/cp -R config $DEPLOYPATH
+    - /bin/cp -R src $DEPLOYPATH
+    - /bin/cp -R vendor $DEPLOYPATH
