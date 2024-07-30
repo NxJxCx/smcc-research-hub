@@ -23,8 +23,7 @@ class ApiController extends Controller
     $q = $db->getDb()->query("SHOW TABLES;");
     $tables = $q->fetchAll(PDO::FETCH_ASSOC);
     Response::json([
-      "tables" => array_map(fn($item) => $item["Tables_in_researchhub"], $tables, []),
-      "tt" => $tables,
+      "tables" => array_map(fn($item) => $item["Tables_in_".MYSQL_DATABASE], $tables, []),
       "count" => count($tables)
     ]);
   }
