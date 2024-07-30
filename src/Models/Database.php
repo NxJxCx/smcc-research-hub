@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub\Models;
 
 use PDO;
+use PDOException;
+use Smcc\ResearchHub\Config\Logger;
 
 interface BaseDatabase
 {
@@ -98,7 +100,11 @@ class Database implements BaseDatabase
         . ')',
     ];
     foreach ($tables as $_ => $createTable) {
-      $this->db->exec($createTable);
+      try {
+        $this->db->exec($createTable);
+      } catch (PDOException $e) {
+        Logger::write_warning(''. $e->getMessage());
+      }
     }
   }
 
