@@ -100,11 +100,7 @@ class Database implements BaseDatabase
         . ')',
     ];
     foreach ($tables as $_ => $createTable) {
-      try {
-        $this->db->exec($createTable);
-      } catch (PDOException $e) {
-        Logger::write_warning(''. $e->getMessage());
-      }
+      $this->db->exec($createTable);
     }
   }
 
