@@ -6,8 +6,8 @@ define('APP_TITLE', $_ENV['APP_TITLE'] ?? 'SMCC Research Hub');
 
 define('MYSQL_HOST', $_ENV['MYSQL_HOST'] ?? 'localhost');
 define('MYSQL_PORT', $_ENV['MYSQL_POST'] ?? '3306');
-define('MYSQL_DATABASE', $_ENV['MYSQL_DATABASE'] ?? 'researchhub');
-define('MYSQL_USER', $_ENV['MYSQL_USER'] ?? 'smcc');
+define('MYSQL_DATABASE', $_ENV['MYSQL_DATABASE'] ?? 'smccrese_researchhub');
+define('MYSQL_USER', $_ENV['MYSQL_USER'] ?? 'smccrese_smcc');
 define('MYSQL_PASSWORD', $_ENV['MYSQL_PASSWORD'] ?? 'smccMySql');
 
 define('VIEW_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views']));
