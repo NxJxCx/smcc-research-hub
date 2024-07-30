@@ -1,0 +1,34 @@
+[
+  {
+    "label": "Home",
+    "url": "/"
+  },
+  {
+    "label": "Current",
+    "url": "/current"
+  },
+  {
+    "label": "Thesis",
+    "url": "/thesis"
+  },
+  {
+    "label": "Journal",
+    "url": "/journal"
+  },
+  {
+    "label": "Departments",
+    "url": "/departments"
+  },
+  {
+    "label": "Downloads",
+    "url": "/downloads"
+  },
+  {
+    "label": "About Us",
+    "url": "/about"
+  },
+  {
+    "label": "Library",
+    "url": "/library"
+  }
+]
