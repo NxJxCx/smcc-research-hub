@@ -12,6 +12,9 @@ define('APP_PATH', realpath(__DIR__ . '/.'));
 
 // Define the path to the .env file
 $envFile = implode(DIRECTORY_SEPARATOR, [APP_PATH, '.env']);
+if (!is_file($envFile)) {
+  $envFile = implode(DIRECTORY_SEPARATOR, [APP_PATH, '.env.production']);
+}
 
 // Check if the .env file exists
 if (file_exists($envFile)) {
@@ -34,5 +37,6 @@ if (file_exists($envFile)) {
     }
   }
 }
+
 require_once implode(DIRECTORY_SEPARATOR, [APP_PATH, 'vendor', 'autoload.php']);
 require_once implode(DIRECTORY_SEPARATOR, [APP_PATH, 'config', 'bootstrap.php']);

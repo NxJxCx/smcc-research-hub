@@ -3,6 +3,7 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/smccrese/public_html/
     - /bin/cp .htaccess $DEPLOYPATH
+    - /bin/cp .env.production $DEPLOYPATH
     - /bin/cp index.php $DEPLOYPATH
     - /bin/cp -R config $DEPLOYPATH
     - /bin/cp -R src $DEPLOYPATH
