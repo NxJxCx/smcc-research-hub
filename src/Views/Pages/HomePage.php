@@ -31,13 +31,16 @@ class HomePage
       </button>
     </a>
   </div>
-  <div class="mx-auto w-fit">
-    <div class="relative max-h-[632px] max-w-[1100px] pt-[41px]">
-      <image src="/assets/images/desktop.svg" class="absolute left-0 top-0 w-full h-full" />
-      <div className="w-full h-full flex flex-col justify-center items-center">
-        
+  <div class="mx-auto mt-16 aspect-video">
+    <div class="w-full h-full relative pt-[2%]">
+      <div id="home-video-container" class="w-full h-full px-[10%] py-[5%] aspect-video"></div>
+      <div class="absolute left-0 top-0 -z-[10] w-full h-full">
+        <image src="/assets/images/desktop.svg" class="w-full h-full" />
       </div>
     </div>
+  </div>
+  <div class="mt-[200px]">
+    &nbsp;
   </div>
 <?php
   }
