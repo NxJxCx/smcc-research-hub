@@ -35,7 +35,7 @@ class HomePage
     <div class="relative max-h-[632px] max-w-[1100px] pt-[41px]">
       <image src="/assets/images/desktop.svg" class="absolute left-0 top-0 w-full h-full" />
       <div className="w-full h-full flex flex-col justify-center items-center">
-        <video
+        
       </div>
     </div>
   </div>
