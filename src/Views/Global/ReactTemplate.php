@@ -17,6 +17,7 @@ class ReactTemplate
             "react": "https://esm.sh/react@18.3.1",
             "react-dom": "https://esm.sh/react-dom@18.3.1/client",
             "confetti": "https://esm.sh/canvas-confetti@1.9.3",
+            "react-player": "https://esm.sh/react-player@2.16.0",
             "myapp": "/react/<?php echo $reactAppPath; ?>"
           }
         }
