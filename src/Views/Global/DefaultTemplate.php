@@ -16,7 +16,8 @@ class DefaultTemplate
       "imports": {
         "react": "https://esm.sh/react@18.3.1",
         "react-dom": "https://esm.sh/react-dom@18.3.1/client",
-        "confetti": "https://esm.sh/canvas-confetti@1.9.3"
+        "confetti": "https://esm.sh/canvas-confetti@1.9.3",
+        "react-player": "https://esm.sh/react-player@2.16.0"
       }
     }
   </script>
@@ -35,7 +36,7 @@ class DefaultTemplate
 ?>
 <body>
   <div id="root" class="overflow-auto relative h-screen w-screen">
-    <header class="relative font-[Quicksand] fixed top-0 left-0 h-[96px] *:h-full flex justify-between items-center p-2 shadow">
+    <header class="font-[Quicksand] fixed top-0 left-0 h-[96px] *:h-full flex justify-between items-center p-2 shadow">
       <h1 class="font-[700] text-[32px] leading-[35.2px] text-[#2487CE] flex-grow pl-8 flex items-center">
         <a href="/" class="hover:opacity-80 hover:drop-shadow-lg cursor-pointer">Research Hub</a>
       </h1>
