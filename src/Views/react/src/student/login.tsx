@@ -11,17 +11,25 @@ function StudentLogin() {
     if (!!studentId) {
       fetch(`/api/student?q=exist&id=${studentId}`)
       .then(response => response.json())
-      .then(({ exists }) => {
-        if (!exists) {
-          // redirect to sign up with the scanned studentId
-          window.location.href = `/signup?studentId=${studentId}&full_name=${studentName}`;
+      .then(({ error, exists }) => {
+        if (error) {
+          setShowScanner(false)
+          alert('Failed to check student existence: ' + error)
+          setShowScanner(true)
         } else {
-          setStudentId(studentId)
+          if (!exists) {
+            // redirect to sign up with the scanned studentId
+            window.location.href = `/signup?studentId=${studentId}&full_name=${studentName}`;
+          } else {
+            setStudentId(studentId)
+          }
         }
       })
       .catch((e) => {
         console.error('Failed to retrieve student information', e)
-        alert('Failed to retrieve student information')
+        setShowScanner(false)
+        alert('Failed to retrieve student information:' + e.message)
+        setShowScanner(true)
       })
 
     }

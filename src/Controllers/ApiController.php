@@ -22,15 +22,19 @@ class ApiController extends Controller
 
   public function studentInfo(string $uri, array $query, array $body)
   {
-    switch ($query['q']) {
-      case 'exist':
-        $db = Database::getInstance();
-        $studentId = $query['id'];
-        $student = $db->findOne('student', ['student_id' => $studentId], Student::class);
-        Response::json(['exists' => $student ? true : false]);
-        return;
+    try {
+      switch ($query['q']) {
+        case 'exist':
+          $db = Database::getInstance();
+          $studentId = $query['id'];
+          $student = $db->findOne('student', ['student_id' => $studentId], Student::class);
+          Response::json(['exists' => $student ? true : false]);
+          return;
+      }
+      Response::json(['error' => 'Bad Request'], 400);
+    } catch (\Throwable $e) {
+      Response::json(['error' => $e->getMessage()]);
     }
-    Response::json(['exists' => false]);
   }
 
   public function login(string $uri, array $query, array $body)
