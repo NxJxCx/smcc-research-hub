@@ -12,7 +12,8 @@ define('MYSQL_PASSWORD', $_ENV['MYSQL_PASSWORD'] ?? 'smccMySql');
 
 define('ASSETS_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'public']));
 define('VIEW_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views']));
-define('REACT_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views', 'react']));
+define('REACT_SRC_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views', 'react', 'src']));
+define('REACT_DIST_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views', 'react', 'dist']));
 
 // set DISPLAY_ERRORS to false if in production environment to hide error messages
 define('DISPLAY_ERRORS', $_ENV['DISPLAY_ERRORS'] ?? true);

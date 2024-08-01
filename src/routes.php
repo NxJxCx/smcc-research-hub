@@ -9,7 +9,7 @@ use Smcc\ResearchHub\Controllers\ViewController;
 use Smcc\ResearchHub\Router\Router;
 
 /* STATIC FOLDERS */
-Router::STATIC('/jsx', implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'jsx']), 'js');
+Router::STATIC('/jsx', REACT_DIST_PATH, 'js');
 
 /* GET METHOD */
 Router::GET('/', ViewController::class, 'index');

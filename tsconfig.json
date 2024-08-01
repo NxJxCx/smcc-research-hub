@@ -13,7 +13,7 @@
   },
   "exclude": ["node_modules", "vendor"],
   "include": [
-    "src/Views/react/**/*.ts",
-    "src/Views/react/**/*.tsx"
+    "src/Views/react/src/**/*.ts",
+    "src/Views/react/src/**/*.tsx"
   ]
 }

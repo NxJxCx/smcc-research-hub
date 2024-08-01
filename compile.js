@@ -5,7 +5,7 @@ const chokidar = require('chokidar');
 
 // Directories
 const inputDir = 'jsxbundle';
-const outputDir = 'src/Views/jsx';
+const outputDir = 'src/Views/react/dist';
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
