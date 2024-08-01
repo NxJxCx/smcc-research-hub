@@ -4,13 +4,16 @@ const Terser = require('terser');
 const chokidar = require('chokidar');
 
 // Directories
-const inputDir = 'jsxbundle';
+const inputDir = 'jsxbuild';
 const outputDir = 'src/Views/react/dist';
 
-// Ensure output directory exists
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
+// Remove old output directory
+if (fs.existsSync(outputDir)) {
+  fs.rmSync(outputDir, {recursive: true });
 }
+
+// Ensure output directory exists
+fs.mkdirSync(outputDir, { recursive: true });
 
 // Function to minify a file
 async function minifyFile(filePath) {

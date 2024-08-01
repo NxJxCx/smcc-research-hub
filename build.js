@@ -1,5 +1,8 @@
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
+
+const tscOutputDir = 'jsxbuild';
 
 // Helper function to run a command and log its output
 function runCommand(command, args = [], options = {}) {
@@ -15,6 +18,11 @@ async function main() {
     console.log('Running Tailwind build watcher...');
     // Run postcss with Tailwind CSS in watch mode
     runCommand('npx', ['postcss', './src/tailwind.css', '-o', './public/css/main.min.css']);
+
+    // Remove old typescript build directory
+    if (fs.existsSync(tscOutputDir)) {
+        fs.rmSync(tscOutputDir, {recursive: true });
+    }
 
     console.log('Running Typescript build watcher...');
     // Run TypeScript compiler in watch mode

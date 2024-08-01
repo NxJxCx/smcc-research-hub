@@ -4,7 +4,7 @@
     "module": "ESNext",
     "jsx": "react",
     "moduleResolution": "Bundler",
-    "outDir": "jsxbundle",
+    "outDir": "jsxbuild",
     "sourceMap": false,
     "strict": true,
     "esModuleInterop": true,
