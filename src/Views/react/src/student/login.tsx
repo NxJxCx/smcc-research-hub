@@ -11,6 +11,11 @@ function StudentLogin() {
   return (
     <div>
       <Scanner onResult={onResult} regExFormat={[/^[A-Z\w]+/, /20\d{7}$/]} />
+      <div className="mt-8">
+        <div className="border border-green-500 bg-green-50 text-black">
+          {!!studentId && <p>Student ID: {studentId}</p>}
+        </div>
+      </div>
     </div>
   )
 }
