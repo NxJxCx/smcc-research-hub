@@ -3,9 +3,11 @@ import { Scanner as QrScanner } from "@yudiel/react-qr-scanner";
 import React from "react";
 function Scanner({ pause = false, format = 'qr_code', onResult = (...result) => { }, regExFormat = [], children, ...props }) {
     const [scannedData, setScannedData] = React.useState([]);
+    const reset = React.useCallback(() => setScannedData([]), []);
     React.useEffect(() => {
         if (regExFormat.length === 0 || (regExFormat.length > 0 && scannedData.length === regExFormat.length && regExFormat.every((regex, index) => regex.test(scannedData[index])))) {
             onResult(...scannedData);
+            reset();
         }
     }, [scannedData]);
     const handleScan = React.useCallback((result) => result?.[0]?.format === format && setScannedData(result?.[0]?.rawValue.split('\r\n')), []);

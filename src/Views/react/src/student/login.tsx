@@ -9,13 +9,17 @@ function StudentLogin() {
 
   const onResult = React.useCallback((studentName?: string, studentId?: string) => {
     if (!!studentId) {
-      fetch(`/api/student?q=exist&id=${studentId}`)
+      fetch(`/api/student`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/www-form-urlencoded',
+        },
+        body: JSON.stringify({ q: 'exist', id: studentId })
+      })
       .then(response => response.json())
       .then(({ error, exists }) => {
         if (error) {
-          setShowScanner(false)
           alert('Failed to check student existence: ' + error)
-          setShowScanner(true)
         } else {
           if (!exists) {
             // redirect to sign up with the scanned studentId
@@ -27,9 +31,7 @@ function StudentLogin() {
       })
       .catch((e) => {
         console.error('Failed to retrieve student information', e)
-        setShowScanner(false)
         alert('Failed to retrieve student information:' + e.message)
-        setShowScanner(true)
       })
 
     }
