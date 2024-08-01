@@ -1,1 +1,1 @@
-import r from"react";import t from"../qrscan";function e(){return r.createElement(t,null)}export default e;
+import e from"react";import t from"../qrscan";function o(){const[o,r]=e.useState(""),n=e.useCallback(((e,t)=>{t&&r(t)}),[]);return e.useEffect((()=>{console.log("Student ID:",o)}),[o]),e.createElement(t,{onResult:n,regExFormat:[/^[A-Z\w]+/,/20\d{7}$/]})}export default o;
