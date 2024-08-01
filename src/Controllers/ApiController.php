@@ -30,6 +30,7 @@ class ApiController extends Controller
         Response::json(['exists' => $student ? true : false]);
         return;
     }
+    Response::json(['exists' => false]);
   }
 
   public function login(string $uri, array $query, array $body)
