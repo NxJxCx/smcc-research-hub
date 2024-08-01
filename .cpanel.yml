@@ -6,5 +6,6 @@ deployment:
     - /bin/cp .env.production $DEPLOYPATH
     - /bin/cp index.php $DEPLOYPATH
     - /bin/cp -R config $DEPLOYPATH
+    - /bin/cp -R public $DEPLOYPATH
     - /bin/cp -R src $DEPLOYPATH
     - /bin/cp -R vendor $DEPLOYPATH
