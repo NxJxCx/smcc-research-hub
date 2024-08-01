@@ -5,17 +5,26 @@ const chokidar = require('chokidar');
 
 // Directories
 const inputDir = 'jsxbundle';
-const outputDir = 'public/jsx';
+const outputDir = 'src/Views/jsx';
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir);
+  fs.mkdirSync(outputDir, { recursive: true });
 }
 
 // Function to minify a file
 async function minifyFile(filePath) {
-  const fileName = path.basename(filePath);
-  const outputFile = path.join(outputDir, fileName.replace(/\.js$/, '.min.js'));
+  console.log("filepath:", filePath);
+  // Construct output path with the same directory structure
+  const relativePath = path.relative(inputDir, filePath);
+  const outputFile = path.join(outputDir, relativePath.replace(/\.js$/, '.js'));
+  const outputDirPath = path.dirname(outputFile);
+
+  // Ensure output directory exists
+  if (!fs.existsSync(outputDirPath)) {
+    fs.mkdirSync(outputDirPath, { recursive: true });
+  }
+
   try {
     const code = fs.readFileSync(filePath, 'utf8');
     const result = await Terser.minify(code, { module: true });
@@ -24,6 +33,22 @@ async function minifyFile(filePath) {
   } catch (err) {
     console.error(`Error minifying ${filePath}:`, err);
   }
+}
+
+// Function to recursively get all .js files
+function getAllJsFiles(dir) {
+  let results = [];
+  const list = fs.readdirSync(dir);
+  list.forEach(file => {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(getAllJsFiles(filePath));
+    } else if (path.extname(file) === '.js') {
+      results.push(filePath);
+    }
+  });
+  return results;
 }
 
 // Check if `--watch` argument is present
@@ -38,10 +63,11 @@ if (watchMode) {
 }
 
 // Minify existing files initially
-fs.readdirSync(inputDir).forEach(file => {
-  if (path.extname(file) === '.js') {
-    minifyFile(path.join(inputDir, file));
-  }
-});
-
-console.log(watchMode ? 'Watching for file changes...' : 'Minification complete.');
+const allJsFiles = getAllJsFiles(inputDir);
+Promise.all(allJsFiles.map(filePath => minifyFile(filePath)))
+  .then(() => {
+    console.log(watchMode ? 'Watching for file changes...' : 'Minification complete.');
+  })
+  .catch(err => {
+    console.error('Error during initial minification:', err);
+  });

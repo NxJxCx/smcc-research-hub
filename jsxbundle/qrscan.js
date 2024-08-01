@@ -1,7 +1,7 @@
 // @ts-ignore
 import { Scanner as QrScanner } from "@yudiel/react-qr-scanner";
 import React from "react";
-const Scanner = () => {
+function Scanner() {
     const [scannedData, setScannedData] = React.useState([]);
     const [studentName, setStudentName] = React.useState('');
     const [studentID, setStudentID] = React.useState('');
@@ -30,5 +30,5 @@ const Scanner = () => {
                 "Scan a QR code containing your student's name and ID, separated by a newline character.",
                 React.createElement("br", null),
                 React.createElement("button", { type: "button", className: "mt-4 p-2 text-white border border-white rounded", onClick: () => togglePause() }, pause ? 'Scan' : 'Close')))));
-};
+}
 export default Scanner;

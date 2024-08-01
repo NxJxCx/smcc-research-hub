@@ -116,8 +116,11 @@ class Router
   }
   private function staticPage(string $diskPath, int $offset, ?string $ignoreExtension): void
   {
-    $filePath = implode(DIRECTORY_SEPARATOR, [$diskPath, substr($this->uri, $offset)]);
+    $filePath = implode(DIRECTORY_SEPARATOR, [$diskPath, substr($this->uri, $offset + 1)]);
     $info = pathinfo($filePath);
+
+    Logger::write_debug("IGNORE EXT: ". $ignoreExtension);
+    Logger::write_debug("FILE EXT: ". json_encode($info['extension']));
     if (empty($info['extension'])) {
       // no file extension
       // then try adding $ignoreExtension to the end of the path

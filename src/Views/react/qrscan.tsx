@@ -2,7 +2,7 @@
 import { Scanner as QrScanner } from "@yudiel/react-qr-scanner";
 import React from "react";
 
-const Scanner = () => {
+function Scanner() {
   const [scannedData, setScannedData] = React.useState([])
   const [studentName, setStudentName] = React.useState('')
   const [studentID, setStudentID] = React.useState('')
