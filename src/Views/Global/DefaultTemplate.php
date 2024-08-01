@@ -10,27 +10,38 @@ class DefaultTemplate
   {
 ?>
 <body>
-  <div id="root" class="relative max-h-screen overflow-hidden w-full">
-    <main class="relative w-full max-h-screen overflow-auto">
-      <?php if (is_callable($method)) { $method($data); }?>
-      <?php Footer::default(); ?>
-    </main>
-  </div>
+  <main id="root" class="relative w-full">
+    <?php if (is_callable($method)) { $method($data); }?>
+  </main>
+  <?php Footer::default(); ?>
   <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.3.1",
-        "react-dom": "https://esm.sh/react-dom@18.3.1/client",
-        "confetti": "https://esm.sh/canvas-confetti@1.9.3",
-        "react-player": "https://esm.sh/react-player@2.16.0"
-      }
-    }
+{
+  "imports": {
+<?php
+// retrieve file "imports.json" and generate importmap
+$imports = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'imports.json']));
+$imports = json_decode($imports, true);
+$__count = count(array_keys($imports));
+$__c = 0;
+foreach ($imports as $alias => $path) {
+  $__c++;
+  if ($__c === $__count) { ?>
+    "<?php echo $alias; ?>": "<?php echo $path; ?>"
+<?php
+  } else { ?>
+    "<?php echo $alias; ?>": "<?php echo $path; ?>",
+<?php
+  }
+}
+?>
+  }
+}
   </script>
   <script type="module">
     var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
   </script>
   <?php if (!empty($mjsFileName)) { ?>
-    <script type="module" src="/assets/mjs/<?php echo $mjsFileName; ?>.mjs"></script>
+    <script type="module" src="/mjs/<?php echo $mjsFileName; ?>.mjs"></script>
   <?php } ?>
 </body>
 <?php
@@ -40,28 +51,39 @@ class DefaultTemplate
   {
 ?>
 <body>
-  <div id="root" class="relative max-h-screen overflow-hidden w-full">
-<?php Header::default(); ?>
-    <main class="relative w-full max-h-[calc(100vh-96px)] mt-[96px] overflow-auto">
-      <?php if (is_callable($method)) { $method($data); }?>
-      <?php Footer::default(); ?>
-    </main>
-  </div>
+  <?php Header::default(); ?>
+  <main id="root" class="relative w-full">
+    <?php if (is_callable($method)) { $method($data); }?>
+  </main>
+  <?php Footer::default(); ?>
   <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.3.1",
-        "react-dom": "https://esm.sh/react-dom@18.3.1/client",
-        "confetti": "https://esm.sh/canvas-confetti@1.9.3",
-        "react-player": "https://esm.sh/react-player@2.16.0"
-      }
-    }
+{
+  "imports": {
+<?php
+// retrieve file "imports.json" and generate importmap
+$imports = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'imports.json']));
+$imports = json_decode($imports, true);
+$__count = count(array_keys($imports));
+$__c = 0;
+foreach ($imports as $alias => $path) {
+  $__c++;
+  if ($__c === $__count) { ?>
+    "<?php echo $alias; ?>": "<?php echo $path; ?>"
+<?php
+  } else { ?>
+    "<?php echo $alias; ?>": "<?php echo $path; ?>",
+<?php
+  }
+}
+?>
+  }
+}
   </script>
   <script type="module">
     var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
   </script>
   <?php if (!empty($mjsFileName)) { ?>
-  <script type="module" src="/assets/mjs/<?php echo $mjsFileName; ?>.mjs"></script>
+  <script type="module" src="/mjs/<?php echo $mjsFileName; ?>.mjs"></script>
   <?php } ?>
 </body>
 <?php

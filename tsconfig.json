@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // Use ESNext for the latest JavaScript features
+    "module": "ESNext", // ESNext for ES Modules
+    "jsx": "react", // Use "react" if you're working with React; adjust if using something else
+    "moduleResolution": "Node",
+    "outDir": "./public/react", // Output directory for the compiled files
+    "sourceMap": false, // Disable source maps for production
+    "strict": true, // Enable strict type-checking options
+    "esModuleInterop": true, // Enable compatibility with CommonJS
+    "skipLibCheck": true // Skip type checking of declaration files
+  },
+  "exclude": [ "node_modules", "vendor" ],
+  "include": [
+    "src/Views/react/*.ts",
+    "src/Views/react/*.tsx",
+  ]
+}

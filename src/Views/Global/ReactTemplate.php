@@ -9,23 +9,64 @@ class ReactTemplate
   static public function render(string $reactAppPath, array $data)
   {
 ?>
+
     <body>
-      <div id="root"></div>
+      <main id="root" class="relative w-full min-h-screen"></main>
+      <?php Footer::default(); ?>
       <script type="importmap">
-        {
-          "imports": {
-            "react": "https://esm.sh/react@18.3.1",
-            "react-dom": "https://esm.sh/react-dom@18.3.1/client",
-            "confetti": "https://esm.sh/canvas-confetti@1.9.3",
-            "react-player": "https://esm.sh/react-player@2.16.0",
-            "myapp": "/react/<?php echo $reactAppPath; ?>"
-          }
-        }
+{
+  "imports": {
+<?php
+// retrieve file "imports.json" and generate importmap
+$imports = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'imports.json']));
+$imports = json_decode($imports, true);
+foreach ($imports as $alias => $path) {
+?>
+    "<?php echo $alias; ?>": "<?php echo $path; ?>",
+<?php
+}
+?>
+    "myapp": "/react/<?php echo $reactAppPath; ?>.js"
+  }
+}
       </script>
       <script type="module">
-        var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`); 
+        var PAGE_DATA = JSON.parse(`<?php echo json_encode($data); ?>`);
       </script>
-      <script type="module" src="/react/main"></script>
+      <script type="module" src="/react/main.js"></script>
+    </body>
+  <?php
+  }
+
+  static public function renderWithNav(string $reactAppPath, array $data)
+  {
+  ?>
+
+    <body>
+      <?php Header::default(); ?>
+      <main id="root" class="relative w-full min-h-screen"></main>
+      <?php Footer::default(); ?>
+      <script type="importmap">
+{
+  "imports": {
+<?php
+// retrieve file "imports.json" and generate importmap
+$imports = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'imports.json']));
+$imports = json_decode($imports, true);
+foreach ($imports as $alias => $path) {
+?>
+    "<?php echo $alias; ?>": "<?php echo $path; ?>",
+<?php
+}
+?>
+    "myapp": "/react/<?php echo $reactAppPath; ?>.js"
+  }
+}
+      </script>
+      <script type="module">
+        var PAGE_DATA = JSON.parse(`<?php echo json_encode($data); ?>`);
+      </script>
+      <script type="module" src="/react/main.js"></script>
     </body>
 <?php
   }

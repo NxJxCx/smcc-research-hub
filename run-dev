@@ -1,0 +1,6 @@
+echo Web: https://localhost:8000
+$(which php) -S https://0.0.0.0:8000 index.php &
+echo Running Tailwind build watcher...
+$(which npx) postcss ./src/tailwind.css -o ./public/css/main.min.css --watch &
+echo Running Typescript build watcher...
+$(which npm) run build:tscwatch

@@ -5,11 +5,11 @@ namespace Smcc\ResearchHub\Views\Global;
 class Header {
   public static function default() {
 ?>
-    <header class="font-[Quicksand] fixed top-0 left-0 h-[96px] w-full">
+    <header class="font-[Quicksand] sticky top-0 left-0 h-[96px] w-full bg-white z-50">
       <div class="relative w-full h-full *:h-full flex justify-between items-center p-2 shadow">
         <h1 class="font-[700] text-[32px] leading-[35.2px] text-[#2487CE] flex-grow pl-2 md:pl-4 lg:pl-8 xl:pl-16 flex items-center">
           <a href="/" class="hover:opacity-80 hover:drop-shadow-lg cursor-pointer flex flex-start items-center gap-x-2">
-            <image src="/assets/images/SMCC-logo.svg" class="w-fit max-w-[70px] aspect-square" />
+            <image src="/images/SMCC-logo.svg" class="w-fit max-w-[70px] aspect-square" />
             Research Hub
           </a>
         </h1>

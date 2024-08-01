@@ -14,14 +14,14 @@ class HeadTemplate
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon"/>
+      <?php /* <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/> */ ?>
       <title><?php echo $title . " - " . APP_TITLE; ?></title>
 
       <!-- Google font -->
       <link href="https://fonts.googleapis.com/css?family=Nunito:400,700" rel="stylesheet" />
 
       <!-- Custom stlylesheet -->
-      <link type="text/css" rel="stylesheet" href="/assets/css/style.css" />
+      <link type="text/css" rel="stylesheet" href="/css/style.css" />
 
     </head>
   <?php
@@ -35,7 +35,7 @@ class HeadTemplate
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon"/>
+      <?php /* <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/> */ ?>
       <title><?php echo $title . " - " . APP_TITLE; ?></title>
 
       <!-- Google font -->
@@ -47,7 +47,7 @@ class HeadTemplate
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
       <!-- Tailwind Minified CSS -->
-      <link type="text/css" rel="stylesheet" href="/assets/css/main.min.css" />
+      <link type="text/css" rel="stylesheet" href="/css/main.min.css" />
 
     </head>
 <?php

@@ -6,6 +6,7 @@ namespace Smcc\ResearchHub\Controllers;
 
 use Smcc\ResearchHub\Views\Errors\ErrorPage;
 use Smcc\ResearchHub\Views\Pages\HomePage;
+use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
 
 class ViewController extends Controller
 {
@@ -20,6 +21,7 @@ class ViewController extends Controller
   }
   public function studentLogin()
   {
+    LoginPage::view("Student Login");
   }
   public function personnelLogin()
   {
@@ -32,5 +34,11 @@ class ViewController extends Controller
   public function error($message)
   {
     ErrorPage::internalServerError("Error 500 - " . $this->head_title, $message);
+  }
+
+  public function favicon()
+  {
+    readfile(implode(DIRECTORY_SEPARATOR, [ASSETS_PATH,  'favicon.ico']));
+    exit;
   }
 }

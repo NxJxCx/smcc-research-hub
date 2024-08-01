@@ -36,6 +36,8 @@ class Router
   public function run(): void
   {
     try {
+      // check public files
+      $this->publicAssets();
       // check static files
       $paths = array_keys(Router::$Router__routes['STATIC']);
       $matchingPaths = array_filter($paths, function ($path) {
@@ -44,25 +46,24 @@ class Router
       if ($matchingPath = reset($matchingPaths)) {
         // static folder found
         $this->staticPage(Router::$Router__routes['STATIC'][$matchingPath][0], strlen($matchingPath), Router::$Router__routes['STATIC'][$matchingPath][1]);
-      } else {
-        // Request Method: GET, POST, PUT, PATCH, DELETE
-        if (
-          in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-          && isset(Router::$Router__routes[$_SERVER['REQUEST_METHOD']][$this->uri])
-        ) {
-          $route = Router::$Router__routes[$_SERVER['REQUEST_METHOD']][$this->uri];
-          if (is_array($route) && count($route) === 2) {
-            $class = $route[0];
-            $method = $route[1];
-            // Create an instance of the class
-            $instance = new $class();
-            if (method_exists($class, $method)) {
-              call_user_func([$instance, $method], $this->uri, $this->query, $this->body);
-              exit;
-            }
-          } else {
-            throw new Exception('Invalid route configuration for route: ' . $this->uri);
+      }
+      // Request Method: GET, POST, PUT, PATCH, DELETE
+      if (
+        in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+        && isset(Router::$Router__routes[$_SERVER['REQUEST_METHOD']][$this->uri])
+      ) {
+        $route = Router::$Router__routes[$_SERVER['REQUEST_METHOD']][$this->uri];
+        if (is_array($route) && count($route) === 2) {
+          $class = $route[0];
+          $method = $route[1];
+          // Create an instance of the class
+          $instance = new $class();
+          if (method_exists($class, $method)) {
+            call_user_func([$instance, $method], $this->uri, $this->query, $this->body);
+            exit;
           }
+        } else {
+          throw new Exception('Invalid route configuration for route: ' . $this->uri);
         }
       }
       // 404 Not Found
@@ -101,6 +102,18 @@ class Router
     }
   }
 
+  private function publicAssets(): void {
+    $filePath = implode(DIRECTORY_SEPARATOR, [ASSETS_PATH, substr($this->uri, 1)]);
+    Logger::write_debug("PUBLIC FILE: $filePath");
+    if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
+      $_splitted_ext = explode('.', strtolower($filePath));
+      $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
+      header($_headerContentType);
+      header('HTTP/1.1 200 OK');
+      readfile($filePath);
+      exit;
+    }
+  }
   private function staticPage(string $diskPath, int $offset, ?string $ignoreExtension): void
   {
     $filePath = implode(DIRECTORY_SEPARATOR, [$diskPath, substr($this->uri, $offset)]);
@@ -112,8 +125,8 @@ class Router
         $filePath .= '.'. $ignoreExtension;
       }
     }
-    Logger::write_debug("FILE: $filePath");
-    if (file_exists($filePath)) {
+    Logger::write_debug("STATIC FILE: $filePath");
+    if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
       $_splitted_ext = explode('.', strtolower($filePath));
       $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
       header($_headerContentType);

@@ -3,7 +3,7 @@
         'name' => 'smcc/research-hub',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '08fbd677f441a44c7cd76deeb10e5afc30abb46f',
+        'reference' => '926aca12c7a157d6689539730550dcecfbda5e29',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'smcc/research-hub' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '08fbd677f441a44c7cd76deeb10e5afc30abb46f',
+            'reference' => '926aca12c7a157d6689539730550dcecfbda5e29',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
