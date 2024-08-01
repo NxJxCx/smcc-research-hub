@@ -1,8 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
+// @ts-ignore
 import ReactPlayer from 'react-player';
 
-function VideoPlayer({ url }) {
+function VideoPlayer({ url }: { url: string }) {
   return React.createElement(
     ReactPlayer,
     {
@@ -21,5 +22,6 @@ function Video() {
   )
 }
 
+// @ts-ignore
 const root = ReactDOM.createRoot(document.getElementById("home-video-container"))
 root.render(React.createElement(Video))

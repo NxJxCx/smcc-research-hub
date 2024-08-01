@@ -1,5 +1,0 @@
-echo Running Build
-echo Building Tailwind CSS
-$(which npx) postcss ./src/tailwind.css -o ./public/css/main.min.css
-echo Building Typescript React
-$(which npm) run build:tsc

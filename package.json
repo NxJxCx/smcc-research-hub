@@ -2,11 +2,9 @@
   "name": "research-hub",
   "version": "1.0.0",
   "scripts": {
-    "build": "./run-build",
-    "dev": "./run-dev",
-    "start": "./run-start",
-    "build:tsc": "tsc",
-    "build:tscwatch": "tsc --watch"
+    "build": "node build.js",
+    "dev": "node dev-watch.js",
+    "start": "./run-start"
   },
   "author": "",
   "license": "ISC",
@@ -16,17 +14,13 @@
     "@types/node": "^22.0.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@yudiel/react-qr-scanner": "^2.0.4",
     "autoprefixer": "^10.4.19",
-    "confetti": "^2.0.3",
+    "chokidar": "^3.6.0",
     "cssnano": "^7.0.4",
-    "esbuild": "^0.23.0",
     "postcss": "^8.4.40",
     "postcss-cli": "^11.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-player": "^2.16.0",
     "tailwindcss": "^3.4.7",
+    "terser": "^5.31.3",
     "typescript": "^5.5.4"
   }
 }

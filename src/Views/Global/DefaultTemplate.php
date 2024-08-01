@@ -6,7 +6,7 @@ namespace Smcc\ResearchHub\Views\Global;
 
 class DefaultTemplate
 {
-  static public function render(callable $method, ?array $data = [], ?string $mjsFileName = null)
+  static public function render(callable $method, ?array $data = [], ?string $reactFileName = null)
   {
 ?>
 <body>
@@ -40,14 +40,14 @@ foreach ($imports as $alias => $path) {
   <script type="module">
     var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
   </script>
-  <?php if (!empty($mjsFileName)) { ?>
-    <script type="module" src="/mjs/<?php echo $mjsFileName; ?>.mjs"></script>
+  <?php if (!empty($reactFileName)) { ?>
+    <script type="module" src="/jsx/<?php echo $reactFileName; ?>.min.js"></script>
   <?php } ?>
 </body>
 <?php
   }
 
-  static public function renderWithNav(callable $method, ?array $data = [], ?string $mjsFileName = null)
+  static public function renderWithNav(callable $method, ?array $data = [], ?string $reactFileName = null)
   {
 ?>
 <body>
@@ -82,8 +82,8 @@ foreach ($imports as $alias => $path) {
   <script type="module">
     var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
   </script>
-  <?php if (!empty($mjsFileName)) { ?>
-  <script type="module" src="/mjs/<?php echo $mjsFileName; ?>.mjs"></script>
+  <?php if (!empty($reactFileName)) { ?>
+  <script type="module" src="/jsx/<?php echo $reactFileName; ?>.min.js"></script>
   <?php } ?>
 </body>
 <?php
