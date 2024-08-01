@@ -9,10 +9,7 @@ function StudentLogin() {
 
   const onResult = React.useCallback((studentName?: string, studentId?: string) => {
     if (!!studentId) {
-      const url = new URL('/api/student', window.location.origin)
-      url.searchParams.set('q', 'exist')
-      url.searchParams.set('id', studentId)
-      fetch(url)
+      fetch(`/api/student?q=exist&id=${studentId}`)
       .then(response => response.json())
       .then(({ error, exists }) => {
         if (error) {

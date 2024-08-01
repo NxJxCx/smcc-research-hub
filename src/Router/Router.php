@@ -29,7 +29,7 @@ class Router
 
   public function __construct()
   {
-    $this->uri = $_SERVER['REQUEST_URI'];
+    $this->uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $this->query = json_decode(json_encode($_GET), true);
 
     $contentType = $_SERVER['CONTENT_TYPE'] ?? 'Not Set';
