@@ -9,7 +9,7 @@ use DateTime;
 class Student implements Model
 {
   private ?int $student_id;
-  private string $fullname;
+  private string $full_name;
   private string $password;
   private string $course;
   private int $year;
@@ -22,7 +22,7 @@ class Student implements Model
   }
   public function getFullName(): string
   {
-    return $this->fullname;
+    return $this->full_name;
   }
   public function getPassword(): string
   {
@@ -45,13 +45,13 @@ class Student implements Model
     return $this->updated_at;
   }
 
-  public function setStudent(?int $student_id, ?string $fullname, ?string $password, ?string $course, ?int $year, ?DateTime $created_at, ?DateTime $updated_at): void
+  public function setData(?int $student_id, ?string $full_name, ?string $password, ?string $course, ?int $year): void
   {
     if (!is_null($student_id)) {
       $this->student_id = $student_id;
     }
-    if (!is_null($fullname)) {
-      $this->fullname = $fullname;
+    if (!is_null($full_name)) {
+      $this->full_name = $full_name;
     }
     if (!is_null($password)) {
       $this->password = password_hash($password, PASSWORD_DEFAULT);
@@ -62,22 +62,16 @@ class Student implements Model
     if (!is_null($year)) {
       $this->year = $year;
     }
-    if (!is_null($created_at)) {
-      $this->created_at = $created_at;
-    }
-    if (!is_null($updated_at)) {
-      $this->updated_at = $updated_at;
-    }
   }
 
   public function create(): ?int
   {
     $db = Database::getInstance();
     $stmt = $db->getDb()->prepare(
-      "INSERT INTO student(student_id, full_name, password, course, year) VALUES(:student_id, :fullname, :password, :course, :year)"
+      "INSERT INTO student(student_id, full_name, password, course, year) VALUES(:student_id, :full_name, :password, :course, :year)"
     );
     $stmt->bindParam(':student_id', $this->student_id);
-    $stmt->bindParam(':fullname', $this->fullname);
+    $stmt->bindParam(':full_name', $this->full_name);
     $stmt->bindParam(':password', $this->password);
     $stmt->bindParam(':course', $this->course);
     $stmt->bindParam(':year', $this->year);
@@ -94,9 +88,9 @@ class Student implements Model
   {
     $db = Database::getInstance();
     $stmt = $db->getDb()->prepare(
-      "UPDATE student SET full_name = :fullname, password = :password, course = :course, year = :year WHERE student_id = :student_id"
+      "UPDATE student SET full_name = :full_name, password = :password, course = :course, year = :year WHERE student_id = :student_id"
     );
-    $stmt->bindParam(':fullname', $this->fullname);
+    $stmt->bindParam(':full_name', $this->full_name);
     $stmt->bindParam(':password', $this->password);
     $stmt->bindParam(':course', $this->course);
     $stmt->bindParam(':year', $this->year);

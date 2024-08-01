@@ -24,6 +24,8 @@ async function main() {
         fs.rmSync(tscOutputDir, {recursive: true });
     }
 
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for second
+
     console.log('Running Typescript build watcher...');
     // Run TypeScript compiler in watch mode
     runCommand('npx', ['tsc']);

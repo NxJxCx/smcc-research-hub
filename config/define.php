@@ -15,6 +15,8 @@ define('VIEW_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views']));
 define('REACT_SRC_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views', 'react', 'src']));
 define('REACT_DIST_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views', 'react', 'dist']));
 
+define('JWT_SECRET_KEY', $_ENV['JWT_SECRET_KEY'] ?? 'researchhub_secret_key');
+
 // set DISPLAY_ERRORS to false if in production environment to hide error messages
 define('DISPLAY_ERRORS', $_ENV['DISPLAY_ERRORS'] ?? true);
 

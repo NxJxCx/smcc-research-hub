@@ -14,6 +14,7 @@ class Router
   private string $uri;
   private array $query;
   private array $body;
+  private array $files;
 
   static $Router__routes = [
     'STATIC' => [],
@@ -29,8 +30,17 @@ class Router
   public function __construct()
   {
     $this->uri = $_SERVER['REQUEST_URI'];
-    $this->query = $_GET;
-    $this->body = $_POST;
+    $this->query = json_decode(json_encode($_GET), true);
+
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? 'Not Set';
+
+    if (str_starts_with($contentType, 'application/json')) {
+      $rawData = file_get_contents('php://input');
+      $this->body = json_decode($rawData, true);
+    } else {
+      $this->body = $_SERVER['REQUEST_METHOD'] !== 'GET' ? json_decode(json_encode($_POST), true) : [];
+    }
+    $this->files = $_SERVER['REQUEST_METHOD'] === 'POST' ? json_decode(json_encode($_FILES), true) : [];
   }
 
   public function run(): void
@@ -59,7 +69,11 @@ class Router
           // Create an instance of the class
           $instance = new $class();
           if (method_exists($class, $method)) {
-            call_user_func([$instance, $method], $this->uri, $this->query, $this->body);
+            Logger::write_info("Request: " . $this->uri);
+            Logger::write_info("Method: " . $_SERVER['REQUEST_METHOD']);
+            Logger::write_info("query: ". json_encode($this->query));
+            Logger::write_info("body: ". json_encode($this->body) );
+            call_user_func([$instance, $method], $this->uri, $this->query, $this->body, $this->files);
             exit;
           }
         } else {

@@ -7,6 +7,10 @@ namespace Smcc\ResearchHub;
 use Smcc\ResearchHub\Controllers\ApiController;
 use Smcc\ResearchHub\Controllers\ViewController;
 use Smcc\ResearchHub\Router\Router;
+use Smcc\ResearchHub\Router\Session;
+
+// initialize session_id for session tracking
+Session::index();
 
 /* STATIC FOLDERS */
 Router::STATIC('/jsx', REACT_DIST_PATH, 'js');
@@ -18,8 +22,9 @@ Router::GET('/admin/login', ViewController::class, 'adminLogin');
 Router::GET('/teacher/login', ViewController::class, 'personnelLogin');
 Router::GET('/api/test', ApiController::class, 'test'); // test api route
 
-
 /* POST METHOD */
+Router::POST('/api/login', ApiController::class, 'login');
+Router::POST('/api/student', ApiController::class, 'studentInfo');
 
 /* PUT METHOD */
 

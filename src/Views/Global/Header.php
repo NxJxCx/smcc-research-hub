@@ -38,8 +38,9 @@ class Header {
               search
             </span>
           </button>
-          <div class="relative flex items-center justify-center mx-4">
-            <p class="text-sm">Mark Daryll Namoca</p>
+          <div class="relative flex items-center justify-center mx-4 gap-x-4">
+            <p class="text-sm"><a href="/signup">Sign Up</a></p>
+            <p class="text-sm"><a href="/login">Login</a></p>
           </div>
         </nav>
       </div>

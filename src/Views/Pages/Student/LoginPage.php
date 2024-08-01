@@ -14,6 +14,6 @@ class LoginPage
     HeadTemplate::default($title);
     // check session here
     $session = $_SESSION['user'] ?? null;
-    ReactTemplate::renderWithNav('student/login-scan', ['session' => $session]);
+    ReactTemplate::render('student/login', ['session' => $session]);
   }
 }

@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub\Models;
 
 use PDO;
-use PDOException;
-use Smcc\ResearchHub\Config\Logger;
 
 interface BaseDatabase
 {
   public function getAllRows(string $tableName, ?string $modelClass = "stdClass"): array;
-  public function getRowById(string $tableName, int $id, ?string $modelClass = "stdClass"): ?Model;
-  public function findOne(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): ?Model;
+  public function getRowById(string $tableName, int $id, ?string $modelClass = "stdClass"): bool|object;
+  public function findOne(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): bool|object;
   public function findMany(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): array;
 }
 
@@ -20,7 +18,7 @@ $_open_database = null;
 
 class Database implements BaseDatabase
 {
-  private PDO $db;
+  private ?PDO $db;
 
   public function __construct(string $host = MYSQL_HOST, string $port = MYSQL_PORT, string $dbname = MYSQL_DATABASE, string $user = MYSQL_USER, string $password = MYSQL_PASSWORD)
   {
@@ -62,14 +60,12 @@ class Database implements BaseDatabase
         . ')',
       'personnel' => 'CREATE TABLE IF NOT EXISTS personnel ('
         . 'personnel_id BIGINT NOT NULL,'
-        . 'username VARCHAR(255) NOT NULL,'
         . 'full_name VARCHAR(255) NOT NULL,'
         . 'email VARCHAR(255) NOT NULL,'
         . 'password VARCHAR(255) NOT NULL,'
         . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
         . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (personnel_id),'
-        . 'UNIQUE (username)'
+        . 'PRIMARY KEY (personnel_id)'
         . ')',
       'admin_logs' => 'CREATE TABLE IF NOT EXISTS admin_logs ('
         . 'id BIGINT NOT NULL AUTO_INCREMENT,'
@@ -97,6 +93,15 @@ class Database implements BaseDatabase
         . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
         . 'PRIMARY KEY (id),'
         . 'FOREIGN KEY (student_id) REFERENCES student(student_id) ON UPDATE CASCADE ON DELETE CASCADE'
+        . ')',
+      'session' => 'CREATE TABLE IF NOT EXISTS sessions ('
+        . 'id INT AUTO_INCREMENT,'
+        . 'session_id VARCHAR(255) NOT NULL,'
+        . 'token TEXT,'
+        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
+        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
+        . 'PRIMARY KEY (id),'
+        . 'UNIQUE (session_id)'
         . ')',
     ];
     foreach ($tables as $_ => $createTable) {
@@ -131,7 +136,7 @@ class Database implements BaseDatabase
   /**
    * @inheritDoc
    */
-  public function getRowById(string $tableName, int $id, ?string $modelClass = "stdClass"): ?Model
+  public function getRowById(string $tableName, int $id, ?string $modelClass = "stdClass"): bool|object
   {
     $stmt = $this->db->prepare("SELECT * FROM $tableName WHERE id = :id");
     $stmt->bindParam(':id', $id);
@@ -153,12 +158,22 @@ class Database implements BaseDatabase
   /**
    * @inheritDoc
    */
-  public function findOne(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): ?Model
+  public function findOne(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): bool|object
   {
     // select one row using prepared statements and return the model object
     $sql = "SELECT * FROM $tableName WHERE " . implode(' AND ', array_map(fn ($key, $value) => "$key = :$key", array_keys($conditions), $conditions));
     $stmt = $this->db->prepare($sql);
     $stmt->execute($conditions);
     return $stmt->fetchObject($modelClass);
+  }
+
+  public function __destruct()
+  {
+    global $_open_database;
+    // close database connection when object is destroyed
+    if (!is_null($_open_database)) {
+      $_open_database = null;
+      $this->db = null;
+    }
   }
 }

@@ -24,6 +24,8 @@ async function main() {
         fs.rmSync(tscOutputDir, {recursive: true });
     }
 
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for second
+
     console.log('Running Typescript build watcher...');
     // Run TypeScript compiler in watch mode
     runCommand('npx', ['tsc', '--watch']);
@@ -34,7 +36,7 @@ async function main() {
     // Run the custom compile script in watch mode
     runCommand('node', ['compile.js', '--watch']);
 
-    console.log('Web: https://localhost:8000');
+    console.log('Web: http://localhost:8000');
     // Start the PHP server
     runCommand('php', ['-S', '0.0.0.0:8000', 'index.php']);
 }
