@@ -1,1 +1,1 @@
-import e from"react";import t from"../qrscan";function o(){const[o,r]=e.useState(""),n=e.useCallback(((e,t)=>{t&&r(t)}),[]);return e.useEffect((()=>{console.log("Student ID:",o)}),[o]),e.createElement(t,{onResult:n,regExFormat:[/^[A-Z\w]+/,/20\d{7}$/]})}export default o;
+import e from"react";import t from"../qrscan";function r(){const[r,a]=e.useState(""),n=e.useCallback(((e,t)=>{t&&a(t)}),[]);return e.createElement("div",null,e.createElement(t,{onResult:n,regExFormat:[/^[A-Z\w]+/,/20\d{7}$/]}))}export default r;

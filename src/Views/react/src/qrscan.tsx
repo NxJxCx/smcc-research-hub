@@ -15,7 +15,7 @@ function Scanner({ pause = false, format = 'qr_code', onResult = (...props: stri
 
   return (
     <div className="relative mt-[100px]">
-      <div  className="mx-auto w-[400px] h-[400px] aspect-square bg-gray-300 p-4 rounded" >
+      <div  className={"mx-auto max-w-[350px] aspect-square p-4 rounded-lg " + (scannedData.length > 0 ? 'bg-green-300' : 'bg-gray-300')}>
         <QrScanner onScan={handleScan} paused={pause} />
       </div>
     </div>

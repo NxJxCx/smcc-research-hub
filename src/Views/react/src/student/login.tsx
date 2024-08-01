@@ -8,10 +8,11 @@ function StudentLogin() {
       setStudentId(studentId)
     }
   }, [])
-  React.useEffect(() => {
-    console.log('Student ID:', studentId)
-  }, [studentId]);
-  return <Scanner onResult={onResult} regExFormat={[/^[A-Z\w]+/, /20\d{7}$/]} />
+  return (
+    <div>
+      <Scanner onResult={onResult} regExFormat={[/^[A-Z\w]+/, /20\d{7}$/]} />
+    </div>
+  )
 }
 
 export default StudentLogin
