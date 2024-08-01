@@ -1,1 +1,0 @@
-import e from"react";import t from"react-dom/client";import r from"myapp";t.createRoot(document.getElementById("root")).render(e.createElement(r,null));

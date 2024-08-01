@@ -1,1 +1,0 @@
-import e from"react";import t from"react-dom/client";import r from"react-player";function o({url:t}){return e.createElement(r,{url:t,controls:!0,width:"100%",height:"100%"})}t.createRoot(document.getElementById("home-video-container")).render(e.createElement((function(){return e.createElement(o,{url:"https://youtu.be/b0eKjsx_V78"})})));

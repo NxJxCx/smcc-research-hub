@@ -1,1 +1,0 @@
-import r from"react";import t from"../qrscan";function e(){return r.createElement(t,null)}export default e;
