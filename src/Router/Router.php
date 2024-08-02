@@ -69,10 +69,6 @@ class Router
           // Create an instance of the class
           $instance = new $class();
           if (method_exists($class, $method)) {
-            Logger::write_info("Request: " . $this->uri);
-            Logger::write_info("Method: " . $_SERVER['REQUEST_METHOD']);
-            Logger::write_info("query: ". json_encode($this->query));
-            Logger::write_info("body: ". json_encode($this->body) );
             call_user_func([$instance, $method], $this->uri, $this->query, $this->body, $this->files);
             exit;
           }
@@ -118,7 +114,6 @@ class Router
 
   private function publicAssets(): void {
     $filePath = implode(DIRECTORY_SEPARATOR, [ASSETS_PATH, substr($this->uri, 1)]);
-    Logger::write_debug("PUBLIC FILE: $filePath");
     if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
       $_splitted_ext = explode('.', strtolower($filePath));
       $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
@@ -140,7 +135,6 @@ class Router
         $filePath .= '.'. $ignoreExtension;
       }
     }
-    Logger::write_debug("STATIC FILE: $filePath");
     if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
       $_splitted_ext = explode('.', strtolower($filePath));
       $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
@@ -172,7 +166,6 @@ class Router
   }
   public static function STATIC(string $uriPath, string $diskPath, ?string $ignoreExtension = null): void
   {
-    Logger::write_debug("PATH: $uriPath - DISK PATH: $diskPath");
     Router::$Router__routes['STATIC'][$uriPath] = [$diskPath, $ignoreExtension];
   }
 

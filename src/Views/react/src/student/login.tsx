@@ -65,38 +65,42 @@ function StudentLogin() {
 
   return showScanner ? (
     <div className="w-full pt-32">
-      <div className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
-        {SMCCLogo}
-        <div className="text-[24px] font-[700] text-center">Student Login</div>
-        <Scanner className="mt-4" onResult={onResult} pause={!showScanner} regExFormat={[/^[A-Z\w]+/, /20\d{7}$/]} />
-      </div>
-      <div className="mt-8 text-center font-bold">
-        Scan your Student ID QR Code
-        <br />
-        <button type="button" className="text-sky-500 hover:text-sky-300 hover:underline mt-2" onClick={() => setShowScanner(false)}>or Login with your Student ID</button>
+      <div className="p-4">
+        <div className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
+          {SMCCLogo}
+          <div className="text-[24px] font-[700] text-center">Student Login</div>
+          <Scanner className="mt-4" onResult={onResult} pause={!showScanner} regExFormat={[/^[A-Z\w]+/, /20\d{7}$/]} />
+        </div>
+        <div className="mt-8 text-center font-bold">
+          Scan your Student ID QR Code
+          <br />
+          <button type="button" className="text-sky-500 hover:text-sky-300 hover:underline mt-2" onClick={() => setShowScanner(false)}>or Login with your Student ID</button>
+        </div>
       </div>
     </div>
   ) : (
     <div className="w-full pt-32">
-      <form onSubmit={onLogin} className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
-        {SMCCLogo}
-        <div className="text-[24px] font-[700] text-center">Student Login</div>
-        <div className="flex justify-center px-4">
-          <input type="text" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Student ID" value={studentId} onChange={(e: any) => setStudentId(e.target.value)} required />
+      <div className="p-4">
+        <form onSubmit={onLogin} className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
+          {SMCCLogo}
+          <div className="text-[24px] font-[700] text-center">Student Login</div>
+          <div className="flex justify-center px-4">
+            <input type="text" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Student ID" value={studentId} onChange={(e: any) => setStudentId(e.target.value)} required />
+          </div>
+          <div className="flex justify-center px-4">
+            <input type="password" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} required />
+          </div>
+          <div className="flex justify-center px-4">
+            <button type="submit" disabled={pending} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 text-[22px] w-full disabled:bg-gray-300">
+              {pending ? <span className="animate-pulse">Loading...</span> : <>Login</>}
+            </button>
+          </div>
+        </form>
+        <div className="mt-8 text-center font-bold">
+          Login with your Student ID
+          <br />
+          <button type="button" className="text-sky-500 hover:text-sky-300 hover:underline mt-2" onClick={() => setShowScanner(true)}>or Scan your Student ID QR Code</button>
         </div>
-        <div className="flex justify-center px-4">
-          <input type="password" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} required />
-        </div>
-        <div className="flex justify-center px-4">
-          <button type="submit" disabled={pending} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 text-[22px] w-full disabled:bg-gray-300">
-            {pending ? <span className="animate-pulse">Loading...</span> : <>Login</>}
-          </button>
-        </div>
-      </form>
-      <div className="mt-8 text-center font-bold">
-        Login with your Student ID
-        <br />
-        <button type="button" className="text-sky-500 hover:text-sky-300 hover:underline mt-2" onClick={() => setShowScanner(true)}>or Scan your Student ID QR Code</button>
       </div>
     </div>
   )

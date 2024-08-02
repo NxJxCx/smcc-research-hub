@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Pages;
 
+use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Global\DefaultTemplate;
 use Smcc\ResearchHub\Views\Global\HeadTemplate;
 
@@ -12,15 +13,13 @@ class HomePage
   static public function view(string $title)
   {
     HeadTemplate::default($title);
-    // check session here
-    $session = $_SESSION['user'] ?? null;
-    DefaultTemplate::renderWithNav([HomePage::class, 'render'], ['session' => $session], 'home');
+    DefaultTemplate::renderWithNav([HomePage::class, 'render'], ['session' => Session::getSession()], 'home');
   }
   static public function render(array $data = [])
   {
     // Render page here
 ?>
-  <div class="flex flex-col justify-center items-center my-8 font-[Poppins] font-[600] text-[48px] leading-[72px] text-[#16507B]">
+  <div class="flex flex-col justify-center items-center text-center my-8 font-[Poppins] font-[600] text-[48px] leading-[72px] text-[#16507B]">
     <h1>Where Knowledge Meets</h1>
     <h1>Innovation</h1>
   </div>

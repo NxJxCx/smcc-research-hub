@@ -22,11 +22,17 @@ class Session
     }
   }
 
+  public static function getSession(): ?array
+  {
+    return self::isAuthenticated() ? $_SESSION['auth'] : null;
+  }
+
   public static function isAuthenticated(): bool
   {
     // Check cookies for session_id and validate it with the database
     $session_cookie = Cookies::get('session_id');
     if (!$session_cookie) {
+      unset($_SESSION['auth']);
       return false;
     }
     // Validate session_id in the database
@@ -40,8 +46,8 @@ class Session
         $_SESSION['auth'] = json_encode($payload['data']);
         return true;
       }
-      unset($_SESSION['auth']);
     }
+    unset($_SESSION['auth']);
     return false;
   }
 
