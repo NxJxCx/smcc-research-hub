@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub\Models;
 
 use PDO;
+use ReflectionClass;
+use Smcc\ResearchHub\Config\Logger;
 
 interface BaseDatabase
 {
-  public function getAllRows(string $tableName, ?string $modelClass = "stdClass"): array;
-  public function getRowById(string $tableName, int $id, ?string $modelClass = "stdClass"): bool|object;
-  public function findOne(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): bool|object;
-  public function findMany(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): array;
+  public function getRowById(string $modelClass, int $id): object|false;
+  public function fetchOne(string $modelClass, array $conditions = []): object|false;
+  public function getAllRows(string $modelClass): array;
+  public function fetchMany(string $modelClass, array $conditions = []): array;
 }
 
 $_open_database = null;
@@ -23,6 +25,12 @@ class Database implements BaseDatabase
   public function __construct(string $host = MYSQL_HOST, string $port = MYSQL_PORT, string $dbname = MYSQL_DATABASE, string $user = MYSQL_USER, string $password = MYSQL_PASSWORD)
   {
     global $_open_database;
+    Logger::write_debug("Connecting to database: $host, $port, $dbname, $user, $password");
+    // Check if database connection already exists
+    if (!is_null($_open_database)) {
+      Logger::write_debug("Database connection already exists.");
+      return;
+    }
     // implement database connection using PDO mysql
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname";
     $options = [
@@ -30,88 +38,43 @@ class Database implements BaseDatabase
       PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
       PDO::ATTR_EMULATE_PREPARES   => false,
     ];
-    // Check if database connection already exists
-    if (!is_null($_open_database)) {
-      return;
-    }
     $_open_database = $this->db = new PDO($dsn, $user, $password, $options);
-    $tables = [
-      'admin' => 'CREATE TABLE IF NOT EXISTS admin ('
-        . 'id BIGINT NOT NULL AUTO_INCREMENT,'
-        . 'admin_user VARCHAR(255) NOT NULL,'
-        . 'full_name VARCHAR(255) NOT NULL,'
-        . 'email VARCHAR(255) NOT NULL,'
-        . 'password VARCHAR(255) NOT NULL,'
-        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (id),'
-        . 'UNIQUE (admin_user)'
-        . ')',
-      'student' => 'CREATE TABLE IF NOT EXISTS student ('
-        . 'student_id BIGINT NOT NULL,'
-        . 'full_name VARCHAR(255) NOT NULL,'
-        . 'password VARCHAR(255) NOT NULL,'
-        . 'course VARCHAR(255) NOT NULL,'
-        . 'year int NOT NULL,'
-        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (student_id),'
-        . 'UNIQUE (student_id, full_name)'
-        . ')',
-      'personnel' => 'CREATE TABLE IF NOT EXISTS personnel ('
-        . 'personnel_id BIGINT NOT NULL,'
-        . 'full_name VARCHAR(255) NOT NULL,'
-        . 'email VARCHAR(255) NOT NULL,'
-        . 'password VARCHAR(255) NOT NULL,'
-        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (personnel_id)'
-        . ')',
-      'admin_logs' => 'CREATE TABLE IF NOT EXISTS admin_logs ('
-        . 'id BIGINT NOT NULL AUTO_INCREMENT,'
-        . 'admin_id BIGINT NOT NULL,'
-        . 'activity VARCHAR(255) NOT NULL,'
-        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (id),'
-        . 'FOREIGN KEY (admin_id) REFERENCES admin(id) ON UPDATE CASCADE ON DELETE CASCADE'
-        . ')',
-      'personnel_logs' => 'CREATE TABLE IF NOT EXISTS personnel_logs ('
-        . 'id INT NOT NULL AUTO_INCREMENT,'
-        . 'personnel_id BIGINT NOT NULL,'
-        . 'activity VARCHAR(255) NOT NULL,'
-        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (id),'
-        . 'FOREIGN KEY (personnel_id) REFERENCES personnel(personnel_id) ON UPDATE CASCADE ON DELETE CASCADE'
-        . ')',
-      'student_logs' => 'CREATE TABLE IF NOT EXISTS student_logs ('
-        . 'id BIGINT NOT NULL AUTO_INCREMENT,'
-        . 'student_id BIGINT NOT NULL,'
-        . 'activity VARCHAR(255) NOT NULL,'
-        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (id),'
-        . 'FOREIGN KEY (student_id) REFERENCES student(student_id) ON UPDATE CASCADE ON DELETE CASCADE'
-        . ')',
-      'session' => 'CREATE TABLE IF NOT EXISTS sessions ('
-        . 'id INT AUTO_INCREMENT,'
-        . 'session_id VARCHAR(255) NOT NULL,'
-        . 'token TEXT,'
-        . 'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'
-        . 'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,'
-        . 'PRIMARY KEY (id),'
-        . 'UNIQUE (session_id)'
-        . ')',
-    ];
-    foreach ($tables as $_ => $createTable) {
-      $this->db->exec($createTable);
+    Logger::write_debug("Database connection established successfully.");
+
+    $models = array_map(fn($t) => new $t([], true), getAllModels());
+
+    Logger::write_debug("Creating tables if not exists:\n"
+      . implode(
+          "\n",
+          array_map(
+            fn($t) => self::quoteIdentifier($t->getTableName()),
+            $models
+          )
+        )
+      );
+    // Create tables for all models
+    foreach ($models as $model) {
+      $model->createTable($this);
+    }
+
+    Logger::write_debug("Alter table for foreign key constraints if not exists:\n"
+    . implode(
+        "\n",
+        array_map(
+          fn($t) => implode(", ", array_map(fn($k) => self::quoteIdentifier($t->getTableName()). ".". self::quoteIdentifier($k), array_keys($t->getForeignConstraints()))),
+          array_filter($models, fn($t) => count($t->getForeignConstraints()) > 0)
+        )
+      )
+    );
+
+    // alter table for foreign key constraints for all models
+    foreach (array_filter($models, fn($t) => count($t->getForeignConstraints()) > 0) as $model) {
+      $model->createForeignConstraints($this);
     }
   }
 
   public function getDb(): PDO
   {
-    $this->getAllRows('admin', Student::class);
     return $this->db;
   }
 
@@ -126,45 +89,77 @@ class Database implements BaseDatabase
   /**
    * @inheritDoc
    */
-  public function getAllRows(string $tableName, string|null $modelClass = "stdClass"): array
+  public function getAllRows(string $modelClass): array
   {
-    $stmt = $this->db->prepare("SELECT * FROM $tableName");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_CLASS, $modelClass);
+    if (is_subclass_of($modelClass, Model::class)) {
+      $model = new $modelClass();
+      $stmt = $this->db->prepare("SELECT * FROM {$model->getTableName()}");
+      if ($stmt->execute()) {
+        return $stmt->fetchAll(PDO::FETCH_CLASS, $modelClass);
+      }
+    }
+    return [];
   }
 
   /**
    * @inheritDoc
    */
-  public function getRowById(string $tableName, int $id, ?string $modelClass = "stdClass"): bool|object
+  public function getRowById(string $modelClass, mixed $id): object|false
   {
-    $stmt = $this->db->prepare("SELECT * FROM $tableName WHERE id = :id");
-    $stmt->bindParam(':id', $id);
-    $stmt->execute();
-    return $stmt->fetchObject($modelClass);
+    if (is_subclass_of($modelClass, Model::class)) {
+      $model = new $modelClass();
+      $stmt = $this->db->prepare("SELECT * FROM {$model->getTableName()} WHERE {$model->getPrimaryKey()} = :{$model->getPrimaryKey()}");
+      $stmt->bindParam(":{$model->getPrimaryKey()}", $id);
+      if ($stmt->execute()) {
+        return $stmt->fetchObject($modelClass);
+      }
+    }
+    return false;
   }
   /**
    * @inheritDoc
    */
-  public function findMany(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): array
+  public function fetchMany(string $modelClass, array $conditions = []): array
   {
-    // select many rows using prepared statements and return the results array of models
-    $sql = "SELECT * FROM $tableName WHERE " . implode(' AND ', array_map(fn ($key, $value) => "$key = :$key", array_keys($conditions), $conditions));
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute($conditions);
-    return $stmt->fetchAll(PDO::FETCH_CLASS, $modelClass);
+    if (is_subclass_of($modelClass, Model::class)) {
+      $model = new $modelClass();
+      // select many rows using prepared statements and return the results array of models
+      $sql = "SELECT * FROM {$model->getTableName()} WHERE " . implode(' AND ', array_map(fn ($key, $value) => "$key = :$key", array_keys($conditions), $conditions));
+      $stmt = $this->db->prepare($sql);
+      foreach ($conditions as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+      }
+      if ($stmt->execute()) {
+        return $stmt->fetchAll(PDO::FETCH_CLASS, $modelClass);
+      }
+    }
+    return [];
   }
 
   /**
    * @inheritDoc
    */
-  public function findOne(string $tableName, array $conditions = [], ?string $modelClass = "stdClass"): bool|object
+  public function fetchOne(string $modelClass, array $conditions = []): object|false
   {
-    // select one row using prepared statements and return the model object
-    $sql = "SELECT * FROM $tableName WHERE " . implode(' AND ', array_map(fn ($key, $value) => "$key = :$key", array_keys($conditions), $conditions));
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute($conditions);
-    return $stmt->fetchObject($modelClass);
+    if (is_subclass_of($modelClass, Model::class)) {
+      $model = new $modelClass();
+      // select one row using prepared statements and return the model object
+      $sql = "SELECT * FROM {$model->getTableName()} WHERE " . implode(' AND ', array_map(fn ($key, $value) => "$key = :$key", array_keys($conditions), $conditions));
+      $stmt = $this->db->prepare($sql);
+      foreach ($conditions as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+      }
+      if ($stmt->execute()) {
+        return $stmt->fetchObject($modelClass);
+      }
+    }
+    return false;
+  }
+
+  // Quote identifiers (table names, column names, etc.)
+  public function quoteIdentifier(string $identifier)
+  {
+      return '`' . str_replace('`', '``', $identifier) . '`';
   }
 
   public function __destruct()
@@ -176,4 +171,24 @@ class Database implements BaseDatabase
       $this->db = null;
     }
   }
+}
+
+function getAllModels(): array
+{
+  $tables = [];
+  $directory = MODELS_PATH;
+  $namespace = "Smcc\\ResearchHub\\Models";
+  foreach (scandir($directory) as $file) {
+    if ($file !== '.' && $file !== '..' && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+      $className = $namespace . "\\" . pathinfo($file, PATHINFO_FILENAME);
+      if (class_exists($className)) {
+        $reflection = new ReflectionClass($className);
+        if ($reflection->isSubclassOf(Model::class)) {
+          $tables[] = $className;
+        }
+      }
+    }
+  }
+
+  return $tables;
 }

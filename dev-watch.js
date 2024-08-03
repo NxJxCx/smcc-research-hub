@@ -30,15 +30,19 @@ async function main() {
     // Run TypeScript compiler in watch mode
     runCommand('npx', ['tsc', '--watch']);
 
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for two second before starting other watchers
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     console.log('Compiling ESM React Modules watcher...');
     // Run the custom compile script in watch mode
     runCommand('node', ['compile.js', '--watch']);
 
-    console.log('Web: http://localhost:8000');
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // console.log('\nWeb: http://localhost:8000');
     // Start the PHP server
-    runCommand('php', ['-S', '0.0.0.0:8000', 'index.php']);
+    runCommand('php', ['-S', 'localhost:8000', 'index.php']);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    runCommand('node', ['proxy.js']);
 }
 
 // Execute the main function

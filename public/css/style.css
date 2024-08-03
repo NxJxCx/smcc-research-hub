@@ -100,7 +100,7 @@ body {
   color: red;
   background-color: rgb(255, 243, 243);
   min-height: 50px;
-  text-align: justify;
+  /* text-align: justify; */
 }
 
 .notfound a {

@@ -95,14 +95,14 @@ class Router
     } catch (\Throwable $e) {
       // 500 Error
       header('HTTP/1.1 500 Internal Server Error');
-      Logger::write_error("Internal Server Error - " . $e->getMessage());
+      Logger::write_error("Internal Server Error - " . $e->getMessage() . "\n" . $e->getTraceAsString());
       if (!empty(Router::$Router__routes['ERROR_PAGE'])) {
         $class = Router::$Router__routes['ERROR_PAGE'][0];
         $method = Router::$Router__routes['ERROR_PAGE'][1];
         // Create an instance of the class
         $instance = new $class();
         if (method_exists($class, $method)) {
-          call_user_func([$instance, $method], "Internal Server Error - " . $e->getMessage());
+          call_user_func([$instance, $method], "Internal Server Error - " . str_replace("\n", "<br />", $e->getMessage() . "\n" . $e->getTraceAsString()));
           exit;
         }
       }

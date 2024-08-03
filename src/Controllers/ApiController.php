@@ -27,7 +27,7 @@ class ApiController extends Controller
         case 'exist':
           $db = Database::getInstance();
           $studentId = $query['id'];
-          $student = $db->findOne('student', ['student_id' => $studentId], Student::class);
+          $student = $db->fetchOne(Student::class, ['student_id' => $studentId]);
           Response::json(['exists' => $student ? true : false]);
           return;
       }
@@ -65,35 +65,35 @@ class ApiController extends Controller
       $password = $body['password'];
 
       $condition = ['student_id' => $username];
-      $class = Student::class;
+      $modelClass = Student::class;
       switch ($account) {
         case 'admin':
           $condition = ['admin_user' => $username];
-          $class = Admin::class;
+          $modelClass = Admin::class;
           break;
         case 'personnel':
           $condition = ['personnel_id' => $username];
-          $class = Personnel::class;
+          $modelClass = Personnel::class;
           break;
       }
-      $user = $db->findOne($account, $condition, $class);
+      $user = $db->fetchOne($modelClass, $condition);
 
       // Check if password matches
-      if ($user && password_verify($password, $user->getPassword())) {
+      if ($user && password_verify($password, $user->password)) {
         switch ($account) {
           case 'admin':
-            $userId = $user->getId();
+            $userId = $user->id;
             break;
           case 'personnel':
-            $userId = $user->getPersonnelId();
+            $userId = $user->personnel_id;
             break;
           case 'student':
-            $userId = $user->getStudentId();
+            $userId = $user->student_id;
             break;
         }
         // Create JWT token and update session data
         if (isset($userId)) {
-          RouterSession::create($account, $userId, $user->getFullName());
+          RouterSession::create($account, $userId, $user->full_name);
           Response::json(['success' => true]);
           return;
         }

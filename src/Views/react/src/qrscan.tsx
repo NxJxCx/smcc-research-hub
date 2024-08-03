@@ -2,7 +2,7 @@
 import { Scanner as QrScanner, type BarcodeFormat } from "@yudiel/react-qr-scanner";
 import React from "react";
 
-function Scanner({ pause = false, format = 'qr_code', onResult = (...result: string[]) => {}, regExFormat = [], children, ...props }: { pause?: boolean, format?: BarcodeFormat, onResult?: (...props: string[]) => void, regExFormat?: RegExp[], children?: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
+function Scanner({ pause = false, format = 'qr_code', onResult = (...result: string[]) => {}, regExFormat = [], children, ...props }: { pause: boolean, format?: BarcodeFormat, onResult?: (...props: string[]) => void, regExFormat?: RegExp[], children?: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
   const [scannedData, setScannedData] = React.useState([])
 
   const reset = React.useCallback(() => setScannedData([]), [])
