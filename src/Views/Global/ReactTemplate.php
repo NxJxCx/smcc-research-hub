@@ -26,14 +26,14 @@ foreach ($imports as $alias => $path) {
 <?php
 }
 ?>
-    "myapp": "/jsx/<?php echo $reactAppPath; ?>"
+    "myapp": "<?php echo implode('/', ['/jsx', $reactAppPath]); ?>"
   }
 }
       </script>
       <script type="module">
         var PAGE_DATA = JSON.parse(`<?php echo json_encode($data); ?>`);
       </script>
-      <script type="module" src="/jsx/main.js"></script>
+      <script type="module" src="/jsx/main"></script>
     </body>
   <?php
   }
@@ -59,14 +59,15 @@ foreach ($imports as $alias => $path) {
 <?php
 }
 ?>
-    "myapp": "/jsx/<?php echo $reactAppPath; ?>"
+    "myapp": "<?php echo implode('/', ['/jsx', $reactAppPath]); ?>"
   }
 }
       </script>
       <script type="module">
         var PAGE_DATA = JSON.parse(`<?php echo json_encode($data); ?>`);
       </script>
-      <script type="module" src="/jsx/main.js"></script>
+      <script type="module" src="/jsx/global/header"></script>
+      <script type="module" src="/jsx/main"></script>
     </body>
 <?php
   }

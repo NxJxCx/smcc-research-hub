@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Smcc\ResearchHub\Config;
+namespace Smcc\ResearchHub\Logger;
 
 class Logger
 {
@@ -23,7 +23,9 @@ class Logger
   }
   static public function write_debug(string $message)
   {
-    $txt = "[USER DEBUG] $message\n";
-    error_log($txt);
+    if ($_ENV['PHP_ENV'] !== 'production') {
+      $txt = "[USER DEBUG] $message\n";
+      error_log($txt);
+    }
   }
 }

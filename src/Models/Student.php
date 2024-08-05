@@ -12,7 +12,7 @@ class Student extends Model
       'full_name' => ['VARCHAR(255)', 'NOT NULL'],
       'password' => ['VARCHAR(255)', 'NOT NULL'],
       'course' => ['VARCHAR(255)', 'NOT NULL'],
-      'year' => ['INT', 'NOT NULL'],
+      'year' => ["ENUM('1','2','3','4')", 'NOT NULL'],
       'created_at' => ['TIMESTAMP', 'DEFAULT CURRENT_TIMESTAMP'],
       'updated_at' => ['TIMESTAMP', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
     ];

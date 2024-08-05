@@ -12,13 +12,18 @@ ini_set('log_errors', 1);
 define('APP_PATH', realpath(__DIR__ . '/.'));
 
 
-// Define the path to the .env file
-$envFile = implode(DIRECTORY_SEPARATOR, [APP_PATH, '.env']);
-if (!is_file($envFile)) {
-  $envFile = implode(DIRECTORY_SEPARATOR, [APP_PATH, '.env.production']);
+// Define the path to the .env files
+$envFiles = ['.env.local', '.env.development', '.env', '.env.production'];
+foreach ($envFiles as $ef) {
+  $efile =  implode(DIRECTORY_SEPARATOR, [APP_PATH, $ef]);
+  if (is_file($ef)) {
+    // choose the .env files exists first
+    $envFile = $efile;
+    break;
+  }
 }
 
-// Check if the .env file exists
+// Check if the .env.local or .env* file exists
 if (file_exists($envFile)) {
   // Read the file content
   $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -29,7 +34,7 @@ if (file_exists($envFile)) {
       continue;
     }
     // Split the line into key and value
-    list($key, $value) = explode('=', $line, 2) + [NULL, NULL];
+    [$key, $value] = explode('=', $line, 2) + [NULL, NULL];
     if ($key !== NULL) {
       // Trim whitespace around the key and value
       $key = trim($key);
@@ -37,6 +42,9 @@ if (file_exists($envFile)) {
       // Add to $_ENV array
       $_ENV[$key] = $value;
     }
+  }
+  if (!array_key_exists('PHP_ENV', $_ENV)) {
+    $_ENV['PHP_ENV'] = ($envFile === '.env.production') ? 'production' : 'development';
   }
 }
 

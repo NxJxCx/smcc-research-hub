@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Router;
 
-use Smcc\ResearchHub\Config\Logger;
+use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\Database;
 use Smcc\ResearchHub\Models\Session as SessionModel;
 
@@ -73,7 +73,7 @@ class Session
       $session->update();
     }
     $_SESSION['auth'] = json_encode(['account' => $account, 'id' => $id, 'full_name' => $full_name]);
-    Logger::write_info("User authenticated: account={$account}, id={$id}, full_name={$full_name}");
+    Logger::write_debug("User authenticated: account={$account}, id={$id}, full_name={$full_name}");
   }
 
   public static function logout(): void

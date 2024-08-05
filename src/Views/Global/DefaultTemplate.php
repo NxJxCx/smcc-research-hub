@@ -41,7 +41,7 @@ foreach ($imports as $alias => $path) {
     var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
   </script>
   <?php if (!empty($reactFileName)) { ?>
-    <script type="module" src="/jsx/<?php echo $reactFileName; ?>.js"></script>
+    <script type="module" src="/jsx/<?php echo $reactFileName; ?>"></script>
   <?php } ?>
 </body>
 <?php
@@ -82,8 +82,9 @@ foreach ($imports as $alias => $path) {
   <script type="module">
     var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
   </script>
+  <script type="module" src="/jsx/global/header"></script>
   <?php if (!empty($reactFileName)) { ?>
-  <script type="module" src="/jsx/<?php echo $reactFileName; ?>.js"></script>
+  <script type="module" src="/jsx/<?php echo $reactFileName; ?>"></script>
   <?php } ?>
 </body>
 <?php

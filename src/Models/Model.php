@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Models;
 
+use DateTime;
 use PDO;
 use PDOException;
 use ReflectionClass;
@@ -32,6 +33,14 @@ class Model implements ModelInterface
   private array $data = [];
   private bool $isCreateOnly = false;
 
+  public const FOREIGN_KEY_PREFIX = 'fk_';
+
+  public static function getRowCount(): int
+  {
+    $db = Database::getInstance();
+    return $db->getRowCount(static::class);
+  }
+
   public function __construct(array $data = [], bool $isCreateOnly = false)
   {
     if ($isCreateOnly) {
@@ -54,30 +63,37 @@ class Model implements ModelInterface
   public function __get(string $propertyName)
   {
     if (!$this->isCreateOnly && array_key_exists($propertyName, $this->data)) {
-      return $this->data[$propertyName];
+      // check datatypes from getColumns() then cast datatypes equal to the declared types for database types
+      if (array_key_exists($propertyName, $this->getColumns())) {
+        $col = $this->getColumns()[$propertyName];
+        if (str_starts_with($col[0], 'BIGINT') || str_starts_with($col[0], 'INT') || str_starts_with($col[0], 'YEAR')) {
+          return (int) intval($this->data[$propertyName]);
+        } else if (str_starts_with($col[0], 'DECIMAL') || str_starts_with($col[0], 'FLOAT') || str_starts_with($col[0], 'DOUBLE')) {
+          return (float) floatval($this->data[$propertyName]);
+        } else if (str_starts_with($col[0], 'TIMESTAMP') || str_starts_with($col[0], 'DATE') || str_starts_with($col[0], 'TIME') || str_starts_with($col[0], 'DATETIME')) {
+          return new DateTime($this->data[$propertyName]);
+        } else if (str_starts_with($col[0], 'TINYINT') || str_starts_with($col[0], 'BOOLEAN')) {
+          return (bool) boolval($this->data[$propertyName]);
+        }
+      } else if (str_starts_with($propertyName, static::FOREIGN_KEY_PREFIX) && array_key_exists(substr($propertyName, strlen(static::FOREIGN_KEY_PREFIX)), $this->getForeignConstraints())) {
+        $fkName = substr($propertyName, strlen(static::FOREIGN_KEY_PREFIX));
+        [$modelClass, $onUpdate, $onDelete] = $this->getForeignConstraints()[$fkName];
+        if (class_exists($modelClass)) {
+          $reflection = new ReflectionClass($modelClass);
+          if ($reflection->isSubclassOf(Model::class)) {
+            return $this->fetchForeignKey($modelClass, $this->getPrimaryKeyValue());
+          }
+        }
+      }
     }
-
-    return null;
+    // all else
+    return $this->data[$propertyName] ?? null;
   }
 
   public function __set(string $propertyName, $value): void
   {
     if (!$this->isCreateOnly && array_key_exists($propertyName, $this->data)) {
       $this->data[$propertyName] = $value;
-      // check if property is foreign key and set related model if it exists
-      foreach ($this->getForeignConstraints() as $fkColumn => $fkDetails) {
-        [$modelClass, $onUpdate, $onDelete] = $fkDetails;
-        if (class_exists($modelClass)) {
-          $reflection = new ReflectionClass($modelClass);
-          if ($reflection->isSubclassOf(Model::class)) {
-            if ($fkColumn === $propertyName) {
-              $fkColumnName = "{$propertyName}_fk";
-              $fkValue = $this->fetchForeignKey($modelClass, $value);
-              $this->data[$fkColumnName] = $fkValue;
-            }
-          }
-        }
-      }
     }
   }
 
@@ -116,7 +132,7 @@ class Model implements ModelInterface
 
     $stmt = $db->getDb()->prepare("SELECT * FROM $tableName WHERE $primaryKey = :id");
     $stmt->execute([':id' => $fkValue]);
-
+    $cl = new ReflectionClass($modelClass);
     return $stmt->fetchObject($modelClass);
   }
 
@@ -196,7 +212,7 @@ class Model implements ModelInterface
 
       // Bind parameters
       foreach ($this->getColumns() as $colName => $args) {
-        $paramName = ":" . $colName;
+        $paramName = ":$colName";
         $value = $this->data[$colName];
         if (str_starts_with($args[0], "BIGINT") || str_starts_with($args[0], "INT")) {
           $stmt->bindValue($paramName, $value, PDO::PARAM_INT);
@@ -376,5 +392,6 @@ class Model implements ModelInterface
     }
     return null;
   }
+
 }
 

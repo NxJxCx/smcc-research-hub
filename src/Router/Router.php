@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub\Router;
 
 use Exception;
-use Smcc\ResearchHub\Config\Logger;
+use Smcc\ResearchHub\Logger\Logger;
 
 
 
