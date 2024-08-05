@@ -39,9 +39,9 @@ class Session
     $db = Database::getInstance();
     $session = $db->fetchOne(SessionModel::class, ['session_id' => $session_cookie]);
 
-    if ($session && $session->getToken() !== null) {
+    if ($session && $session->token !== null) {
       // decode JWT token to get user id and expiration time
-      $payload = JWT::decode($session->getToken());
+      $payload = JWT::decode($session->token);
       if ($payload && $payload['id'] === $session->getSessionId() && $payload['exp'] > time()) {
         $_SESSION['auth'] = json_encode($payload['data']);
         return true;
