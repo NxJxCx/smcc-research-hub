@@ -8,11 +8,11 @@ class PersonnelLogs extends Model
 {
   public function getColumns(): array {
     return [
-      'id' => ['BIGINT', 'NOT NULL'],
+      'id' => ['BIGINT', 'NOT NULL', 'AUTO_INCREMENT'],
       'personnel_id' => ['BIGINT', 'NOT NULL'],
       'activity' => ['TEXT', 'NOT NULL'],
-      'created_at' => ['TIMESTAMP', 'DEFAULT CURRENT_TIMESTAMP'],
-      'updated_at' => ['TIMESTAMP', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
+      'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],
+      'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
     ];
   }
   public function getForeignConstraints(): array {

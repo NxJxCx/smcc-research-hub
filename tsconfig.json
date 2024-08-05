@@ -11,7 +11,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
   },
-  "exclude": ["node_modules", "vendor"],
+  "exclude": ["node_modules", "vendor", "public", "jsxbuild"],
   "include": [
     "src/Views/react/src/**/*.ts",
     "src/Views/react/src/**/*.tsx"

@@ -202,17 +202,18 @@ class Model implements ModelInterface
     if (!$this->isCreateOnly) {
       $db = Database::getInstance();
 
-      $columns = $includePrimaryKeyValue ? array_keys($this->getColumns()) : array_filter(array_keys($this->getColumns()), fn($col) => $col !== $this->getPrimaryKey());
+      $columns = $includePrimaryKeyValue ? array_filter(array_keys($this->getColumns()), fn($k) => !is_null($this->get($k))) : array_filter(array_keys($this->getColumns()), fn($col) => $col !== $this->getPrimaryKey() && !is_null($this->get($col)));
       $colNames = implode(",", $columns);
-      $colNameParams = implode(",", array_map(fn ($key) => ":" . $key, $columns));
+      $colNameParams = implode(",", array_map(fn ($key) => ":$key", $columns));
 
       $stmt = $db->getDb()->prepare(
         "INSERT INTO {$this->getTableName()} ($colNames) VALUES($colNameParams)"
       );
 
       // Bind parameters
-      foreach ($this->getColumns() as $colName => $args) {
+      foreach ($columns as $colName) {
         $paramName = ":$colName";
+        $args = $this->getColumns()[$colName];
         $value = $this->data[$colName];
         if (str_starts_with($args[0], "BIGINT") || str_starts_with($args[0], "INT")) {
           $stmt->bindValue($paramName, $value, PDO::PARAM_INT);
@@ -260,8 +261,9 @@ class Model implements ModelInterface
       $stmt = $db->getDb()->prepare($sql);
 
       // Bind parameters
-      foreach ($this->getColumns() as $colName => $args) {
-        $paramName = ":" . $colName;
+      foreach ($columns as $colName) {
+        $paramName = ":$colName";
+        $args = $this->getColumns()[$colName];
         $value = $this->data[$colName];
         if (str_starts_with($args[0], "BIGINT") || str_starts_with($args[0], "INT")) {
           $stmt->bindValue($paramName, $value, PDO::PARAM_INT);

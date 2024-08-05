@@ -14,7 +14,7 @@ class Cookies
   {
     return isset($_COOKIE[$name]);
   }
-  public static function set(string $name, string $value, ?int $expiry = 3600, ?string $path = '/'): void
+  public static function set(string $name, string $value, ?int $expiry = 3600, ?string $path = '/'): string
   {
     setcookie($name, $value, [
       'expires' => time() + $expiry, // Expiration time
@@ -23,6 +23,7 @@ class Cookies
       'httponly' => true, // Cookie is accessible only through the HTTP protocol, not JavaScript
       'samesite' => 'Strict' // Controls whether the cookie is sent with cross-site requests
     ]);
+    return $value;
   }
   public static function delete(string $name, ?string $path = '/'): void
   {

@@ -2,6 +2,8 @@
 
 namespace Smcc\ResearchHub\Views\Global;
 
+use Smcc\ResearchHub\Router\Session;
+
 class Header {
   public static function default() {
 ?>
@@ -14,12 +16,12 @@ class Header {
           </a>
         </h1>
         <nav class="hidden xl:flex flex-row justify-between gap-x-8 text-center items-center px-10 *:h-full whitespace-nowrap">
-          <?php
-            // read file json file and display menu items
-            $menuItems = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'menu.json']));
-            $menuItems = json_decode($menuItems, true);
-            foreach ($menuItems as $menuItem) {
-          ?>
+<?php
+    // read file json file and display menu items
+    $menuItems = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'menu.json']));
+    $menuItems = json_decode($menuItems, true);
+    foreach ($menuItems as $menuItem) {
+?>
             <a
               href="<?php echo $menuItem['url']; ?>"
               class="flex items-center justify-center font-[400] text-[16px] leading-[24px] tracking-[0.5px] <?php
@@ -32,7 +34,9 @@ class Header {
               >
               <?php echo $menuItem['label']; ?>
             </a>
-            <?php } ?>
+<?php
+    }
+?>
           <button>
             <span class="material-symbols-outlined">
               search
@@ -42,8 +46,25 @@ class Header {
         <nav id="responsive-nav-small" data-navlist="<?php echo htmlspecialchars(json_encode($menuItems)); ?>">
         </nav>
         <div class="relative flex items-center justify-end mx-4 gap-x-4 whitespace-nowrap flex-grow">
+<?php
+    if (Session::isAuthenticated()) {
+?>
+          <div>
+            <span class="material-symbols-outlined">
+              account_circle
+            </span>
+            <span class="text-sm ml-2">
+              <?php echo Session::getUserFullName(); ?>
+            </span>
+          </div>
+<?php
+    } else {
+?>
           <p class="text-sm"><a href="/signup">Sign Up</a></p>
           <p class="text-sm"><a href="/login">Login</a></p>
+<?php
+    }
+?>
         </div>
       </div>
     </header>

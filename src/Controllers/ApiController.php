@@ -6,9 +6,12 @@ namespace Smcc\ResearchHub\Controllers;
 
 use PDO;
 use Smcc\ResearchHub\Models\Admin;
+use Smcc\ResearchHub\Models\AdminLogs;
 use Smcc\ResearchHub\Models\Database;
 use Smcc\ResearchHub\Models\Personnel;
+use Smcc\ResearchHub\Models\PersonnelLogs;
 use Smcc\ResearchHub\Models\Student;
+use Smcc\ResearchHub\Models\StudentLogs;
 use Smcc\ResearchHub\Router\Response;
 use Smcc\ResearchHub\Router\Session as RouterSession;
 
@@ -37,6 +40,37 @@ class ApiController extends Controller
     }
   }
 
+  public function signup(string $uri, array $query, array $body)
+  {
+    try {
+      // Check if inputs are provided
+      if (!isset($body['account']) || !isset($body['username']) || !isset($body['password']) || !isset($body['email'])) {
+        Response::json(['error' => 'Missing required inputs. '.json_encode($body) ], 400);
+        return;
+      }
+
+      // Validate account type (admin, personnel, student)
+      if (!in_array($body['account'], ['admin', 'personnel','student'])) {
+        Response::json(['error' => 'Invalid account type.'], 400);
+        return;
+      }
+
+      $db = Database::getInstance();
+      // Validate and sanitize inputs here
+      $account = $body['account'];
+      $username = $body['username'];
+      $password = $body['password'];
+      $email = $body['email'];
+
+      $condition = ['student_id' => $username];
+      $modelClass = Student::class;
+
+    } catch (\Throwable $e) {
+      Response::json(['success'=> false, 'error' => $e->getMessage()], 500);
+    }
+    Response::json(['success'=> false, 'error' => 'Invalid Request'], 500);
+  }
+
   public function login(string $uri, array $query, array $body)
   {
     try {
@@ -48,13 +82,13 @@ class ApiController extends Controller
 
       // Check if inputs are provided
       if (!isset($body['account']) || !isset($body['username']) || !isset($body['password'])) {
-        Response::json(['success' => false, 'error' => 'Missing required inputs. '.json_encode($body) ], 400);
+        Response::json(['error' => 'Missing required inputs. '.json_encode($body) ], 400);
         return;
       }
 
       // Validate account type (admin, personnel, student)
       if (!in_array($body['account'], ['admin', 'personnel', 'student'])) {
-        Response::json(['success' => false, 'error' => 'Invalid account type.'], 400);
+        Response::json(['error' => 'Invalid account type.'], 400);
         return;
       }
 
@@ -80,28 +114,34 @@ class ApiController extends Controller
 
       // Check if password matches
       if ($user && password_verify($password, $user->password)) {
-        switch ($account) {
-          case 'admin':
-            $userId = $user->id;
-            break;
-          case 'personnel':
-            $userId = $user->personnel_id;
-            break;
-          case 'student':
-            $userId = $user->student_id;
-            break;
-        }
+        $userId = match ($account) {
+          'admin' => $user->id,
+          'personnel' => $user->personnel_id,
+          'student' => $user->student_id,
+        };
         // Create JWT token and update session data
         if (isset($userId)) {
           RouterSession::create($account, $userId, $user->full_name);
+          switch ($account) {
+            case 'admin':
+              (new AdminLogs(['admin_id' => $userId, 'activity' => "Logged in at {RouterSession::getClientIpAddress()}"]))->create();
+              break;
+            case 'personnel':
+              (new PersonnelLogs(['personnel_id' => $userId, 'activity' => 'Logged in at {RouterSession::getClientIpAddress()}']))->create();
+              break;
+            case 'student':
+              (new StudentLogs(['student_id' => $userId, 'activity' => 'Logged in at {RouterSession::getClientIpAddress()}']))->create();
+              break;
+          }
           Response::json(['success' => true]);
           return;
         }
       }
       Response::json(['success' => false, 'error' => 'Invalid username or password.']);
     } catch (\Throwable $e) {
-      Response::json(['success'=> false, 'error' => $e->getMessage()], 500);
+      Response::json(['error' => $e->getMessage()], 500);
     }
+    Response::json(['error' => 'Bad Request'], 400);
   }
 
   public function logout(string $uri, array $query, array $body)
