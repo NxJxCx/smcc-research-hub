@@ -42,7 +42,7 @@ class Session
     if ($session && $session->token !== null) {
       // decode JWT token to get user id and expiration time
       $payload = JWT::decode($session->token);
-      if ($payload && $payload['id'] === $session->getSessionId() && $payload['exp'] > time()) {
+      if ($payload && $payload['id'] === $session->session_id && $payload['exp'] > time()) {
         $_SESSION['auth'] = json_encode($payload['data']);
         return true;
       }
