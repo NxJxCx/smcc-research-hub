@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub\Router;
 
 use Smcc\ResearchHub\Logger\Logger;
+use Smcc\ResearchHub\Models\Admin;
 use Smcc\ResearchHub\Models\AdminLogs;
 use Smcc\ResearchHub\Models\Database;
 use Smcc\ResearchHub\Models\PersonnelLogs;
@@ -23,6 +24,8 @@ class Session
       $session->create();
       Logger::write_info("New session created: session_id={$cookieSession}");
     }
+    // seed an admin account if not exists
+    Admin::seed();
   }
 
   public static function getSession(): ?array

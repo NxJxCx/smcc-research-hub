@@ -28,6 +28,12 @@ class Footer {
       <li>
         <a href="#">Contact</a>
       </li>
+      <li>
+        <a href="/admin/login">Admin</a>
+      </li>
+      <li>
+        <a href="/teacher/login">Teacher</a>
+      </li>
     </div>
   </footer>
 <?php
