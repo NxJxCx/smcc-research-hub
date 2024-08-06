@@ -7,12 +7,12 @@ namespace Smcc\ResearchHub\Views\Pages\Admin;
 use Smcc\ResearchHub\Views\Global\HeadTemplate;
 use Smcc\ResearchHub\Views\Global\ReactTemplate;
 
-class DashboardPage
+class AdminPages
 {
-  static public function view(string $title)
+  static public function view(string $title, string $reactAppPath)
   {
     HeadTemplate::default($title);
-    ReactTemplate::renderWithSidebar('admin/dashboard', [], [
+    ReactTemplate::renderWithSidebar($reactAppPath, [], [
       [
         'label' => 'Dashboard',
         'url' => '/admin/dashboard',

@@ -7,7 +7,7 @@ namespace Smcc\ResearchHub\Controllers;
 use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Errors\ErrorPage;
-use Smcc\ResearchHub\Views\Pages\Admin\DashboardPage;
+use Smcc\ResearchHub\Views\Pages\Admin\AdminPages;
 use Smcc\ResearchHub\Views\Pages\Admin\LoginPage as AdminLoginPage;
 use Smcc\ResearchHub\Views\Pages\HomePage;
 use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
@@ -55,7 +55,63 @@ class ViewController extends Controller
     if (!Session::isAuthenticated()) {
       Router::redirect("/admin/login");
     }
-    DashboardPage::view("Admin Dashboard");
+    AdminPages::view("Admin Dashboard", 'admin/dashboard');
+  }
+
+  public function adminThesisList()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Thesis List - Admin", 'admin/theses');
+  }
+
+  public function adminWeeklyList()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Weekly List - Admin", 'admin/weekly');
+  }
+
+  public function adminDepartmentList()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Department List - Admin", 'admin/departments');
+  }
+
+  public function adminRecentThesisDeployed()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Recent Thesis Deplyed - Admin", 'admin/recent');
+  }
+
+  public function adminAnnouncements()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Announcements - Admin", 'admin/announcements');
+  }
+
+  public function adminDownloads()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Downloads - Admin", 'admin/downloads');
+  }
+
+  public function adminStudentList()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Student List - Admin", 'admin/students');
   }
 
   public function notFound()
