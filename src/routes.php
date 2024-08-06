@@ -29,6 +29,8 @@ Router::GET('/admin/recent', ViewController::class, 'adminRecentThesisDeployed')
 Router::GET('/admin/announcements', ViewController::class, 'adminAnnouncements');
 Router::GET('/admin/downloads', ViewController::class, 'adminDownloads');
 Router::GET('/admin/students', ViewController::class, 'adminStudentList');
+Router::GET('/admin/teachers', ViewController::class, 'adminTeacherAccounts');
+Router::GET('/teacher/login', ViewController::class, 'teacherLogin');
 
 /* API GET METHOD */
 Router::GET('/api/test', ApiController::class, 'test'); // test api route

@@ -44,6 +44,10 @@ class AdminPages
       [
         'label' => 'Student List',
         'url' => '/admin/students',
+      ],
+      [
+        'label' => 'Teacher Accounts',
+        'url' => '/admin/teachers',
       ]
     ]);
   }

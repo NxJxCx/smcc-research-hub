@@ -12,6 +12,7 @@ use Smcc\ResearchHub\Views\Pages\Admin\LoginPage as AdminLoginPage;
 use Smcc\ResearchHub\Views\Pages\HomePage;
 use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
 use Smcc\ResearchHub\Views\Pages\Student\SignupPage;
+use Smcc\ResearchHub\Views\Pages\Teacher\LoginPage as TeacherLoginPage;
 
 class ViewController extends Controller
 {
@@ -38,8 +39,12 @@ class ViewController extends Controller
     }
     LoginPage::view("Student Login");
   }
-  public function personnelLogin()
+  public function teacherLogin()
   {
+    if (Session::isAuthenticated()) {
+      Router::redirect("/");
+    }
+    TeacherLoginPage::view("Teacher Login");
   }
 
   public function studentSignup()
@@ -112,6 +117,14 @@ class ViewController extends Controller
       Router::redirect("/admin/login");
     }
     AdminPages::view("Student List - Admin", 'admin/students');
+  }
+
+  public function adminTeacherAccounts()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    AdminPages::view("Teacher Accounts - Admin", 'admin/teachers');
   }
 
   public function notFound()
