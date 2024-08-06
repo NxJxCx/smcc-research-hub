@@ -138,10 +138,11 @@ if (avatarBtn && avatarDropdown) {
   }
 
   avatarBtn.addEventListener("click", toggleDropdown);
-  // avatarBtn.addEventListener("blur", (e) => {
-  //   e.preventDefault();
-  //   hideDropdown();
-  // });
+  document.getElementById('root')?.setAttribute("tabindex", "0");
+  document.getElementById('root')?.addEventListener("focus", (e) => {
+    e.preventDefault();
+    hideDropdown();
+  });
 }
 
 const containerRoot = document.getElementById("responsive-nav-small");
