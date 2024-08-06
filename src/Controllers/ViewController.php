@@ -7,6 +7,7 @@ namespace Smcc\ResearchHub\Controllers;
 use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Errors\ErrorPage;
+use Smcc\ResearchHub\Views\Pages\Admin\DashboardPage;
 use Smcc\ResearchHub\Views\Pages\Admin\LoginPage as AdminLoginPage;
 use Smcc\ResearchHub\Views\Pages\HomePage;
 use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
@@ -48,13 +49,22 @@ class ViewController extends Controller
     }
     SignupPage::view("Student Registration");
   }
+
+  public function adminDashboard()
+  {
+    if (!Session::isAuthenticated()) {
+      Router::redirect("/admin/login");
+    }
+    DashboardPage::view("Admin Dashboard");
+  }
+
   public function notFound()
   {
-    ErrorPage::notFound("Page not found - " . $this->head_title);
+    ErrorPage::notFound("Page not found - {$this->head_title}");
   }
   public function error($message)
   {
-    ErrorPage::internalServerError("Error 500 - " . $this->head_title, $message);
+    ErrorPage::internalServerError("Error 500 - {$this->head_title}", $message);
   }
 
   public function favicon()

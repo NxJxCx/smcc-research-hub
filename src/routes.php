@@ -21,6 +21,7 @@ Router::GET('/login', ViewController::class, 'studentLogin');
 Router::GET('/admin/login', ViewController::class, 'adminLogin');
 Router::GET('/teacher/login', ViewController::class, 'personnelLogin');
 Router::GET('/signup', ViewController::class, 'studentSignup');
+Router::GET('/admin/dashboard', ViewController::class, 'adminDashboard');
 /* API GET METHOD */
 Router::GET('/api/test', ApiController::class, 'test'); // test api route
 Router::GET('/api/student', ApiController::class, 'studentInfo');

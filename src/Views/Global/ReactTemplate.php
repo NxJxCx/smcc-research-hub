@@ -41,4 +41,30 @@ class ReactTemplate
     </body>
 <?php
   }
+
+  static public function renderWithSidebar(string $reactAppPath, array $data, array $sidebarListData)
+  {
+  ?>
+
+    <body>
+      <div class="container-fluid relative flex max-h-screen overflow-hidden w-full">
+        <aside id="sidebar-nav" data-sidebar-list="<?php echo htmlspecialchars(json_encode($sidebarListData)); ?>">
+        </aside>
+        <main class="relative max-h-screen overflow-y-auto flex-grow">
+          <?php Header::admin(); ?>
+          <div
+            id="root"
+            class="w-full min-h-screen"
+            data-react-app="<?php echo htmlspecialchars(implode('/', ['/jsx', $reactAppPath])); ?>"
+            data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+          ></div>
+          <?php Footer::default(); ?>
+        </main>
+      </div>
+      <script type="module" src="/jsx/admin/sidebar"></script>
+      <script type="module" src="/jsx/admin/header"></script>
+      <script type="module" src="/jsx/main"></script>
+    </body>
+<?php
+  }
 }

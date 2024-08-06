@@ -1,3 +1,4 @@
+import avatar from "/jsx/global/avatar";
 import { React, ReactDOM } from "/jsx/imports";
 
 interface NavItems {
@@ -107,44 +108,10 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
   </>)
 }
 
+// implement avatar dropdown
+avatar();
 
-// dropdown avatar
-const avatarBtn = document.getElementById("profile-avatar-dropdown-btn");
-const avatarDropdown = document.getElementById("profile-avatar-dropdown");
-if (avatarBtn && avatarDropdown) {
-
-  const hideDropdown = () => {
-    if (!avatarDropdown.classList.contains("hidden")) {
-      avatarDropdown.classList.add("scale-y-0");
-      setTimeout(() => {
-        avatarDropdown.classList.add("hidden");
-      }, 200)
-    }
-  }
-  const showDropdown = () => {
-    if (avatarDropdown.classList.contains("hidden")) {
-      avatarDropdown.classList.remove("hidden");
-      setTimeout(() => {
-        avatarDropdown.classList.remove("scale-y-0");
-      }, 10)
-    }
-  }
-  const toggleDropdown = () => {
-    if (avatarDropdown.classList.contains("hidden")) {
-      showDropdown()
-    } else {
-      hideDropdown()
-    }
-  }
-
-  avatarBtn.addEventListener("click", toggleDropdown);
-  document.getElementById('root')?.setAttribute("tabindex", "0");
-  document.getElementById('root')?.addEventListener("focus", (e) => {
-    e.preventDefault();
-    hideDropdown();
-  });
-}
-
+// responsive navigation for small screens
 const containerRoot = document.getElementById("responsive-nav-small");
 if (containerRoot) {
   containerRoot.classList.add("block", "xl:hidden", "p-4", "flex-shrink");
