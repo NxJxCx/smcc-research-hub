@@ -30,7 +30,11 @@ class DefaultTemplate
 ?>
 <body>
   <?php Header::default(); ?>
-  <main id="root" class="relative w-full">
+  <main
+    id="root"
+    class="relative w-full"
+    data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+  >
     <?php if (is_callable($method)) { $method($data); }?>
   </main>
   <?php Footer::default(); ?>

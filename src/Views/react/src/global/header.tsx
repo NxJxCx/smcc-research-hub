@@ -20,6 +20,7 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
   const navRef = React.useRef<HTMLDivElement|null>(null);
   const ulRef = React.useRef<HTMLUListElement|null>(null);
   const toggleShow = React.useCallback(() => setShow(!show), [show]);
+  const pageData = React.useMemo(() => JSON.parse(document.getElementById('root')!.dataset.pageData as string), []);
 
   const pathname = React.useMemo(() => window.location.pathname, []);
 
@@ -46,7 +47,6 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
   }, [show]);
 
   React.useEffect(() => {
-    console.log(ulRef.current.children.length);
     if (ulRef.current && ulRef.current.children.length === navList.length) {
       (ulRef.current as HTMLElement).prepend(authAvatarList[0]);
       (ulRef.current as HTMLElement).append(authAvatarList[1]);
@@ -57,6 +57,19 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
     <div ref={navRef} className="flex absolute bg-white top-full right-0 border w-full h-fit px-10 pb-6 pt-4 scale-y-0 -z-10 flex-col justify-start items-start gap-y-4 transition-transform duration-500 delay-10 ease-in-out origin-top shadow-lg">
       <SearchInput search={search} setSearch={setSearch} />
       <ul className="flex flex-col gap-2 w-full h-full font-[500]" ref={ulRef}>
+        <li>
+          { pageData.authenticated ? (
+              <div className="px-4 py-3 text-sm text-gray-900">
+                <div>{pageData.auth_data.full_name}</div>
+                <div className="font-medium truncate capitalize">{pageData.auth_data.account}</div>
+              </div>
+            ) : (
+              <div className="px-4 flex flex-col gap-2">
+                <a href="/login" className="text-sky-600 hover:text-sky-300">Login</a>
+              </div>
+            )
+          }
+        </li>
         {
           navList.map((item) => (
             <li key={item.label}>
@@ -73,6 +86,19 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
             </li>
           ))
         }
+        <li>
+          { pageData.authenticated ? (
+              <form action="/logout" method="post">
+                <a href="/settings" className="block px-4 py-2 hover:bg-gray-200">Settings</a>
+                <button type="submit" className="block px-4 pt-2 text-red-400 hover:text-red-700 w-full text-start">Sign out</button>
+              </form>
+            ) : (
+              <div className="px-4 flex flex-col gap-2">
+                <a href="/signup" className="text-yellow-600 hover:text-sky-300">Sign Up</a>
+              </div>
+            )
+          }
+        </li>
       </ul>
     </div>
     <button type="button" onClick={toggleShow} className="w-[50px] h-[50px] aspect-square hover:text-sky-500" >

@@ -44,22 +44,6 @@ class Header {
           </button>
         </nav>
         <nav id="responsive-nav-small" data-navlist="<?php echo htmlspecialchars(json_encode($menuItems)); ?>">
-          <?php if (Session::isAuthenticated()) { ?>
-            <div class="px-4 py-3 text-sm text-gray-900">
-              <div><?php echo Session::getUserFullName(); ?></div>
-              <div class="font-medium truncate capitalize"><?php echo Session::getUserAccountType(); ?></div>
-            </div>
-            <form action="/logout" method="post">
-              <button type="submit" class="block px-4 pt-2 text-red-400 hover:text-red-700 w-full text-start">Sign out</button>
-            </form>
-          <?php } else { ?>
-            <div class="px-4 flex flex-col gap-2">
-              <a href="/login" class="text-sky-600 hover:text-sky-300">Login</a>
-            </div>
-            <div class="px-4 flex flex-col gap-2">
-              <a href="/signup" class="text-yellow-600 hover:text-sky-300">Sign Up</a>
-            </div>
-          <?php } ?>
         </nav>
         <div class="relative hidden xl:flex items-center justify-end mx-4 gap-x-4 whitespace-nowrap flex-grow">
 <?php
