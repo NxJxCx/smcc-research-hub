@@ -7,6 +7,7 @@ namespace Smcc\ResearchHub\Controllers;
 use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Errors\ErrorPage;
+use Smcc\ResearchHub\Views\Pages\Admin\LoginPage as AdminLoginPage;
 use Smcc\ResearchHub\Views\Pages\HomePage;
 use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
 use Smcc\ResearchHub\Views\Pages\Student\SignupPage;
@@ -21,6 +22,13 @@ class ViewController extends Controller
 
   public function adminLogin()
   {
+    if (Session::isAuthenticated()) {
+      if (Session::getUserAccountType() === "admin") {
+        Router::redirect("/admin/dashboard");
+      }
+      Router::redirect("/");
+    }
+    AdminLoginPage::view("Admin Login");
   }
   public function studentLogin()
   {

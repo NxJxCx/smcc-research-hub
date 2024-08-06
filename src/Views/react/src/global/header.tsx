@@ -112,7 +112,7 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
 const avatarBtn = document.getElementById("profile-avatar-dropdown-btn");
 const avatarDropdown = document.getElementById("profile-avatar-dropdown");
 if (avatarBtn && avatarDropdown) {
-  avatarDropdown.setAttribute("tabindex", "0");
+
   const hideDropdown = () => {
     if (!avatarDropdown.classList.contains("hidden")) {
       avatarDropdown.classList.add("scale-y-0");
@@ -137,27 +137,11 @@ if (avatarBtn && avatarDropdown) {
     }
   }
 
-  const isFocused = {
-    value: false,
-    value2: false,
-  }
-
-  avatarDropdown.addEventListener("focus", () => {
-    isFocused.value = true;
-  });
-  avatarDropdown.addEventListener("blur", () => {
-    if (isFocused.value && isFocused.value2) {
-      hideDropdown();
-    }
-  });
   avatarBtn.addEventListener("click", toggleDropdown);
-  avatarBtn.addEventListener("blur", () => {
-    if (isFocused.value) {
-      isFocused.value2 = true;
-    } else {
-      hideDropdown()
-    }
-  });
+  // avatarBtn.addEventListener("blur", (e) => {
+  //   e.preventDefault();
+  //   hideDropdown();
+  // });
 }
 
 const containerRoot = document.getElementById("responsive-nav-small");
