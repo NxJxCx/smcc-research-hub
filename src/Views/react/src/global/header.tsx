@@ -112,17 +112,50 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
 const avatarBtn = document.getElementById("profile-avatar-dropdown-btn");
 const avatarDropdown = document.getElementById("profile-avatar-dropdown");
 if (avatarBtn && avatarDropdown) {
-  avatarBtn.addEventListener("click", () => {
+  avatarDropdown.setAttribute("tabindex", "0");
+  const hideDropdown = () => {
+    if (!avatarDropdown.classList.contains("hidden")) {
+      avatarDropdown.classList.add("scale-y-0");
+      setTimeout(() => {
+        avatarDropdown.classList.add("hidden");
+      }, 200)
+    }
+  }
+  const showDropdown = () => {
     if (avatarDropdown.classList.contains("hidden")) {
       avatarDropdown.classList.remove("hidden");
       setTimeout(() => {
         avatarDropdown.classList.remove("scale-y-0");
       }, 10)
+    }
+  }
+  const toggleDropdown = () => {
+    if (avatarDropdown.classList.contains("hidden")) {
+      showDropdown()
     } else {
-      avatarDropdown.classList.add("scale-y-0");
-      setTimeout(() => {
-        avatarDropdown.classList.add("hidden");
-      }, 200)
+      hideDropdown()
+    }
+  }
+
+  const isFocused = {
+    value: false,
+    value2: false,
+  }
+
+  avatarDropdown.addEventListener("focus", () => {
+    isFocused.value = true;
+  });
+  avatarDropdown.addEventListener("blur", () => {
+    if (isFocused.value && isFocused.value2) {
+      hideDropdown();
+    }
+  });
+  avatarBtn.addEventListener("click", toggleDropdown);
+  avatarBtn.addEventListener("blur", () => {
+    if (isFocused.value) {
+      isFocused.value2 = true;
+    } else {
+      hideDropdown()
     }
   });
 }
