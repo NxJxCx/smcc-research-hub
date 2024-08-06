@@ -21,15 +21,16 @@ class JWT
       'alg' => $algo,
       'typ' => 'JWT',
     ];
+    $cookie_session = Cookies::get('session_id');
     $finalPayload = [
-      "id" => Cookies::get('session_id'),
+      "id" => $cookie_session,
       "iat" => time(),
-      "exp" => time() + (60 * 60 * 8), // 8 hours
+      "exp" => time() + 60 * 60 * 8, // 8 hours
       "data" => $payload,
     ];
     $headerEncoded = self::base64UrlEncode(json_encode($header));
     $payloadEncoded = self::base64UrlEncode(json_encode($finalPayload));
-    $signature = self::sign("$headerEncoded.$payloadEncoded");
+    $signature = self::base64UrlEncode(self::sign("$headerEncoded.$payloadEncoded"));
 
     return "$headerEncoded.$payloadEncoded.$signature";
   }
@@ -42,7 +43,7 @@ class JWT
    */
   public static function decode($jwt): ?array
   {
-    list($headerEncoded, $payloadEncoded, $signature) = explode('.', $jwt);
+    [$headerEncoded, $payloadEncoded, $signature] = explode('.', $jwt);
 
     // Verify the JWT
     if (!self::verify("$headerEncoded.$payloadEncoded", $signature)) {
@@ -65,7 +66,6 @@ class JWT
   public static function verify($data, $signature): bool
   {
     $expectedSignature = self::base64UrlEncode(self::sign($data));
-
     return hash_equals($expectedSignature, $signature);
   }
 

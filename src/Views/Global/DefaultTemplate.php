@@ -10,38 +10,16 @@ class DefaultTemplate
   {
 ?>
 <body>
-  <main id="root" class="relative w-full">
+  <main
+    id="root"
+    class="relative w-full"
+    data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+  >
     <?php if (is_callable($method)) { $method($data); }?>
   </main>
   <?php Footer::default(); ?>
-  <script type="importmap">
-{
-  "imports": {
-<?php
-// retrieve file "imports.json" and generate importmap
-$imports = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'imports.json']));
-$imports = json_decode($imports, true);
-$__count = count(array_keys($imports));
-$__c = 0;
-foreach ($imports as $alias => $path) {
-  $__c++;
-  if ($__c === $__count) { ?>
-    "<?php echo $alias; ?>": "<?php echo $path; ?>"
-<?php
-  } else { ?>
-    "<?php echo $alias; ?>": "<?php echo $path; ?>",
-<?php
-  }
-}
-?>
-  }
-}
-  </script>
-  <script type="module">
-    var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
-  </script>
   <?php if (!empty($reactFileName)) { ?>
-    <script type="module" src="/jsx/<?php echo $reactFileName; ?>"></script>
+    <script type="module" src="<?php echo implode("/", ["/jsx", $reactFileName]); ?>"></script>
   <?php } ?>
 </body>
 <?php
@@ -56,35 +34,9 @@ foreach ($imports as $alias => $path) {
     <?php if (is_callable($method)) { $method($data); }?>
   </main>
   <?php Footer::default(); ?>
-  <script type="importmap">
-{
-  "imports": {
-<?php
-// retrieve file "imports.json" and generate importmap
-$imports = file_get_contents(implode(DIRECTORY_SEPARATOR, [VIEW_PATH, 'Global', 'imports.json']));
-$imports = json_decode($imports, true);
-$__count = count(array_keys($imports));
-$__c = 0;
-foreach ($imports as $alias => $path) {
-  $__c++;
-  if ($__c === $__count) { ?>
-    "<?php echo $alias; ?>": "<?php echo $path; ?>"
-<?php
-  } else { ?>
-    "<?php echo $alias; ?>": "<?php echo $path; ?>",
-<?php
-  }
-}
-?>
-  }
-}
-  </script>
-  <script type="module">
-    var PAGE_DATA = JSON.parse(`<?php echo json_encode($data);?>`);
-  </script>
   <script type="module" src="/jsx/global/header"></script>
   <?php if (!empty($reactFileName)) { ?>
-  <script type="module" src="/jsx/<?php echo $reactFileName; ?>"></script>
+  <script type="module" src="<?php echo implode("/", ["/jsx", $reactFileName]); ?>"></script>
   <?php } ?>
 </body>
 <?php

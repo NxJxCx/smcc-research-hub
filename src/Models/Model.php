@@ -24,8 +24,8 @@ interface ModelInterface
   function create(bool $includePrimaryKeyValue = false): string|false;
   function update(): bool;
   function delete(): bool;
+  function toArray(): array;
 }
-
 
 // superclass for all model classes
 class Model implements ModelInterface
@@ -41,19 +41,17 @@ class Model implements ModelInterface
     return $db->getRowCount(static::class);
   }
 
-  public function __construct(array $data = [], bool $isCreateOnly = false)
+  public function __construct(array $data = [], bool $isCreateOnly = false, ...$args)
   {
     if ($isCreateOnly) {
       $this->isCreateOnly = true;
     } else {
-      // Fetch column definitions
-      $columns = $this->getColumns();
       // Initialize properties
-      foreach ($columns as $columnName => $attributes) {
-        $this->initializeProperty($columnName, $attributes);
+      foreach (array_keys($this->getColumns()) as $columnName) {
+        $this->initializeProperty($columnName);
       }
       foreach ($data as $columnName => $value) {
-        if (array_key_exists($columnName, $this->data)) {
+        if (array_key_exists($columnName, $this->getColumns())) {
           $this->data[$columnName] = $value;
         }
       }
@@ -92,31 +90,16 @@ class Model implements ModelInterface
 
   public function __set(string $propertyName, $value): void
   {
-    if (!$this->isCreateOnly && array_key_exists($propertyName, $this->data)) {
+    if (!$this->isCreateOnly && array_key_exists($propertyName, $this->getColumns())) {
       $this->data[$propertyName] = $value;
     }
   }
 
-  private function initializeProperty(string $columnName, array $attributes): void
+  private function initializeProperty(string $columnName): void
   {
-    $type = 'mixed'; // Default type
-    $typeDefinition = $attributes[0];
-
-    if (str_starts_with($typeDefinition, 'BIGINT') || str_starts_with($typeDefinition, 'INT')) {
-      $type = 'int';
-    } elseif (str_starts_with($typeDefinition, 'VARCHAR') || str_starts_with($typeDefinition, 'TEXT')) {
-      $type = 'string';
-    } elseif (str_starts_with($typeDefinition, 'BOOLEAN') || str_starts_with($typeDefinition, 'TINYINT')) {
-      $type = 'bool';
-    } elseif (str_starts_with($typeDefinition, 'TIMESTAMP') || str_starts_with($typeDefinition, 'DATETIME')) {
-      $type = 'DateTime';
-    } else if (str_starts_with($typeDefinition, 'DECIMAL') || str_starts_with($typeDefinition, 'FLOAT') || str_starts_with($typeDefinition, 'DOUBLE')) {
-      $type = 'float';
+    if (!array_key_exists($columnName, $this->data)) {
+      $this->data[$columnName] = null;
     }
-
-    // Initialize property
-    $this->data[$columnName] = null;
-
   }
 
   private function fetchForeignKey(string $modelClass, $fkValue)
@@ -205,7 +188,7 @@ class Model implements ModelInterface
       $columns = $includePrimaryKeyValue ? array_filter(array_keys($this->getColumns()), fn($k) => !is_null($this->get($k))) : array_filter(array_keys($this->getColumns()), fn($col) => $col !== $this->getPrimaryKey() && !is_null($this->get($col)));
       $colNames = implode(",", $columns);
       $colNameParams = implode(",", array_map(fn ($key) => ":$key", $columns));
-
+      $db->getDb()->beginTransaction();
       $stmt = $db->getDb()->prepare(
         "INSERT INTO {$this->getTableName()} ($colNames) VALUES($colNameParams)"
       );
@@ -229,17 +212,15 @@ class Model implements ModelInterface
       }
 
       // Execute statement
-      if (!$stmt->execute()) {
+      if (!$stmt->execute())
+      {
+        $db->getDb()->rollBack();
         return false;
       }
-
-      // Retrieve the last inserted ID
-      $id = $db->getDb()->lastInsertId();
-      if (!$id) {
-        return false;
-      }
-      // Set the $id to the primary key of the model
-      return $id;
+      $lastInsertedId = $includePrimaryKeyValue ? $this->getPrimaryKeyValue() : $db->getDb()->lastInsertId();
+      $db->getDb()->commit();
+      // Retrieve the last inserted
+      return $lastInsertedId;
     }
     return false;
   }
@@ -254,10 +235,12 @@ class Model implements ModelInterface
       $primaryKey = $this->getPrimaryKey();
       $primaryKeyValue = $this->getPrimaryKeyValue();
       $primaryKeyPDOType = $this->getPrimaryKeyPDOType();
-      $columns = array_keys($this->getColumns());
+      $c = array_keys($this->getColumns());
+      $columns = array_filter($c, fn($colName) => $colName!== $primaryKey);
       $setClause = implode(", ", array_map(fn ($col) => "$col = :$col", $columns));
 
       $sql = "UPDATE {$this->getTableName()} SET $setClause WHERE $primaryKey = :$primaryKey";
+      $db->getDb()->beginTransaction();
       $stmt = $db->getDb()->prepare($sql);
 
       // Bind parameters
@@ -282,6 +265,11 @@ class Model implements ModelInterface
       $stmt->bindValue(":$primaryKey", $primaryKeyValue, $primaryKeyPDOType);
 
       $result = $stmt->execute();
+      if (!$result) {
+        $db->getDb()->rollBack();
+        return false;
+      }
+      $db->getDb()->commit();
       return $result;
     }
     return false;
@@ -330,7 +318,8 @@ class Model implements ModelInterface
   public function getPrimaryKeyPDOType(): int
   {
     if (!$this->isCreateOnly && $this->getPrimaryKey() !== '') {
-      if (str_starts_with($this->getColumns()[$this->getPrimaryKey()], 'BIGINT') || str_starts_with($this->getColumns()[$this->getPrimaryKey()], 'INT')) {
+      $colArgs = $this->getColumns()[$this->getPrimaryKey()];
+      if (str_starts_with($colArgs[0], 'BIGINT') || str_starts_with($colArgs[0], 'INT')) {
         return PDO::PARAM_INT;
       }
       return PDO::PARAM_STR;
@@ -393,6 +382,12 @@ class Model implements ModelInterface
       return $this->data[$columnName];
     }
     return null;
+  }
+  /**
+   * @inheritDoc
+   */
+  public function toArray(): array {
+    return [...$this->data];
   }
 
 }

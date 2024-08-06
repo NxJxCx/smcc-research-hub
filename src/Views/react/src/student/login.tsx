@@ -1,37 +1,55 @@
-import React, { FormEvent } from "react";
-import Scanner from "../qrscan";
+import { IDRegExFormat } from "/jsx/global/enums";
+import { React, Sweetalert2 } from "/jsx/imports";
+import Scanner from "/jsx/qrscan";
 
 function StudentLogin() {
+  const searchParams = React.useMemo(() => new URLSearchParams(window.location.search), [window.location.search]);
+  const { student_id } = React.useMemo(() => ({ student_id: searchParams.get('student_id'), full_name: searchParams.get('full_name') }), [searchParams]);
   const [showScanner, setShowScanner] = React.useState(false);
-  const [studentId, setStudentId] = React.useState('')
+  const [pause ,setPause] = React.useState(false);
+  const [studentId, setStudentId] = React.useState(student_id);
   const [password, setPassword] = React.useState('')
   const [pending, setPending] = React.useState(false)
 
   const onResult = React.useCallback((studentName?: string, studentId?: string) => {
     if (!!studentId) {
+      setPause(true);
+      console.log("Student ID scanned: " + studentId);
       fetch(`/api/student?q=exist&id=${studentId}`)
       .then(response => response.json())
       .then(({ error, exists }) => {
         if (error) {
-          alert('Failed to check student existence: ' + error)
+          Sweetalert2.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to check student existence: ' + error
+          })
         } else {
           if (!exists) {
             // redirect to sign up with the scanned studentId
-            window.location.href = `/signup?studentId=${studentId}&full_name=${studentName}`;
+            window.location.href = `/signup?student_id=${studentId}&full_name=${studentName}`;
           } else {
             setStudentId(studentId)
+            setShowScanner(false);
           }
         }
       })
       .catch((e) => {
-        console.error('Failed to retrieve student information', e)
-        alert('Failed to retrieve student information:' + e.message)
+        Sweetalert2.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to retrieve student information:' + e.message,
+          toast: true,
+          showConfirmButton: false,
+          position: 'top',
+          timer: 3000,
+        })
       })
-
+      .finally(() => setTimeout(() => setPause(false), 1000))
     }
   }, [])
 
-  const onLogin = React.useCallback((e: FormEvent) => {
+  const onLogin = React.useCallback((e: React.FormEvent) => {
     e.preventDefault()
     setPending(true)
     fetch('/api/login', {
@@ -45,31 +63,46 @@ function StudentLogin() {
     .then(response => response.json())
     .then(({ error, success }) => {
       if (error) {
-        alert(error)
+        Sweetalert2.fire({
+          icon: 'error',
+          title: error,
+          toast: true,
+          showConfirmButton: false,
+          position: 'top',
+          timer: 3000,
+        })
         console.log(error)
       } else if (success) {
-        window.location.href = '/'
+        window.location.replace('/');
       }
     })
     .catch((e) => {
-      alert('Failed to login. Please try again.')
+      Sweetalert2.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to login. Please try again.',
+        toast: true,
+        showConfirmButton: false,
+        position: 'top',
+        timer: 3000,
+      })
       console.log(e)
     })
     .finally(() => {
       setPassword('')
       setPending(false)
     })
-  }, [studentId])
+  }, [studentId, password])
 
   const SMCCLogo = React.useMemo(() => <img src="/images/SMCC-logo.svg" alt="SMCC Logo" className="w-[100px] aspect-square mx-auto"/>, [])
 
   return showScanner ? (
-    <div className="w-full pt-32">
+    <div className="w-full pt-16">
       <div className="p-4">
         <div className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
           {SMCCLogo}
           <div className="text-[24px] font-[700] text-center">Student Login</div>
-          <Scanner className="mt-4" onResult={onResult} pause={!showScanner} regExFormat={[/^[A-Z\w]+/, /20\d{7}$/]} />
+          <Scanner className="mt-4" onResult={onResult} pause={pause || !showScanner} regExFormat={[IDRegExFormat.studentName, IDRegExFormat.studentId]} />
         </div>
         <div className="mt-8 text-center font-bold">
           Scan your Student ID QR Code
@@ -79,21 +112,24 @@ function StudentLogin() {
       </div>
     </div>
   ) : (
-    <div className="w-full pt-32">
+    <div className="w-full pt-16">
       <div className="p-4">
         <form onSubmit={onLogin} className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
           {SMCCLogo}
           <div className="text-[24px] font-[700] text-center">Student Login</div>
           <div className="flex justify-center px-4">
-            <input type="text" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Student ID" value={studentId} onChange={(e: any) => setStudentId(e.target.value)} required />
+            <input type="text" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Student ID" value={studentId} onChange={(e: any) => setStudentId(e.target.value)} />
           </div>
           <div className="flex justify-center px-4">
-            <input type="password" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} required />
+            <input type="password" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} />
           </div>
           <div className="flex justify-center px-4">
             <button type="submit" disabled={pending} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 text-[22px] w-full disabled:bg-gray-300">
               {pending ? <span className="animate-pulse">Loading...</span> : <>Login</>}
             </button>
+          </div>
+          <div>
+            <a href="/signup" className="text-sky-500 hover:text-sky-300 hover:underline pl-4">No Account? Register Now!</a>
           </div>
         </form>
         <div className="mt-8 text-center font-bold">

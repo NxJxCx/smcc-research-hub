@@ -37,7 +37,7 @@ class Database implements BaseDatabase
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname";
     $options = [
       PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+      PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_PROPS_LATE,
       PDO::ATTR_EMULATE_PREPARES   => false,
     ];
     $this->db = new PDO($dsn, $user, $password, $options);
@@ -185,7 +185,10 @@ class Database implements BaseDatabase
         $stmt->bindValue(":$key", $value);
       }
       if ($stmt->execute()) {
-        return $stmt->fetchObject($modelClass);
+        $obj = $stmt->fetchObject($modelClass);
+        if ($obj !== false) {
+          return $obj;
+        }
       }
     }
     return false;

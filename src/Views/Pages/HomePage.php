@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Pages;
 
-use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Global\DefaultTemplate;
 use Smcc\ResearchHub\Views\Global\HeadTemplate;
 
@@ -13,7 +12,7 @@ class HomePage
   static public function view(string $title)
   {
     HeadTemplate::default($title);
-    DefaultTemplate::renderWithNav([HomePage::class, 'render'], ['session' => Session::getSession()], 'home');
+    DefaultTemplate::renderWithNav([HomePage::class, 'render'], [], 'home');
   }
   static public function render(array $data = [])
   {

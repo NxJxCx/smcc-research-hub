@@ -8,11 +8,11 @@ use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Global\HeadTemplate;
 use Smcc\ResearchHub\Views\Global\ReactTemplate;
 
-class LoginPage
+class SignupPage
 {
   static public function view(string $title)
   {
     HeadTemplate::default($title);
-    ReactTemplate::render('student/login', ['authenticated' => Session::isAuthenticated()]);
+    ReactTemplate::render('student/signup', ['authenticated' => Session::isAuthenticated()]);
   }
 }

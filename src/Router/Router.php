@@ -178,4 +178,10 @@ class Router
   {
     Router::$Router__routes['ERROR_PAGE'] = [$class, $method];
   }
+
+  public static function redirect(string $url): void
+  {
+    header("Location: $url");
+    exit;
+  }
 }

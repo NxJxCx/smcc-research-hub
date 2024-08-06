@@ -9,7 +9,10 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "./src/Views/react/src",
+    "paths": {
+      "/jsx/*": ["./*"]
+    }
   },
   "exclude": ["node_modules", "vendor", "public", "jsxbuild"],
   "include": [

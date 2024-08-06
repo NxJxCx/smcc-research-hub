@@ -7,7 +7,7 @@ use Smcc\ResearchHub\Router\Session;
 class Header {
   public static function default() {
 ?>
-    <header class="font-[Quicksand] sticky top-0 left-0 h-[96px] w-full bg-white z-50">
+    <header class="font-[Quicksand] sticky top-0 left-0 h-[96px] w-full bg-white z-10">
       <div class="relative w-full h-full *:h-full flex justify-between items-center p-2 shadow">
         <h1 class="font-[700] text-[32px] leading-[35.2px] text-[#2487CE] flex-grow pl-2 md:pl-4 lg:pl-8 xl:pl-16 flex items-center">
           <a href="/" class="hover:opacity-80 hover:drop-shadow-lg cursor-pointer flex flex-start items-center gap-x-2">
@@ -44,18 +44,56 @@ class Header {
           </button>
         </nav>
         <nav id="responsive-nav-small" data-navlist="<?php echo htmlspecialchars(json_encode($menuItems)); ?>">
+          <?php if (Session::isAuthenticated()) { ?>
+            <div class="px-4 py-3 text-sm text-gray-900">
+              <div><?php echo Session::getUserFullName(); ?></div>
+              <div class="font-medium truncate capitalize"><?php echo Session::getUserAccountType(); ?></div>
+            </div>
+            <form action="/logout" method="post">
+              <button type="submit" class="block px-4 pt-2 text-red-400 hover:text-red-700 w-full text-start">Sign out</button>
+            </form>
+          <?php } else { ?>
+            <div class="px-4 flex flex-col gap-2">
+              <a href="/login" class="text-sky-600 hover:text-sky-300">Login</a>
+            </div>
+            <div class="px-4 flex flex-col gap-2">
+              <a href="/signup" class="text-yellow-600 hover:text-sky-300">Sign Up</a>
+            </div>
+          <?php } ?>
         </nav>
-        <div class="relative flex items-center justify-end mx-4 gap-x-4 whitespace-nowrap flex-grow">
+        <div class="relative hidden xl:flex items-center justify-end mx-4 gap-x-4 whitespace-nowrap flex-grow">
 <?php
     if (Session::isAuthenticated()) {
 ?>
-          <div>
-            <span class="material-symbols-outlined">
-              account_circle
-            </span>
-            <span class="text-sm ml-2">
-              <?php echo Session::getUserFullName(); ?>
-            </span>
+          <div class="relative">
+            <!-- tailwind dropdown start -->
+            <button id="profile-avatar-dropdown-btn" data-dropdown-toggle="profile-avatar-dropdown" class="text-black hover:bg-gray-50 hover:text-sky-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center" type="button">
+              <span class="material-symbols-outlined">
+                account_circle
+              </span>
+              <span class="text-sm ml-2">
+                <?php echo Session::getUserFullName(); ?>
+              </span>
+            </button>
+
+            <!-- Dropdown menu -->
+            <div id="profile-avatar-dropdown" class="absolute top-full left-0 w-full mt-2 z-20 hidden bg-sky-50 divide-y divide-slate-300 rounded-lg shadow-lg scale-y-0 transition-transform ease-in-out delay-10 duration-200 origin-top border">
+              <div class="px-4 py-3 text-sm text-gray-900">
+                <div><?php echo Session::getUserFullName(); ?></div>
+                <div class="font-medium truncate capitalize"><?php echo Session::getUserAccountType(); ?></div>
+              </div>
+              <ul class="py-2 text-sm text-gray-700">
+                <li>
+                  <a href="/settings" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
+                </li>
+              </ul>
+              <div class="pt-2">
+                <form action="/logout" method="post">
+                  <button type="submit" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 w-full text-start">Sign out</button>
+                </form>
+              </div>
+            </div>
+            <!-- tailwind dropdown stop -->
           </div>
 <?php
     } else {

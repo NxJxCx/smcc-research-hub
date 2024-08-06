@@ -20,11 +20,15 @@ Router::GET('/', ViewController::class, 'index');
 Router::GET('/login', ViewController::class, 'studentLogin');
 Router::GET('/admin/login', ViewController::class, 'adminLogin');
 Router::GET('/teacher/login', ViewController::class, 'personnelLogin');
+Router::GET('/signup', ViewController::class, 'studentSignup');
+/* API GET METHOD */
 Router::GET('/api/test', ApiController::class, 'test'); // test api route
 Router::GET('/api/student', ApiController::class, 'studentInfo');
 
 /* POST METHOD */
+Router::POST('/logout', ApiController::class, 'logout');
 Router::POST('/api/login', ApiController::class, 'login');
+Router::POST('/api/signup', ApiController::class, 'signup');
 
 /* PUT METHOD */
 

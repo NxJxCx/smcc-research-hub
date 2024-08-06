@@ -1,1 +1,1 @@
-import e from"react";import t from"react-dom/client";import r from"myapp";t.createRoot(document.getElementById("root")).render(e.createElement(r,null));
+import e from"/jsx/global/loading";import{React as t,ReactDOM as a}from"/jsx/imports";const r=document.getElementById("root"),l=r?.dataset.reactApp,o=r?.dataset.pageData,n=a.createRoot(r);n.render(t.createElement(e,{className:"min-h-full w-full flex items-center justify-center"})),import(l).then((({default:e})=>{console.log(`Page data: ${JSON.stringify(o)}`),n.render(t.createElement(e,null))}));

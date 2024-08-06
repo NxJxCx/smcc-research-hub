@@ -1,13 +1,15 @@
-import React from "react";
-import ReactDOM from 'react-dom/client';
-// @ts-ignore
-import App from 'myapp';
-React
-const root = ReactDOM.createRoot(
-  // @ts-ignore
-  document.getElementById('root')
-)
+import Loading from "/jsx/global/loading";
+import { React, ReactDOM } from "/jsx/imports";
 
-// @ts-ignore
-root.render(<App />);
+const rootDOM = document.getElementById('root');
+const jsxAppPath = rootDOM?.dataset.reactApp;
+const pageData = rootDOM?.dataset.pageData;
+const root = ReactDOM.createRoot(rootDOM);
+
+root.render(<Loading className="min-h-full w-full flex items-center justify-center" />);
+
+import(jsxAppPath as string).then(({ default: App }) => {
+  console.log(`Page data: ${JSON.stringify(pageData)}`);
+  root.render(<App />);
+});
 

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
+use Smcc\ResearchHub\Router\Router;
+use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Errors\ErrorPage;
 use Smcc\ResearchHub\Views\Pages\HomePage;
 use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
+use Smcc\ResearchHub\Views\Pages\Student\SignupPage;
 
 class ViewController extends Controller
 {
@@ -21,12 +24,22 @@ class ViewController extends Controller
   }
   public function studentLogin()
   {
+    if (Session::isAuthenticated()) {
+      Router::redirect("/");
+    }
     LoginPage::view("Student Login");
   }
   public function personnelLogin()
   {
   }
 
+  public function studentSignup()
+  {
+    if (Session::isAuthenticated()) {
+      Router::redirect("/");
+    }
+    SignupPage::view("Student Registration");
+  }
   public function notFound()
   {
     ErrorPage::notFound("Page not found - " . $this->head_title);
