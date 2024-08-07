@@ -21,7 +21,6 @@ class FileController extends Controller
     if (Session::isAuthenticated() && Session::getUserAccountType() === 'admin') {
       $file = $request->getFiles("pdf");
       $body = $request->getBody();
-      Logger::write_debug("BODY: ". json_encode($body));
       $doc = $body['document'];
       $docTitle = $body['title'];
       $docAuthor = $body['author'];
@@ -39,21 +38,30 @@ class FileController extends Controller
         if ($file->getType() !== 'application/pdf') {
           return Response::json(['error' => 'Invalid file type. Only PDF files are allowed.'], StatusCode::BAD_REQUEST);
         } else {
-          $newFilename = uniqid("thesis_");
-          $file->moveTo(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, $doc]), $newFilename);
-          $fileUrl = "/$doc?filename=$newFilename";
-          if ($doc === 'thesis') {
-            $thesis = new Thesis([
-              "title" => $docTitle,
-              "author" => $docAuthor,
-              "year" => $docYear,
-              "url" => $fileUrl,
-            ]);
-            $fid = $thesis->create();
+          try {
+            $newFilename = uniqid("thesis_");
+            $file->moveTo(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, $doc]), $newFilename);
+            $fileUrl = "/$doc?filename=$newFilename";
+            if ($doc === 'thesis') {
+              $thesis = new Thesis([
+                "title" => $docTitle,
+                "author" => $docAuthor,
+                "year" => $docYear,
+                "url" => $fileUrl,
+              ]);
+              $fid = $thesis->create();
+              $doc = ucfirst($doc);
+              (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
+            }
+            return Response::json(['success' => isset($fid)], StatusCode::CREATED);
+          } catch (\PDOException $e) {
+            // SQL error handling
             $doc = ucfirst($doc);
-            (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
+            return Response::json(['error' => $e->getCode() === "23000" ? "$doc title already exists. Please enter another title." : $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+          } catch (\Throwable $e) {
+            // upload error handling
+            return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
           }
-          return Response::json(['success' => isset($fid)], StatusCode::CREATED);
         }
       } else {
         return Response::json(['error' => 'Only one file is allowed at a time.'], StatusCode::BAD_REQUEST);

@@ -98,7 +98,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
         setPdf(null)
         setThesisTitle('')
         setThesisAuthor('')
-        setThesisYear('')
+        setThesisYear((new Date()).getFullYear().toString())
       }
     })
     .catch((e) => {
@@ -145,7 +145,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
             </div>
             <input id="dropzone-file" type="file" name="pdf" className="hidden" accept=".pdf" value={""} onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file && file.size > 10 * 1024 * 1024) {
+              if (file && file.size > 30 * 1024 * 1024) { // limit to 30MB
                 Sweetalert2.fire({
                   icon: 'warning',
                   text: 'File size exceeds the maximum limit of 10MB.',
