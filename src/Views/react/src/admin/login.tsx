@@ -25,7 +25,7 @@ function AdminLogin() {
           title: error,
           toast: true,
           showConfirmButton: false,
-          position: 'top',
+          position: 'center',
           timer: 3000,
         })
         console.log(error)
@@ -40,7 +40,7 @@ function AdminLogin() {
         text: 'Failed to login. Please try again.',
         toast: true,
         showConfirmButton: false,
-        position: 'top',
+        position: 'center',
         timer: 3000,
       })
       console.log(e)

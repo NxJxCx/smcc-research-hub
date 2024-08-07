@@ -17,36 +17,37 @@ Session::index();
 Router::STATIC('/jsx', REACT_DIST_PATH, 'js');
 
 /* GET METHOD */
-Router::GET('/', ViewController::class, 'index');
-Router::GET('/login', ViewController::class, 'studentLogin');
-Router::GET('/admin/login', ViewController::class, 'adminLogin');
-Router::GET('/teacher/login', ViewController::class, 'personnelLogin');
-Router::GET('/signup', ViewController::class, 'studentSignup');
-Router::GET('/admin/dashboard', ViewController::class, 'adminDashboard');
-Router::GET('/admin/theses', ViewController::class, 'adminThesisList');
-Router::GET('/admin/weekly', ViewController::class, 'adminWeeklyList');
-Router::GET('/admin/departments', ViewController::class, 'adminDepartmentList');
-Router::GET('/admin/recent', ViewController::class, 'adminRecentThesisDeployed');
-Router::GET('/admin/announcements', ViewController::class, 'adminAnnouncements');
-Router::GET('/admin/downloads', ViewController::class, 'adminDownloads');
-Router::GET('/admin/students', ViewController::class, 'adminStudentList');
-Router::GET('/admin/teachers', ViewController::class, 'adminTeacherAccounts');
-Router::GET('/teacher/login', ViewController::class, 'teacherLogin');
-Router::GET('/read/thesis', FileController::class, 'viewPdfFile');
-Router::GET('/read/journal', FileController::class, 'viewPdfFile');
-Router::GET('/download/thesis', FileController::class, 'downloadPdfFile');
-Router::GET('/download/journal', FileController::class, 'downloadPdfFile');
+Router::GET('/', [ViewController::class, 'index']);
+Router::GET('/login', [ViewController::class, 'studentLogin']);
+Router::GET('/admin/login', [ViewController::class, 'adminLogin']);
+Router::GET('/teacher/login', [ViewController::class, 'personnelLogin']);
+Router::GET('/signup', [ViewController::class, 'studentSignup']);
+Router::GET('/admin/dashboard', [ViewController::class, 'adminDashboard']);
+Router::GET('/admin/theses', [ViewController::class, 'adminThesisList']);
+Router::GET('/admin/weekly', [ViewController::class, 'adminWeeklyList']);
+Router::GET('/admin/departments', [ViewController::class, 'adminDepartmentList']);
+Router::GET('/admin/recent', [ViewController::class, 'adminRecentThesisDeployed']);
+Router::GET('/admin/announcements', [ViewController::class, 'adminAnnouncements']);
+Router::GET('/admin/downloads', [ViewController::class, 'adminDownloads']);
+Router::GET('/admin/students', [ViewController::class, 'adminStudentList']);
+Router::GET('/admin/teachers', [ViewController::class, 'adminTeacherAccounts']);
+Router::GET('/teacher/login', [ViewController::class, 'teacherLogin']);
+Router::GET('/read/thesis', [FileController::class, 'viewPdfFile']);
+Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
+Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);
+Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
+
 
 /* API GET METHOD */
-Router::GET('/api/test', ApiController::class, 'test'); // test api route
-Router::GET('/api/student', ApiController::class, 'studentInfo');
+Router::GET('/api/test', [ApiController::class, 'test']); // test api route
+Router::GET('/api/student', [ApiController::class, 'studentInfo']);
 
 /* POST METHOD */
-Router::POST('/logout', ApiController::class, 'logout');
-Router::POST('/api/login', ApiController::class, 'login');
-Router::POST('/api/signup', ApiController::class, 'signup');
-Router::POST('/api/upload/pdf', FileController::class, 'uploadPdf');
-Router::POST('/api/upload/images', FileController::class, 'uploadImages');
+Router::POST('/logout', [ApiController::class, 'logout']);
+Router::POST('/api/login', [ApiController::class, 'login']);
+Router::POST('/api/signup', [ApiController::class, 'signup']);
+Router::POST('/api/upload/pdf', [FileController::class, 'uploadPdf']);
+Router::POST('/api/upload/images', [FileController::class, 'uploadImages']);
 
 /* PUT METHOD */
 
@@ -55,5 +56,5 @@ Router::POST('/api/upload/images', FileController::class, 'uploadImages');
 /* DELETE METHOD */
 
 /* ERROR PAGES */
-Router::NOTFOUND(ViewController::class, 'notFound');
-Router::ERROR(ViewController::class, 'error');
+Router::NOTFOUND([ViewController::class, 'notFound']);
+Router::ERROR([ViewController::class, 'error']);

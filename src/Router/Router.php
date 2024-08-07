@@ -7,8 +7,6 @@ namespace Smcc\ResearchHub\Router;
 use Exception;
 use Smcc\ResearchHub\Logger\Logger;
 
-
-
 class Router
 {
   private string $method;
@@ -40,9 +38,14 @@ class Router
       $rawData = file_get_contents('php://input');
       $this->body = json_decode($rawData, true);
     } else {
-      $this->body = $this->method !== 'GET' ? json_decode(json_encode($_POST), true) : [];
+      $this->body = $this->method !== 'GET' ? [...$_POST] : [];
     }
-    $this->files = $this->method === 'POST' ? json_decode(json_encode($_FILES), true) : [];
+    $this->files = [];
+    if ($this->method === 'POST') {
+      foreach ($_FILES as $name => $file) {
+        $this->files[$name] = new File($file);
+      }
+    }
   }
 
   public function run(): void
@@ -75,14 +78,23 @@ class Router
             if ($response instanceof Response) {
               $response->sendResponse(); // response ends here
             }
+            Logger::write_info("HTTP Response: 200");
             exit; // if it is a view, exit here
           }
+        } else if (is_callable($route)) {
+          $response = call_user_func($route, new Request($this->method, $this->uri, $this->query, $this->body, $this->files, getallheaders()));
+          if ($response instanceof Response) {
+            $response->sendResponse(); // response ends here
+          }
+          Logger::write_info("HTTP Response: 200");
+          exit; // if it is a view, exit here
         } else {
           throw new Exception("Invalid route configuration for route: {$this->uri}");
         }
       }
       // 404 Not Found
       header('HTTP/1.1 404 Not Found');
+      Logger::write_info("HTTP Response: 404");
       if (!empty(Router::$Router__routes['NOT_FOUND_PAGE'])) {
         // 404 Not Found page exists
         $class = Router::$Router__routes['NOT_FOUND_PAGE'][0];
@@ -100,6 +112,7 @@ class Router
     } catch (\Throwable $e) {
       // 500 Error
       header('HTTP/1.1 500 Internal Server Error');
+      Logger::write_info("HTTP Response: 500");
       Logger::write_error("Internal Server Error - " . $e->getMessage() . "\n" . $e->getTraceAsString());
       if (!empty(Router::$Router__routes['ERROR_PAGE'])) {
         $class = Router::$Router__routes['ERROR_PAGE'][0];
@@ -150,39 +163,39 @@ class Router
       exit;
     }
   }
-  public static function GET(string $uriPath, string $class, string $method): void
+  public static function GET(string $uriPath, callable|array $callable): void
   {
-    Router::$Router__routes['GET'][$uriPath] = [$class, $method];
+    Router::$Router__routes['GET'][$uriPath] = $callable;
   }
-  public static function POST(string $uriPath, string $class, string $method): void
+  public static function POST(string $uriPath, callable|array $callable): void
   {
-    Router::$Router__routes['POST'][$uriPath] = [$class, $method];
+    Router::$Router__routes['POST'][$uriPath] = $callable;
   }
-  public static function PUT(string $uriPath, string $class, string $method): void
+  public static function PUT(string $uriPath, callable|array $callable): void
   {
-    Router::$Router__routes['PUT'][$uriPath] = [$class, $method];
+    Router::$Router__routes['PUT'][$uriPath] = $callable;
   }
-  public static function PATCH(string $uriPath, string $class, string $method): void
+  public static function PATCH(string $uriPath, callable|array $callable): void
   {
-    Router::$Router__routes['PATCH'][$uriPath] = [$class, $method];
+    Router::$Router__routes['PATCH'][$uriPath] = $callable;
   }
-  public static function DELETE(string $uriPath, string $class, string $method): void
+  public static function DELETE(string $uriPath, callable|array $callable): void
   {
-    Router::$Router__routes['DELETE'][$uriPath] = [$class, $method];
+    Router::$Router__routes['DELETE'][$uriPath] = $callable;
   }
   public static function STATIC(string $uriPath, string $diskPath, ?string $ignoreExtension = null): void
   {
     Router::$Router__routes['STATIC'][$uriPath] = [$diskPath, $ignoreExtension];
   }
 
-  public static function NOTFOUND(string $class, string $method): void
+  public static function NOTFOUND(callable|array $callable): void
   {
-    Router::$Router__routes['NOT_FOUND_PAGE'] = [$class, $method];
+    Router::$Router__routes['NOT_FOUND_PAGE'] = $callable;
   }
 
-  public static function ERROR(string $class, string $method): void
+  public static function ERROR(callable|array $callable): void
   {
-    Router::$Router__routes['ERROR_PAGE'] = [$class, $method];
+    Router::$Router__routes['ERROR_PAGE'] = $callable;
   }
 
   public static function redirect(string $url): void

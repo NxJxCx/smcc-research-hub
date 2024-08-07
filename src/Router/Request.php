@@ -4,7 +4,18 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Router;
 
-class Request {
+interface RequestInterface {
+  public function getMethod(): string;
+  public function getUri(): string;
+  public function getQueryParam(string $key): string;
+  public function getQuery(): array;
+  public function getBody(): array;
+  public function getFiles(string $key): array|File|null;
+  public function getAllFiles(): array;
+  public function getHeaders(): array;
+}
+
+class Request implements RequestInterface {
   private string $method;
   private string $uri;
   private array $query;
@@ -32,7 +43,10 @@ class Request {
   public function getBody(): array {
     return $this->body;
   }
-  public function getFiles(): array {
+  public function getFiles(string $key): array|File|null {
+    return $this->files[$key] ?? null;
+  }
+  public function getAllFiles(): array {
     return $this->files;
   }
   public function getHeaders(): array {

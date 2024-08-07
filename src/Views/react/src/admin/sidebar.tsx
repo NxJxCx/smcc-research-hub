@@ -1,3 +1,5 @@
+import clsx from "/jsx/global/clsx";
+import SMCCLogo from "/jsx/global/smcclogo";
 import { React, ReactDOM } from "/jsx/imports";
 
 interface NavItems {
@@ -18,10 +20,6 @@ function SidebarNav({ defaultShow = true, sidebarList, toggleBtn }: { defaultSho
     localStorage.setItem("sidebarShow", show ? "true" : "false");
   }, [show]);
 
-  const clsx = React.useCallback((...args: string[]) => {
-    return args.join(" ");
-  }, [])
-
   return (
     <nav className={
       clsx(
@@ -32,7 +30,7 @@ function SidebarNav({ defaultShow = true, sidebarList, toggleBtn }: { defaultSho
     }>
       <div className="w-full max-h-[60px] h-[60px] flex items-center justify-center bg-[#21282f]">
         <div className="flex flex-nowrap h-full w-fit items-center justify-start">
-          <img src="/images/SMCC-logo.svg" alt="SMCC Logo" className="aspect-square h-full py-2" />
+          <SMCCLogo className="aspect-square h-full py-2" />
           <h1 className="pr-3 font-[600]">RESEARCH HUB</h1>
         </div>
       </div>
@@ -56,11 +54,10 @@ function SidebarNav({ defaultShow = true, sidebarList, toggleBtn }: { defaultSho
   )
 }
 
-function LoadingSidebar({ show }: { show: boolean }) {
+function LoadingSidebar() {
   return (
     <nav className={
-      "text-slate-50 bg-[#262e36] max-w-[250px] h-full relative "
-      + (show ? " w-[250px]" : " w-0 *:hidden")
+      "text-slate-50 bg-[#262e36] max-w-[250px] h-full relative w-[250px]"
     }>
       <div className="w-full max-h-[60px] h-[60px] flex items-center justify-center bg-[#21282f]">
         <div className="flex flex-nowrap h-full w-fit items-center justify-start">

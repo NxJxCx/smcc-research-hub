@@ -38,7 +38,7 @@ function StudentSignup() {
             text: 'Failed to check student existence: ' + error,
             toast: true,
             showConfirmButton: false,
-            position: 'top',
+            position: 'center',
             timer: 3000,
           });
         } else {
@@ -52,7 +52,7 @@ function StudentSignup() {
               text: 'Student ID is already registered',
               timer: 2000,
               toast: true,
-              position: 'top',
+              position: 'center',
               showConfirmButton: false,
             }).then(() => {
               Sweetalert2.fire({
@@ -77,7 +77,7 @@ function StudentSignup() {
           text: 'Failed to retrieve student information:' + e.message,
           toast: true,
           showConfirmButton: false,
-          position: 'top',
+          position: 'center',
           timer: 3000,
         });
       })
@@ -96,7 +96,7 @@ function StudentSignup() {
         text: 'Passwords do not match',
         toast: true,
         showConfirmButton: false,
-        position: 'top',
+        position: 'center',
         timer: 3000,
       });
       setPending(false);
@@ -119,7 +119,7 @@ function StudentSignup() {
           text: error,
           toast: true,
           showConfirmButton: false,
-          position: 'top',
+          position: 'center',
           timer: 3000,
         });
         console.log(error)
@@ -131,7 +131,7 @@ function StudentSignup() {
           text: 'You have been registered successfully. Please login.',
           toast: true,
           showConfirmButton: false,
-          position: 'top',
+          position: 'center',
           timer: 2000,
         }).then(() => {
           window.location.href = '/login'

@@ -114,18 +114,19 @@ class Session
       $fullName = self::getUserFullName();
       $uid = self::getUserId();
       $ipAddr = self::getClientIpAddress();
-      Logger::write_debug("{ucfirst($accountType)} ID {$uid} logged out: session_id={$session_cookie} name={$fullName} IP: {$ipAddr}");
+      $accType = ucfirst($accountType);
+      Logger::write_debug("$accType ID {$uid} logged out: session_id={$session_cookie} name={$fullName} IP: {$ipAddr}");
       $session->delete();
       Cookies::delete('session_id');
       switch ($accountType) {
         case 'admin':
-          (new AdminLogs(['admin_id' => $uid, 'activity' => "{ucfirst($accountType)} ID {$uid} has Logged out at {$ipAddr}"]))->create();
+          (new AdminLogs(['admin_id' => $uid, 'activity' => "$accType ID {$uid} has Logged out at {$ipAddr}"]))->create();
           break;
         case 'personnel':
-          (new PersonnelLogs(['personnel_id' => $uid, 'activity' => "{ucfirst($accountType)} ID {$uid} has Logged out at {$ipAddr}"]))->create();
+          (new PersonnelLogs(['personnel_id' => $uid, 'activity' => "$accType ID {$uid} has Logged out at {$ipAddr}"]))->create();
           break;
         case'student':
-          (new StudentLogs(['student_id' => $uid, 'activity' => "{ucfirst($accountType)} ID {$uid} has Logged out at {$ipAddr}"]))->create();
+          (new StudentLogs(['student_id' => $uid, 'activity' => "$accType ID {$uid} has Logged out at {$ipAddr}"]))->create();
           break;
       }
     }

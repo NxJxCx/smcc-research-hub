@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Router;
 
+use Smcc\ResearchHub\Logger\Logger;
+
 enum StatusCode: int
 {
   case OK = 200;
@@ -27,9 +29,7 @@ enum StatusCode: int
   case UNSUPPORTED_MEDIA = 415;
   case REQUESTED_RANGE_NOT_SATISFIABLE = 416;
   case EXPECTATION_FAILED = 417;
-  case IM_USED = 423;
   case UNPROCESSABLE_ENTITY = 422;
-  case LOCKED = 423;
   case TOO_MANY_REQUESTS = 429;
   case REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
   case UNAVAILABLE_FOR_LEGAL_REASONS = 451;
@@ -91,6 +91,7 @@ class Response
     } else {
       echo $this->content;
     }
+    Logger::write_info("HTTP Response: {$this->statusCode->value}");
     exit;
   }
 

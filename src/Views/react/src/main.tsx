@@ -9,7 +9,7 @@ const root = ReactDOM.createRoot(rootDOM);
 root.render(<Loading className="min-h-full w-full flex items-center justify-center" />);
 
 import(jsxAppPath as string).then(({ default: App }) => {
-  console.log(`Page data: ${JSON.stringify(pageData)}`);
+  // console.log(`Page data: ${JSON.stringify(pageData)}`);
   root.render(<App />);
 });
 

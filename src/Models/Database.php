@@ -27,7 +27,7 @@ class Database implements BaseDatabase
   public function __construct(string $host = MYSQL_HOST, string $port = MYSQL_PORT, string $dbname = MYSQL_DATABASE, string $user = MYSQL_USER, string $password = MYSQL_PASSWORD)
   {
     global $_open_database;
-    Logger::write_debug("Connecting to database: $host, $port, $dbname, $user, $password");
+    // Logger::write_debug("Connecting to database: $host, $port, $dbname, $user, $password");
     // Check if database connection already exists
     if (!is_null($_open_database)) {
       Logger::write_debug("Database connection already exists.");
@@ -42,50 +42,50 @@ class Database implements BaseDatabase
     ];
     $this->db = new PDO($dsn, $user, $password, $options);
     $_open_database = $this;
-    Logger::write_debug("Connecting to database: HOST=$host, PORT=$port, USER={$this->quoteIdentifier($user)}, DATABASE={$this->quoteIdentifier($dbname)}");
-    Logger::write_debug("Database connection established successfully.");
+    // Logger::write_debug("Connecting to database: HOST=$host, PORT=$port, USER={$this->quoteIdentifier($user)}, DATABASE={$this->quoteIdentifier($dbname)}");
+    // Logger::write_debug("Database connection established successfully.");
 
     $models = array_map(fn($t) => new $t([], true), getAllModels());
 
-    Logger::write_debug("\nCreating tables if not exists:\n"
-      . implode(
-          "\n",
-          array_map(
-            fn($t) => "{$this->quoteIdentifier($dbname)}.{$this->quoteIdentifier($t->getTableName())}",
-            $models
-          )
-        )
-      );
+    // Logger::write_debug("\nCreating tables if not exists:\n"
+    //   . implode(
+    //       "\n",
+    //       array_map(
+    //         fn($t) => "{$this->quoteIdentifier($dbname)}.{$this->quoteIdentifier($t->getTableName())}",
+    //         $models
+    //       )
+    //     )
+    //   );
     // Create tables for all models
     foreach ($models as $model) {
       $model->createTable($this);
     }
 
-    Logger::write_debug("\nAlter table for foreign key constraints if not exists:\n"
-    . implode(
-        "\n",
-        array_map(
-          fn($t) => implode(", ", array_map(fn($k) => $this->quoteIdentifier($t->getTableName()). ".". $this->quoteIdentifier($k), array_keys($t->getForeignConstraints()))),
-          array_filter($models, fn($t) => count($t->getForeignConstraints()) > 0)
-        )
-      )
-    );
+    // Logger::write_debug("\nAlter table for foreign key constraints if not exists:\n"
+    // . implode(
+    //     "\n",
+    //     array_map(
+    //       fn($t) => implode(", ", array_map(fn($k) => $this->quoteIdentifier($t->getTableName()). ".". $this->quoteIdentifier($k), array_keys($t->getForeignConstraints()))),
+    //       array_filter($models, fn($t) => count($t->getForeignConstraints()) > 0)
+    //     )
+    //   )
+    // );
 
     // alter table for foreign key constraints for all models
     foreach ($models as $model) {
       $model->createForeignConstraints($this);
     }
 
-    Logger::write_debug("Database tables migrated completed successfully.");
-    Logger::write_debug("\nTable row counts:\n"
-    . implode(
-      "\n",
-        array_map(
-          fn($t) => "{$this->quoteIdentifier($dbname)}.{$this->quoteIdentifier($t->getTableName())} = {$t::getRowCount()} records",
-          $models
-        )
-      )
-    );
+    // Logger::write_debug("Database tables migrated completed successfully.");
+    // Logger::write_debug("\nTable row counts:\n"
+    // . implode(
+    //   "\n",
+    //     array_map(
+    //       fn($t) => "{$this->quoteIdentifier($dbname)}.{$this->quoteIdentifier($t->getTableName())} = {$t::getRowCount()} records",
+    //       $models
+    //     )
+    //   )
+    // );
   }
 
   public function getDb(): PDO

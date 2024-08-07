@@ -35,15 +35,11 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
 
   React.useEffect(() => {
     if (show) {
-      navRef.current?.classList.remove("-z-10");
-      navRef.current?.classList.remove("scale-y-0");
-      navRef.current?.classList.add("z-10");
-      navRef.current?.classList.add("scale-y-full");
+      navRef.current?.classList.remove("-z-10", "h-0");
+      navRef.current?.classList.add("z-10", "h-screen");
     } else {
-      navRef.current?.classList.remove("z-10");
-      navRef.current?.classList.remove("scale-y-full");
-      navRef.current?.classList.add("scale-y-0");
-      navRef.current?.classList.add("-z-10");
+      navRef.current?.classList.remove("z-10", "h-screen");
+      navRef.current?.classList.add("h-0", "-z-10");
     }
   }, [show]);
 
@@ -55,52 +51,54 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
   }, [authAvatarList, ulRef]);
 
   return (<>
-    <div ref={navRef} className="flex absolute bg-white top-full right-0 border w-full h-fit px-10 pb-6 pt-4 scale-y-0 -z-10 flex-col justify-start items-start gap-y-4 transition-transform duration-500 delay-10 ease-in-out origin-top shadow-lg">
-      <SearchInput search={search} setSearch={setSearch} />
-      <ul className="flex flex-col gap-2 w-full h-full font-[500]" ref={ulRef}>
-        <li>
-          { pageData.authenticated ? (
-              <div className="px-4 py-3 text-sm text-gray-900">
-                <div>{pageData.auth_data.full_name}</div>
-                <div className="font-medium truncate capitalize">{pageData.auth_data.account}</div>
-              </div>
-            ) : (
-              <div className="px-4 flex flex-col gap-2">
-                <a href="/login" className="text-sky-600 hover:text-sky-300">Login</a>
-              </div>
-            )
-          }
-        </li>
-        {
-          navList.map((item) => (
-            <li key={item.label}>
-              <a href={item.url} className="indent-4">
-                <div className={
-                  `hover:text-sky-500 transition duration-300 w-full
-                  ${(item.url === "/" && pathname === "/") || pathname.startsWith(item.url)
-                  ? "text-black border-l-4 border-sky-300 font-700"
-                  : "text-gray-500 w-full"}`
-                }>
-                  {item.label}
+    <div ref={navRef} className="absolute bg-white top-full right-0 border w-full h-0 max-h-fit overflow-hidden -z-10 transition-[height] duration-500 delay-10 ease-in-out origin-top shadow-lg">
+      <div className="flex w-full h-full px-10 pb-6 pt-4 flex-col justify-start items-start gap-y-4">
+        <SearchInput search={search} setSearch={setSearch} />
+        <ul className="flex flex-col gap-2 w-full h-full font-[500]" ref={ulRef}>
+          <li>
+            { pageData.authenticated ? (
+                <div className="px-4 py-3 text-sm text-gray-900">
+                  <div>{pageData.auth_data.full_name}</div>
+                  <div className="font-medium truncate capitalize">{pageData.auth_data.account}</div>
                 </div>
-              </a>
-            </li>
-          ))
-        }
-        <li>
-          { pageData.authenticated ? (
-              <form action="/logout" method="post">
-                <a href="/settings" className="block px-4 py-2 hover:bg-gray-200">Settings</a>
-                <button type="submit" className="block px-4 pt-2 text-red-400 hover:text-red-700 w-full text-start">Sign out</button>
-              </form>
-            ) : (
-              <div className="px-4 flex flex-col gap-2">
-                <a href="/signup" className="text-yellow-600 hover:text-sky-300">Sign Up</a>
-              </div>
-            )
+              ) : (
+                <div className="px-4 flex flex-col gap-2">
+                  <a href="/login" className="text-sky-600 hover:text-sky-300">Login</a>
+                </div>
+              )
+            }
+          </li>
+          {
+            navList.map((item) => (
+              <li key={item.label}>
+                <a href={item.url} className="indent-4">
+                  <div className={
+                    `hover:text-sky-500 transition duration-300 w-full
+                    ${(item.url === "/" && pathname === "/") || pathname.startsWith(item.url)
+                    ? "text-black border-l-4 border-sky-300 font-700"
+                    : "text-gray-500 w-full"}`
+                  }>
+                    {item.label}
+                  </div>
+                </a>
+              </li>
+            ))
           }
-        </li>
-      </ul>
+          <li>
+            { pageData.authenticated ? (
+                <form action="/logout" method="post">
+                  <a href="/settings" className="block px-4 py-2 hover:bg-gray-200">Settings</a>
+                  <button type="submit" className="block px-4 pt-2 text-red-400 hover:text-red-700 w-full text-start">Sign out</button>
+                </form>
+              ) : (
+                <div className="px-4 flex flex-col gap-2">
+                  <a href="/signup" className="text-yellow-600 hover:text-sky-300">Sign Up</a>
+                </div>
+              )
+            }
+          </li>
+        </ul>
+      </div>
     </div>
     <button type="button" onClick={toggleShow} className="w-[50px] h-[50px] aspect-square hover:text-sky-500" >
       <span className="material-symbols-outlined">menu</span>

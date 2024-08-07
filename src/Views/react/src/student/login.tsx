@@ -14,7 +14,6 @@ function StudentLogin() {
   const onResult = React.useCallback((studentName?: string, studentId?: string) => {
     if (!!studentId) {
       setPause(true);
-      console.log("Student ID scanned: " + studentId);
       fetch(`/api/student?q=exist&id=${studentId}`)
       .then(response => response.json())
       .then(({ error, exists }) => {
@@ -41,7 +40,7 @@ function StudentLogin() {
           text: 'Failed to retrieve student information:' + e.message,
           toast: true,
           showConfirmButton: false,
-          position: 'top',
+          position: 'center',
           timer: 3000,
         })
       })
@@ -68,7 +67,7 @@ function StudentLogin() {
           title: error,
           toast: true,
           showConfirmButton: false,
-          position: 'top',
+          position: 'center',
           timer: 3000,
         })
         console.log(error)
@@ -83,7 +82,7 @@ function StudentLogin() {
         text: 'Failed to login. Please try again.',
         toast: true,
         showConfirmButton: false,
-        position: 'top',
+        position: 'center',
         timer: 3000,
       })
       console.log(e)

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
+use Smcc\ResearchHub\Logger\Logger;
+use Smcc\ResearchHub\Models\AdminLogs;
+use Smcc\ResearchHub\Models\Thesis;
+use Smcc\ResearchHub\Router\File;
 use Smcc\ResearchHub\Router\Request;
 use Smcc\ResearchHub\Router\Response;
 use Smcc\ResearchHub\Router\Session;
@@ -14,67 +18,82 @@ class FileController extends Controller
 
   public function uploadPdf(Request $request): Response
   {
-    $files = $request->getFiles();
-    $body = $request->getBody();
-    $doc = $body['document'];
-    if (!in_array(["thesis", "journal"], $doc)) {
-      return Response::json(['error' => 'Invalid document type. Must be thesis or journal.'], StatusCode::BAD_REQUEST);
-    }
-    $count = 0;
-    $total = count($files);
-    $filesSaved = []; // filenames
-    $errors = [];
-    foreach ($files as $file) {
-      // check if $file is pdf
-      if ($file['type'] !== 'application/pdf') {
-        $errors[] = [$file['name'], 'Invalid file type. Only PDF files are allowed.'];
-        continue; // skip non-pdf files
+    if (Session::isAuthenticated() && Session::getUserAccountType() === 'admin') {
+      $file = $request->getFiles("pdf");
+      $body = $request->getBody();
+      Logger::write_debug("BODY: ". json_encode($body));
+      $doc = $body['document'];
+      $docTitle = $body['title'];
+      $docAuthor = $body['author'];
+      $docYear = $body['year'];
+      if (!in_array($doc, ["thesis", "journal"])) {
+        return Response::json(['error' => 'Invalid document type. Must be thesis or journal.'], StatusCode::BAD_REQUEST);
       }
-      $count++; // increment uploaded file count
-      $newFilenameNoExt = uniqid("thesis_");
-      $newFilename = "$newFilenameNoExt.pdf";
-      move_uploaded_file($file['tmp_name'], implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, $doc, $newFilename]));
-      $filesSaved[] = "/view/$doc?filename=$newFilenameNoExt";
+      if (!$docTitle || !$docAuthor || !$docYear) {
+        return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
+      }
+      if ($file instanceof File) {
+        if ($file->getError() !== UPLOAD_ERR_OK) {
+          return Response::json(['error' => "Error uploading file. Error Code ".$file->getError()], StatusCode::INTERNAL_SERVER_ERROR);
+        }
+        if ($file->getType() !== 'application/pdf') {
+          return Response::json(['error' => 'Invalid file type. Only PDF files are allowed.'], StatusCode::BAD_REQUEST);
+        } else {
+          $newFilename = uniqid("thesis_");
+          $file->moveTo(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, $doc]), $newFilename);
+          $fileUrl = "/$doc?filename=$newFilename";
+          if ($doc === 'thesis') {
+            $thesis = new Thesis([
+              "title" => $docTitle,
+              "author" => $docAuthor,
+              "year" => $docYear,
+              "url" => $fileUrl,
+            ]);
+            $fid = $thesis->create();
+            $doc = ucfirst($doc);
+            (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
+          }
+          return Response::json(['success' => isset($fid)], StatusCode::CREATED);
+        }
+      } else {
+        return Response::json(['error' => 'Only one file is allowed at a time.'], StatusCode::BAD_REQUEST);
+      }
     }
-    return Response::json(['success' => ["total" => $total, "uploaded" => $count, "failed" => (int)($total - $count), "files" => $filesSaved, "errors" => $errors]]);
+    return Response::json(['error' => 'You must be authenticated as an admin to upload files.'], StatusCode::UNAUTHORIZED);
   }
 
   public function uploadImages(Request $request): Response
   {
-    $files = $request->getFiles();
-    $filesSaved = []; // filenames
+    $files = $request->getFiles("photo");
+    $filesSaved = [];
     $count = 0;
     $total = count($files);
     $errors = [];
     foreach ($files as $file) {
-      // check if $file is jpg or png
       if (!in_array($file['type'], ['image/jpeg', 'image/png'])) {
         $errors[] = [$file['name'], 'Invalid file type. Only JPEG or PNG images are allowed.'];
-        continue; // skip non-image files
+        continue;
       }
-      // check if file size is too large
       if ($file['size'] > MAX_IMAGE_SIZE) {
         $errors[] = [$file['name'], 'File size is too large. Maximum allowed size is '. (MAX_IMAGE_SIZE / 1024 / 1024).'MB'];
-        continue; // skip files exceeding size limit
+        continue;
       }
-      $count++; // increment uploaded file count
+      $count++;
       $newFilename = uniqid("photo_") . ".". pathinfo($file['name'], PATHINFO_EXTENSION);
       move_uploaded_file($file['tmp_name'], implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'public', 'photo', $newFilename]));
       $filesSaved[] = "/public/photo/$newFilename";
     }
-    return Response::json(["total" => $total, "uploaded" => $count, "failed" => (int)($total - $count), "files" => $filesSaved, "errors" => $errors]);
+    return Response::json(["total" => $total, "uploaded" => $count, "failed" => (int)($total - $count), "files" => $filesSaved, "errors" => $errors], StatusCode::CREATED);
   }
 
   public function viewPdfFile(Request $request): Response
   {
-    if (Session::isAuthenticated()) {
+    if (!Session::isAuthenticated()) {
       return Response::json(['error' => 'Unauthorized'], StatusCode::UNAUTHORIZED);
     }
     $uri = $request->getUri();
-    // get the last splitted part of the URI to get the doc type
     $parts = explode('/', $uri);
     $docType = strtolower(end($parts));
-    // get the filename from query parameter named 'filename'
     $filenameNoExt = $request->getQueryParam('filename');
     if (!$filenameNoExt) {
       return Response::json(['error' => 'Filename not provided'], StatusCode::BAD_REQUEST);
@@ -89,14 +108,12 @@ class FileController extends Controller
 
   public function downloadPdfFile(Request $request): Response
   {
-    if (Session::isAuthenticated()) {
+    if (!Session::isAuthenticated()) {
       return Response::json(['error' => 'Unauthorized'], StatusCode::UNAUTHORIZED);
     }
     $uri = $request->getUri();
-    // get the last splitted part of the URI to get the doc type
     $parts = explode('/', $uri);
     $docType = strtolower(end($parts));
-    // get the filename from query parameter named 'filename'
     $filenameNoExt = $request->getQueryParam('filename');
     if (!$filenameNoExt) {
       return Response::json(['error' => 'Filename not provided'], StatusCode::BAD_REQUEST);

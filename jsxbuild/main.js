@@ -6,6 +6,6 @@ const pageData = rootDOM?.dataset.pageData;
 const root = ReactDOM.createRoot(rootDOM);
 root.render(React.createElement(Loading, { className: "min-h-full w-full flex items-center justify-center" }));
 import(jsxAppPath).then(({ default: App }) => {
-    console.log(`Page data: ${JSON.stringify(pageData)}`);
+    // console.log(`Page data: ${JSON.stringify(pageData)}`);
     root.render(React.createElement(App, null));
 });
