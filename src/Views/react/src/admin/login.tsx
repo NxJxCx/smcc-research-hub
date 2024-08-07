@@ -1,3 +1,4 @@
+import SMCCLogo from "/jsx/global/smcclogo";
 import { React, Sweetalert2 } from "/jsx/imports";
 
 function AdminLogin() {
@@ -51,13 +52,12 @@ function AdminLogin() {
     })
   }, [username, password])
 
-  const SMCCLogo = React.useMemo(() => <img src="/images/SMCC-logo.svg" alt="SMCC Logo" className="w-[100px] aspect-square mx-auto"/>, [])
-
   return (
-    <div className="w-full pt-16">
+    <div className="w-full pt-16 relative">
+      <button type="button" onClick={() => window.location.replace("/")} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
       <div className="p-4">
         <form onSubmit={onLogin} className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
-          {SMCCLogo}
+          <SMCCLogo className="w-[100px] aspect-square mx-auto"/>
           <div className="text-[24px] font-[700] text-center">Admin Login</div>
           <div className="flex justify-center px-4">
             <input type="text" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Username" value={username} onChange={(e: any) => setUsername(e.target.value)} />
