@@ -13,7 +13,7 @@ class Thesis extends Model
       'title' => ['VARCHAR(255)', 'NOT NULL'],
       'author' => ['VARCHAR(255)', 'NOT NULL'],
       'year' => ['YEAR', 'NOT NULL'],
-      'url' => ['TEXT', 'NOT NULL'],
+      'url' => ['VARCHAR(1024)', 'NOT NULL'],
       'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],
       'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
     ];
