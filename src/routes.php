@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub;
 
 use Smcc\ResearchHub\Controllers\ApiController;
+use Smcc\ResearchHub\Controllers\FileController;
 use Smcc\ResearchHub\Controllers\ViewController;
 use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
@@ -31,6 +32,10 @@ Router::GET('/admin/downloads', ViewController::class, 'adminDownloads');
 Router::GET('/admin/students', ViewController::class, 'adminStudentList');
 Router::GET('/admin/teachers', ViewController::class, 'adminTeacherAccounts');
 Router::GET('/teacher/login', ViewController::class, 'teacherLogin');
+Router::GET('/read/thesis', FileController::class, 'viewPdfFile');
+Router::GET('/read/journal', FileController::class, 'viewPdfFile');
+Router::GET('/download/thesis', FileController::class, 'downloadPdfFile');
+Router::GET('/download/journal', FileController::class, 'downloadPdfFile');
 
 /* API GET METHOD */
 Router::GET('/api/test', ApiController::class, 'test'); // test api route
@@ -40,6 +45,8 @@ Router::GET('/api/student', ApiController::class, 'studentInfo');
 Router::POST('/logout', ApiController::class, 'logout');
 Router::POST('/api/login', ApiController::class, 'login');
 Router::POST('/api/signup', ApiController::class, 'signup');
+Router::POST('/api/upload/pdf', FileController::class, 'uploadPdf');
+Router::POST('/api/upload/images', FileController::class, 'uploadImages');
 
 /* PUT METHOD */
 

@@ -6,7 +6,6 @@ namespace Smcc\ResearchHub\Controllers;
 
 interface BaseController
 {
-  public function index(string $uri, array $query, array $body);
   public function notFound();
   public function error(string $message);
 }
@@ -14,12 +13,6 @@ interface BaseController
 class Controller implements BaseController
 {
   protected string $head_title = APP_TITLE ?? "Research Hub";
-  /**
-   * @inheritDoc
-   */
-  public function index(string $uri, array $query, array $body)
-  {
-  }
   /**
    * @inheritDoc
    */

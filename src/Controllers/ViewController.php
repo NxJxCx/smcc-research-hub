@@ -17,7 +17,7 @@ use Smcc\ResearchHub\Views\Pages\Teacher\LoginPage as TeacherLoginPage;
 class ViewController extends Controller
 {
 
-  public function index(string $uri, array $query, array $body)
+  public function index()
   {
     HomePage::view("Home");
   }
@@ -32,6 +32,7 @@ class ViewController extends Controller
     }
     AdminLoginPage::view("Admin Login");
   }
+
   public function studentLogin()
   {
     if (Session::isAuthenticated()) {
@@ -39,6 +40,7 @@ class ViewController extends Controller
     }
     LoginPage::view("Student Login");
   }
+
   public function teacherLogin()
   {
     if (Session::isAuthenticated()) {

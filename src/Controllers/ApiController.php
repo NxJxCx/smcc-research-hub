@@ -13,54 +13,48 @@ use Smcc\ResearchHub\Models\Personnel;
 use Smcc\ResearchHub\Models\PersonnelLogs;
 use Smcc\ResearchHub\Models\Student;
 use Smcc\ResearchHub\Models\StudentLogs;
+use Smcc\ResearchHub\Router\Request;
 use Smcc\ResearchHub\Router\Response;
-use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session as RouterSession;
+use Smcc\ResearchHub\Router\StatusCode;
 
 class ApiController extends Controller
 {
 
-  public function index(string $uri, array $query, array $body)
-  {
-  }
-
-  public function studentInfo(string $uri, array $query, array $body)
+  public function studentInfo(Request $request): Response
   {
     try {
-      switch ($query['q']) {
+      switch (['q']) {
         case 'exist':
           $db = Database::getInstance();
-          $studentId = $query['id'];
+          $studentId = $request->getQueryParam('id');
           $student = $db->fetchOne(Student::class, ['student_id' => $studentId]);
-          Response::json(['exists' => $student ? true : false]);
-          return;
+          return Response::json(['exists' => $student ? true : false]);
         case 'profile':
           $db = Database::getInstance();
-          $studentId = $query['id'];
+          $studentId = $request->getQueryParam('id');
           $student = $db->fetchOne(Student::class, ['student_id' => $studentId]);
-          $student = $student? $student->toArray() : [];
-          Response::json(['data' => $student]);
-          return;
+          $student = $student ? $student->toArray() : [];
+          return Response::json(['data' => $student]);
       }
-      Response::json(['error' => 'Bad Request'], 400);
+      return Response::json(['error' => 'Bad Request'], StatusCode::BAD_REQUEST);
     } catch (\Throwable $e) {
-      Response::json(['error' => $e->getMessage()]);
+      return Response::json(['error' => $e->getMessage()]);
     }
   }
 
-  public function signup(string $uri, array $query, array $body)
+  public function signup(Request $request): Response
   {
+    $body = $request->getBody();
     try {
       // Check if inputs are provided
       if (!isset($body['account']) || !isset($body['username']) || !isset($body['full_name']) || !isset($body['password']) || !isset($body['email'])) {
-        Response::json(['error' => 'Missing required inputs. ' . json_encode($body)], 400);
-        return;
+        return Response::json(['error' => 'Missing required inputs. ' . json_encode($body)], StatusCode::BAD_REQUEST);
       }
 
       // Validate account type (admin, personnel, student)
       if (!in_array($body['account'], ['admin', 'personnel', 'student'])) {
-        Response::json(['error' => 'Invalid account type.'], 400);
-        return;
+        return Response::json(['error' => 'Invalid account type.'], StatusCode::BAD_REQUEST);
       }
 
       $accountType = $body['account'];
@@ -103,8 +97,7 @@ class ApiController extends Controller
           $id_pattern = "/^20\\d{7}$/";
           $name_pattern = "/^[A-ZÑ]+(?: [A-ZÑ]+)*?(?: [A-ZÑ]\\. )?(?:[A-ZÑ]+(?: [A-ZÑ]+)*)?(?: (?:III|IV|V|VI|VII|VIII|IX|X))?$/";
           if (!preg_match($id_pattern, $data['student_id']) || !preg_match($name_pattern, $data['full_name'])) {
-            Response::json(['success' => false, 'error' => 'Invalid student ID format.']);
-            return;
+            return Response::json(['success' => false, 'error' => 'Invalid student ID format.']);
           }
           $model = new Student($data);
           try {
@@ -112,40 +105,36 @@ class ApiController extends Controller
             Logger::write_debug("ID Registered is: {$id}");
             (new StudentLogs(['student_id' => $id, 'activity' => "Student ID: {$id}, fullname: {$body['full_name']} has newly been registered"]))->create();
           } catch (\PDOException $e) {
-            Response::json(['success' => false, 'error' => $e->getMessage()]);
-            return;
+            return Response::json(['success' => false, 'error' => $e->getMessage()]);
           }
-        break;
+          break;
       }
       Logger::write_info("Account registered: accountType={$accountType}, databaseId={$id}, full_name={$body['full_name']}");
-      Response::json(['success' => true]);
+      return Response::json(['success' => true]);
     } catch (\Throwable $e) {
       $b = json_encode($body);
       Logger::write_error("BODY: $b");
-      Response::json(['error' => $e->getMessage()], 500);
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
-    Response::json(['error' => 'Invalid Request'], 500);
   }
 
-  public function login(string $uri, array $query, array $body)
+  public function login(Request $request): Response
   {
+    $body = $request->getBody();
     try {
       // check authenticated users before logging in
       if (RouterSession::isAuthenticated()) {
-        Response::json(['success' => false, 'error' => 'Already authenticated.']);
-        return;
+        return Response::json(['success' => false, 'error' => 'Already authenticated.']);
       }
 
       // Check if inputs are provided
       if (!isset($body['account']) || !isset($body['username']) || !isset($body['password'])) {
-        Response::json(['error' => 'Missing required inputs. ' . json_encode($body)], 400);
-        return;
+        return Response::json(['error' => 'Missing required inputs. ' . json_encode($body)], StatusCode::BAD_REQUEST);
       }
 
       // Validate account type (admin, personnel, student)
       if (!in_array($body['account'], ['admin', 'personnel', 'student'])) {
-        Response::json(['error' => 'Invalid account type.'], 400);
-        return;
+        return Response::json(['error' => 'Invalid account type.'], StatusCode::BAD_REQUEST);
       }
 
       $db = Database::getInstance();
@@ -195,37 +184,34 @@ class ApiController extends Controller
           }
 
           Logger::write_debug("User logged in: account={$account}, id={$userId}, full_name={$user->full_name}");
-          Response::json(['success' => true]);
-          return;
+          return Response::json(['success' => true]);
         }
       }
-      Response::json(['success' => false, 'error' => 'Invalid username or password.']);
+      return Response::json(['success' => false, 'error' => 'Invalid username or password.']);
     } catch (\Throwable $e) {
-      Response::json(['error' => $e->getMessage()], 500);
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
-    Response::json(['error' => 'Bad Request'], 400);
   }
 
-  public function logout(string $uri, array $query, array $body)
+  public function logout(): Response
   {
     // Check if authenticated users before logging out
     if (!RouterSession::isAuthenticated()) {
       Logger::write_info("Attempted to log out without being authenticated. IP: {RouterSession::getClientIpAddress()}");
-      Response::json(['success' => false, 'error' => 'Not authenticated.'], 401);
-      return;
+      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
 
     RouterSession::logout();
-    Router::redirect('/');
+    return Response::redirect('/');
   }
 
-  public function test(string $uri, array $query, array $body)
+  public function test(): Response
   {
     // Shows all table names exists in the database
     $db = Database::getInstance();
     $q = $db->getDb()->query("SHOW TABLES;");
     $tables = $q->fetchAll(PDO::FETCH_ASSOC);
-    Response::json([
+    return Response::json([
       "tables" => array_map(fn ($item) => $item["Tables_in_" . MYSQL_DATABASE], $tables, []),
       "count" => count($tables)
     ]);

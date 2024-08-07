@@ -15,7 +15,9 @@ define('VIEW_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views']));
 define('MODELS_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Models']));
 define('REACT_SRC_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views', 'react', 'src']));
 define('REACT_DIST_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'src', 'Views', 'react', 'dist']));
+define('UPLOADS_PATH', implode(DIRECTORY_SEPARATOR, [APP_PATH, 'uploads']));
 
+define('MAX_IMAGE_SIZE', 10 * 1024 * 1024); // 10 MB
 define('JWT_SECRET_KEY', $_ENV['JWT_SECRET_KEY'] ?? 'researchhub_secret_key');
 
 // set DISPLAY_ERRORS to false if in production environment to hide error messages

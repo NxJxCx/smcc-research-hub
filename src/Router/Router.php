@@ -11,6 +11,7 @@ use Smcc\ResearchHub\Logger\Logger;
 
 class Router
 {
+  private string $method;
   private string $uri;
   private array $query;
   private array $body;
@@ -29,6 +30,7 @@ class Router
 
   public function __construct()
   {
+    $this->method = $_SERVER['REQUEST_METHOD'];
     $this->uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $this->query = json_decode(json_encode($_GET), true);
 
@@ -38,9 +40,9 @@ class Router
       $rawData = file_get_contents('php://input');
       $this->body = json_decode($rawData, true);
     } else {
-      $this->body = $_SERVER['REQUEST_METHOD'] !== 'GET' ? json_decode(json_encode($_POST), true) : [];
+      $this->body = $this->method !== 'GET' ? json_decode(json_encode($_POST), true) : [];
     }
-    $this->files = $_SERVER['REQUEST_METHOD'] === 'POST' ? json_decode(json_encode($_FILES), true) : [];
+    $this->files = $this->method === 'POST' ? json_decode(json_encode($_FILES), true) : [];
   }
 
   public function run(): void
@@ -59,21 +61,24 @@ class Router
       }
       // Request Method: GET, POST, PUT, PATCH, DELETE
       if (
-        in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-        && isset(Router::$Router__routes[$_SERVER['REQUEST_METHOD']][$this->uri])
+        in_array($this->method, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+        && isset(Router::$Router__routes[$this->method][$this->uri])
       ) {
-        $route = Router::$Router__routes[$_SERVER['REQUEST_METHOD']][$this->uri];
+        $route = Router::$Router__routes[$this->method][$this->uri];
         if (is_array($route) && count($route) === 2) {
           $class = $route[0];
           $method = $route[1];
           // Create an instance of the class
           $instance = new $class();
           if (method_exists($class, $method)) {
-            call_user_func([$instance, $method], $this->uri, $this->query, $this->body, $this->files);
-            exit;
+            $response = call_user_func([$instance, $method], new Request($this->method, $this->uri, $this->query, $this->body, $this->files, getallheaders()));
+            if ($response instanceof Response) {
+              $response->sendResponse(); // response ends here
+            }
+            exit; // if it is a view, exit here
           }
         } else {
-          throw new Exception('Invalid route configuration for route: ' . $this->uri);
+          throw new Exception("Invalid route configuration for route: {$this->uri}");
         }
       }
       // 404 Not Found
@@ -112,7 +117,8 @@ class Router
     }
   }
 
-  private function publicAssets(): void {
+  private function publicAssets(): void
+  {
     $filePath = implode(DIRECTORY_SEPARATOR, [ASSETS_PATH, substr($this->uri, 1)]);
     if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
       $_splitted_ext = explode('.', strtolower($filePath));
@@ -132,7 +138,7 @@ class Router
       // no file extension
       // then try adding $ignoreExtension to the end of the path
       if (!empty($ignoreExtension)) {
-        $filePath .= '.'. $ignoreExtension;
+        $filePath .= '.' . $ignoreExtension;
       }
     }
     if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
