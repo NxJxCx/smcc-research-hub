@@ -233,6 +233,37 @@ class ApiController extends Controller
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
+
+  public function dashboardStatistics(): Response
+  {
+    if (!RouterSession::isAuthenticated()) {
+      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $thesis = Thesis::getRowCount();
+      $journal = Journal::getRowCount();
+      $student = Student::getRowCount();
+      $personnel = Personnel::getRowCount();
+      $thesisPublished = count($db->fetchMany(Thesis::class, ['published' => true]));
+      $journalPublished = count($db->fetchMany(Journal::class, ['published' => true]));
+      $weeklyThesisReads = 0; // TODO: implement weekly reads statistics
+      $weeklyJournalReads = 0; // TODO: implement weekly reads statistics
+      return Response::json(['success' => [
+        "theses" => $thesis,
+        "journals" => $journal,
+        "publishedTheses" => $thesisPublished,
+        "publishedJournals" => $journalPublished,
+        "students" => $student,
+        "teachers" => $personnel,
+        "weeklyThesisReads" => $weeklyThesisReads,
+        "weeklyJournalReads" => $weeklyJournalReads,
+      ]]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
   public function test(): Response
   {
     // Shows all table names exists in the database

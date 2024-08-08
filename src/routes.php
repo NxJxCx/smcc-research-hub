@@ -37,12 +37,12 @@ Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);
 Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
 
-
 /* API GET METHOD */
 Router::GET('/api/test', [ApiController::class, 'test']); // test api route
 Router::GET('/api/student', [ApiController::class, 'studentInfo']);
 Router::GET('/api/thesis/all', [ApiController::class, 'thesisList']);
 Router::GET('/api/journal/all', [ApiController::class, 'journalList']);
+Router::GET('/api/dashboard/statistics', [ApiController::class, 'dashboardStatistics']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);
