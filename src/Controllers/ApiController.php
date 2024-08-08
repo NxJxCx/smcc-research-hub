@@ -200,7 +200,7 @@ class ApiController extends Controller
     // Check if authenticated users before logging out
     if (!RouterSession::isAuthenticated()) {
       Logger::write_info("Attempted to log out without being authenticated. IP: {RouterSession::getClientIpAddress()}");
-      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
 
     RouterSession::logout();
@@ -210,7 +210,7 @@ class ApiController extends Controller
   public function thesisList(): Response
   {
     if (!RouterSession::isAuthenticated()) {
-      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     try {
       $db = Database::getInstance();
@@ -223,7 +223,7 @@ class ApiController extends Controller
   public function journalList(): Response
   {
     if (!RouterSession::isAuthenticated()) {
-      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     try {
       $db = Database::getInstance();
@@ -236,8 +236,8 @@ class ApiController extends Controller
 
   public function dashboardStatistics(): Response
   {
-    if (!RouterSession::isAuthenticated()) {
-      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     try {
       $db = Database::getInstance();
@@ -261,6 +261,24 @@ class ApiController extends Controller
       ]]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function deleteThesis(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getQueryParam('id');
+    if (!$id) {
+      return Response::json(['error' => 'Missing thesis ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $thesis = Database::getInstance()->fetchOne(Thesis::class, ['id' => $id]);
+      $thesis->delete();
+      return Response::json(['success'=> true]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
 
