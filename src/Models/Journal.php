@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Models;
 
-class Thesis extends Model
+class Journal extends Model
 {
   public function getColumns(): array
   {

@@ -22,15 +22,11 @@ class AdminPages
         'url' => '/admin/theses',
       ],
       [
-        'label' => 'Weekly Visit',
-        'url' => '/admin/weekly',
+        'label' => 'Journal List',
+        'url' => '/admin/journal',
       ],
       [
-        'label' => 'Department List',
-        'url' => '/admin/departments',
-      ],
-      [
-        'label' => 'Recent Thesis Deployed',
+        'label' => 'Recently Published',
         'url' => '/admin/recent',
       ],
       [

@@ -1,6 +1,6 @@
 import PdfViewer from "../global/pdfviewer";
 import AddThesisForm from "/jsx/admin/addthesis";
-import { CellAlign, SortOrder, Table, TableCellType, TableColumn, TableRow, TableRowAction } from "/jsx/admin/table";
+import { CellAlign, Table, TableCellType, TableColumn, TableRow, TableRowAction } from "/jsx/admin/table";
 import Modal from "/jsx/global/modal";
 import { React, Sweetalert2 } from "/jsx/imports";
 
@@ -21,9 +21,6 @@ function AdminLogin() {
   const [pdfUrl, setPdfUrl] = React.useState("")
   const [pdfTitle, setPdfTitle] = React.useState("")
   const [pdfAuthor, setPdfAuthor] = React.useState("")
-  const [showEntries, setShowEntries] = React.useState(10)
-  const [sortColumn, setSortColumn] = React.useState("")
-  const [sortOrder, setSortOrder] = React.useState<SortOrder>(SortOrder.Ascending)
   const [tableData, setTableData] = React.useState<TableRow[]>([])
 
   const fetchList = () => {
@@ -87,14 +84,15 @@ function AdminLogin() {
 
   return (
     <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 ">
+      <h1 className="text-white text-2xl my-2">Thesis/Capstone List</h1>
       <Table columns={columns} items={tableData}>
         {/* Additional Toolbar Button */}
         <div className="px-4">
           {/* Refresh Button */}
-          <button type="button" onClick={() => fetchList()} className="hover:text-yellow-500"><span className="material-symbols-outlined">refresh</span></button>
+          <button type="button" onClick={() => fetchList()} className="hover:text-yellow-500" title="Refresh List"><span className="material-symbols-outlined">refresh</span></button>
         </div>
         <div className="px-4">
-          <button type="button" onClick={() => setShowAddThesisForm(true)} className="hover:text-yellow-500"><span className="material-symbols-outlined">add</span></button>
+          <button type="button" onClick={() => setShowAddThesisForm(true)} className="hover:text-yellow-500" title="Add Thesis"><span className="material-symbols-outlined">add</span></button>
         </div>
         <AddThesisForm open={openAddThesisForm} onClose={() => setShowAddThesisForm(false)} onSuccess={() => fetchList()} className="absolute right-3 top-full mt-4 shadow-lg" />
       </Table>
