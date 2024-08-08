@@ -94,7 +94,7 @@ class ViewController extends Controller
     if (!Session::isAuthenticated()) {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Recent Thesis Deplyed - Admin", 'admin/recent');
+    AdminPages::view("Recently Published - Admin", 'admin/recent');
   }
 
   public function adminAnnouncements()

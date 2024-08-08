@@ -235,7 +235,7 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
                         {column.cellType === TableCellType.Custom && typeof row[column.key] === "object" && column.sortable && !!row[column.key].value && <>{row[column.key].content}</>}
                         {column.cellType === TableCellType.Custom && typeof row[column.key] === "object" && !column.sortable && !!row[column.key].content && <>{row[column.key].content}</>}
                         {column.cellType === TableCellType.Custom && typeof row[column.key] === "object" && !column.sortable && !row[column.key].content && <>{row[column.key]}</>}
-                        {column.cellType === TableCellType.String && typeof row[column.key] === "string" ? row[column.key].length > 20? row[column.key].slice(0, 20) + "..." : row[column.key] : ""}
+                        {column.cellType === TableCellType.String && typeof row[column.key] === "string" && row[column.key].toString()}
                       </td>
                     ))
                   }
