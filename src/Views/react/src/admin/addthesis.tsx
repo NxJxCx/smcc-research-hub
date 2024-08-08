@@ -13,6 +13,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
   const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
   const [showModal, setShowModal] = React.useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = React.useState<number>(0)
+  const [xhr, setXhr] = React.useState<XMLHttpRequest|null>(null)
   const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
 
   React.useEffect(() => {
@@ -70,6 +71,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
 
     const xhr = new XMLHttpRequest();
+    setXhr(xhr);
     xhr.open('POST', '/api/upload/pdf', true);
 
     xhr.upload.onprogress = (event) => {
@@ -135,6 +137,23 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
 
     xhr.send(formData);
   }, [pdf, thesisTitle, thesisAuthor, thesisYear])
+
+  const onCancelUpload = () => {
+    if (xhr) {
+      xhr.abort();
+      setUploadProgress(0);
+      setXhr(null);
+      Sweetalert2.fire({
+        icon: 'info',
+        title: 'Upload Cancelled',
+        text: 'The file upload has been cancelled.',
+        toast: true,
+        timer: 2000,
+        showConfirmButton: false,
+        position: 'center',
+      });
+    }
+  };
 
   return (<>
     <div className={
@@ -202,20 +221,19 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           <div className="w-full px-4 mt-4">
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
-                className={
-                  clsx(
-                    "bg-blue-600 h-2.5 rounded-full",
-                    `w-[${uploadProgress}%]`
-                  )
-                }
+                className="bg-blue-600 h-2.5 rounded-full"
+                style={{
+                  width: `${uploadProgress}%`
+                }}
               ></div>
             </div>
             <p className="text-white text-center mt-2">{uploadProgress.toFixed(2)}%</p>
+            <button type="button" onClick={onCancelUpload} className="bg-red-500 rounded-2xl px-4 py-1 text-white shadow-lg mt-2">Cancel Upload</button>
           </div>
         )}
         <div className="w-full py-2 flex justify-between items-center mt-2 px-4">
-          <button type="submit" className="bg-sky-500 rounded-2xl px-4 py-1 text-white shadow-lg">Submit</button>
-          <button type="reset" onClick={onCloseModal} className="bg-[#333D49] rounded-2xl px-4 py-1 text-white">Cancel</button>
+          <button type="submit" disabled={uploadProgress > 0 && uploadProgress < 100} className="bg-sky-500 rounded-2xl px-4 py-1 text-white shadow-lg">Submit</button>
+          <button type="reset" onClick={() => { if (uploadProgress > 0 && uploadProgress < 100) { onCancelUpload(); onCloseModal(); } else onCloseModal(); }} className="bg-[#333D49] rounded-2xl px-4 py-1 text-white">Cancel</button>
         </div>
       </form>
     </div>
