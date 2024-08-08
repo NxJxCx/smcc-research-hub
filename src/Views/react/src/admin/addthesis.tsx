@@ -4,7 +4,7 @@ import Modal from "/jsx/global/modal"
 import PdfViewer from "/jsx/global/pdfviewer"
 import { React, Sweetalert2 } from "/jsx/imports"
 
-export default function AddThesisForm({ open, defaultOpen, className = "", onClose = () => {} }: { open?: boolean, defaultOpen?: boolean, className?: string, onClose?: () => void }) {
+export default function AddThesisForm({ open, defaultOpen, className = "", onClose = () => {}, onSuccess = () => {} }: { open?: boolean, defaultOpen?: boolean, className?: string, onClose?: () => void, onSuccess?: () => void }) {
   const [show, setShow] = React.useState(open === undefined ? defaultOpen || false : open);
   const [thesisTitle, setThesisTitle] = React.useState('')
   const [thesisAuthor, setThesisAuthor] = React.useState('')
@@ -110,6 +110,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           setThesisAuthor('')
           setThesisYear((new Date()).getFullYear().toString())
           setUploadProgress(0);
+          onSuccess && onSuccess();
         }
       } else {
         Sweetalert2.fire({
@@ -137,7 +138,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     };
 
     xhr.send(formData);
-  }, [pdf, thesisTitle, thesisAuthor, thesisYear])
+  }, [pdf, thesisTitle, thesisAuthor, thesisYear, onSuccess])
 
   const onCancelUpload = () => {
     if (xhr) {

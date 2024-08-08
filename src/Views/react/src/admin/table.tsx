@@ -36,12 +36,12 @@ export interface TableRow {
 }
 
 
-export function TableRowAction({ id, onEdit = (id: string|number) => {}, onDelete = (id: string|number) => {} }: { id: string|number, onEdit?: (id: string|number) => void, onDelete?: (id: string|number) => void }) {
+export function TableRowAction({ id, onView = (id: string|number) => {}, onDelete = (id: string|number) => {} }: { id: string|number, onView?: (id: string|number) => void, onDelete?: (id: string|number) => void }) {
   return (
     <div className="grid grid-cols-2 gap-x-1 max-w-[80px] mx-auto items-center">
-      <button type="button" className="p-1 text-[#624DE3]" title="Edit" onClick={() => onEdit(id)}>
+      <button type="button" className="p-1 text-white hover:text-green-500" title="Preview" onClick={() => onView(id)}>
         <span className="material-symbols-outlined">
-          edit
+          preview
         </span>
       </button>
       <button type="button" className="p-1 text-red-500" title="Delete" onClick={() => onDelete(id)}>
@@ -239,6 +239,15 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
                   }
                 </tr>
               ))
+            }
+            {
+              finalItems.length === 0 && (
+                <tr className="h-[65px]">
+                  <td className="text-white text-center" colSpan={columns.length}>
+                    NO RECORDS
+                  </td>
+                </tr>
+              )
             }
           </tbody>
         </table>

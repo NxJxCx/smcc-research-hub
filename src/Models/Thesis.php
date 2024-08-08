@@ -14,6 +14,7 @@ class Thesis extends Model
       'author' => ['VARCHAR(255)', 'NOT NULL'],
       'year' => ['YEAR', 'NOT NULL'],
       'url' => ['TEXT', 'NOT NULL'],
+      'published' => ['BOOLEAN', 'NOT NULL', 'DEFAULT FALSE'],
       'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],
       'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
     ];

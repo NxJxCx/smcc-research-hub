@@ -41,6 +41,7 @@ Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
 /* API GET METHOD */
 Router::GET('/api/test', [ApiController::class, 'test']); // test api route
 Router::GET('/api/student', [ApiController::class, 'studentInfo']);
+Router::GET('/api/thesis/all', [ApiController::class, 'thesisList']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);

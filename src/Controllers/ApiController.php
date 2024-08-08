@@ -13,6 +13,7 @@ use Smcc\ResearchHub\Models\Personnel;
 use Smcc\ResearchHub\Models\PersonnelLogs;
 use Smcc\ResearchHub\Models\Student;
 use Smcc\ResearchHub\Models\StudentLogs;
+use Smcc\ResearchHub\Models\Thesis;
 use Smcc\ResearchHub\Router\Request;
 use Smcc\ResearchHub\Router\Response;
 use Smcc\ResearchHub\Router\Session as RouterSession;
@@ -203,6 +204,20 @@ class ApiController extends Controller
 
     RouterSession::logout();
     return Response::redirect('/');
+  }
+
+  public function thesisList(): Response
+  {
+    if (!RouterSession::isAuthenticated()) {
+      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $thesis = $db->getAllRows(Thesis::class);
+      return Response::json(['success' => array_map(fn($t) => $t->toArray(), $thesis)]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
   }
 
   public function test(): Response
