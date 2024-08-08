@@ -108,7 +108,9 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
         }
         return 0;
       }));
-
+    if (page === 0 && sortedItems.length > 0) {
+      setPage(1);
+    }
     if (!!searchString) {
       return sortedItems.filter((item) =>
         Object.entries(item).some(([key, value]) => {
