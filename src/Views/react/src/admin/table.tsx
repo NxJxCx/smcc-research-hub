@@ -226,7 +226,7 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
           <tbody>
             {
               finalItems.map((row: TableRow, index: number) => (
-                <tr key={"thesis_rowtable_" + index} className="h-[65px]">
+                <tr key={"rowtable_" + index} className="h-[65px]">
                   {
                     columns.map((column) => (
                       <td key={column.key} className={`text-white text-xs px-4 py-2 ${column.align === CellAlign.Center ? "text-center" : column.align === CellAlign.Right ? "text-right" : "text-left"}`}>
