@@ -236,7 +236,7 @@ class Model implements ModelInterface
       $primaryKeyValue = $this->getPrimaryKeyValue();
       $primaryKeyPDOType = $this->getPrimaryKeyPDOType();
       $c = array_keys($this->getColumns());
-      $columns = array_filter($c, fn($colName) => $colName!== $primaryKey);
+      $columns = array_filter($c, fn($colName) => $colName !== $primaryKey && $colName !== "updated_at" && $colName !== "created_at");
       $setClause = implode(", ", array_map(fn ($col) => "$col = :$col", $columns));
 
       $sql = "UPDATE {$this->getTableName()} SET $setClause WHERE $primaryKey = :$primaryKey";
