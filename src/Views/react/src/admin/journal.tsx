@@ -1,4 +1,4 @@
-import AddThesisForm from "/jsx/admin/addthesis";
+import AddJournalForm from "/jsx/admin/addjournal";
 import { CellAlign, Table, TableCellType, TableColumn, TableRow, TableRowAction } from "/jsx/admin/table";
 import Modal from "/jsx/global/modal";
 import PdfViewer from "/jsx/global/pdfviewer";
@@ -17,15 +17,15 @@ const columns: TableColumn[] = [
 ];
 
 
-function ThesesPage() {
-  const [openAddThesisForm, setShowAddThesisForm] = React.useState(false)
+function JournalPage() {
+  const [openAddJournalForm, setShowAddJournalForm] = React.useState(false)
   const [pdfUrl, setPdfUrl] = React.useState("")
   const [pdfTitle, setPdfTitle] = React.useState("")
   const [pdfAuthor, setPdfAuthor] = React.useState("")
   const [tableData, setTableData] = React.useState<TableRow[]>([])
 
   const fetchList = () => {
-    fetch('/api/thesis/all')
+    fetch('/api/journal/all')
     .then(response => response.json())
     .then(({ success, error }) => {
       if (error) {
@@ -47,7 +47,7 @@ function ThesesPage() {
             },
             action: <TableRowAction id={data.id} onView={(id) => {
               if (id === data.id) {
-                // Open the view thesis modal
+                // Open the view journal modal
                 setPdfTitle(data.title);
                 setPdfAuthor("Author/s: " + data.author + " (" + data.year + ")");
                 setPdfUrl(new URL(`/read${data.url}`, window.location.origin).toString());
@@ -62,7 +62,7 @@ function ThesesPage() {
       Sweetalert2.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Failed to fetch thesis list',
+        text: 'Failed to fetch journal list',
         confirmButtonText: 'Try Again',
         showCancelButton: true,
       }).then(({ isConfirmed }: any) => {
@@ -86,7 +86,7 @@ function ThesesPage() {
 
   return (
     <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 ">
-      <h1 className="text-white text-2xl my-2">Thesis/Capstone List</h1>
+      <h1 className="text-white text-2xl my-2">Journal List</h1>
       <Table columns={columns} items={tableData}>
         {/* Additional Toolbar Button */}
         <div className="px-4">
@@ -94,13 +94,13 @@ function ThesesPage() {
           <button type="button" onClick={() => fetchList()} className="hover:text-yellow-500" title="Refresh List"><span className="material-symbols-outlined">refresh</span></button>
         </div>
         <div className="px-4">
-          <button type="button" onClick={() => setShowAddThesisForm(true)} className="hover:text-yellow-500" title="Add Thesis"><span className="material-symbols-outlined">add</span></button>
+          <button type="button" onClick={() => setShowAddJournalForm(true)} className="hover:text-yellow-500" title="Add Journal"><span className="material-symbols-outlined">add</span></button>
         </div>
-        <AddThesisForm open={openAddThesisForm} onClose={() => setShowAddThesisForm(false)} onSuccess={() => fetchList()} className="absolute right-3 top-full mt-4 shadow-lg" />
+        <AddJournalForm open={openAddJournalForm} onClose={() => setShowAddJournalForm(false)} onSuccess={() => fetchList()} className="absolute right-3 top-full mt-4 shadow-lg" />
       </Table>
       <Modal open={!!pdfUrl} onClose={() => setPdfUrl(null)} content={<PdfViewer src={pdfUrl} />} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
     </div>
   )
 }
 
-export default ThesesPage
+export default JournalPage

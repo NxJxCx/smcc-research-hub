@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub\Controllers;
 
 use Smcc\ResearchHub\Models\AdminLogs;
+use Smcc\ResearchHub\Models\Journal;
 use Smcc\ResearchHub\Models\Thesis;
 use Smcc\ResearchHub\Router\File;
 use Smcc\ResearchHub\Router\Request;
@@ -23,11 +24,12 @@ class FileController extends Controller
       $doc = $body['document'];
       $docTitle = $body['title'];
       $docAuthor = $body['author'];
+      $docDepartment = $body['department'];
       $docYear = $body['year'];
       if (!in_array($doc, ["thesis", "journal"])) {
         return Response::json(['error' => 'Invalid document type. Must be thesis or journal.'], StatusCode::BAD_REQUEST);
       }
-      if (!$docTitle || !$docAuthor || !$docYear) {
+      if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment) {
         return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
       }
       if ($file instanceof File) {
@@ -46,12 +48,22 @@ class FileController extends Controller
                 "title" => $docTitle,
                 "author" => $docAuthor,
                 "year" => $docYear,
+                "department" => $docDepartment,
                 "url" => $fileUrl,
               ]);
               $fid = $thesis->create();
-              $doc = ucfirst($doc);
-              (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
+            } else if ($doc === 'journal') {
+              $journal = new Journal([
+                "title" => $docTitle,
+                "author" => $docAuthor,
+                "year" => $docYear,
+                "department" => $docDepartment,
+                "url" => $fileUrl,
+              ]);
+              $fid = $journal->create();
             }
+            $doc = ucfirst($doc);
+            (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
             return Response::json(['success' => isset($fid)], StatusCode::CREATED);
           } catch (\PDOException $e) {
             // SQL error handling

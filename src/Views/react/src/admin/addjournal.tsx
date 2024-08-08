@@ -5,12 +5,12 @@ import Modal from "/jsx/global/modal"
 import PdfViewer from "/jsx/global/pdfviewer"
 import { React, Sweetalert2 } from "/jsx/imports"
 
-export default function AddThesisForm({ open, defaultOpen, className = "", onClose = () => {}, onSuccess = () => {} }: { open?: boolean, defaultOpen?: boolean, className?: string, onClose?: () => void, onSuccess?: () => void }) {
+export default function AddJournalForm({ open, defaultOpen, className = "", onClose = () => {}, onSuccess = () => {} }: { open?: boolean, defaultOpen?: boolean, className?: string, onClose?: () => void, onSuccess?: () => void }) {
   const [show, setShow] = React.useState(open === undefined ? defaultOpen || false : open);
-  const [thesisTitle, setThesisTitle] = React.useState('')
-  const [thesisAuthor, setThesisAuthor] = React.useState('')
-  const [thesisYear, setThesisYear] = React.useState((new Date()).getFullYear().toString())
-  const [thesisDepartment, setThesisDepartment] = React.useState("");
+  const [journalTitle, setJournalTitle] = React.useState('')
+  const [journalAuthor, setJournalAuthor] = React.useState('')
+  const [journalYear, setJournalYear] = React.useState((new Date()).getFullYear().toString())
+  const [journalDepartment, setJournalDepartment] = React.useState("");
   const [pdf, setPdf] = React.useState<File|null|undefined>()
   const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
   const [showModal, setShowModal] = React.useState<boolean>(false)
@@ -59,7 +59,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     if (!pdf) {
       Sweetalert2.fire({
         icon: 'warning',
-        text: 'Please upload Thesis Document in PDF format.',
+        text: 'Please upload Journal Document in PDF format.',
         toast: true,
         timer: 2000,
         showConfirmButton: false,
@@ -68,11 +68,11 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
       return;
     }
     const formData = new FormData();
-    formData.append('document', 'thesis');
-    formData.append('title', thesisTitle);
-    formData.append('author', thesisAuthor);
-    formData.append('year', thesisYear);
-    formData.append('department', thesisDepartment);
+    formData.append('document', 'journal');
+    formData.append('title', journalTitle);
+    formData.append('author', journalAuthor);
+    formData.append('year', journalYear);
+    formData.append('department', journalDepartment);
     formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
 
     const xhr = new XMLHttpRequest();
@@ -103,16 +103,16 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           Sweetalert2.fire({
             icon:'success',
             title: 'Success',
-            text: 'Thesis Document uploaded successfully.',
+            text: 'Journal Document uploaded successfully.',
             toast: true,
             timer: 2000,
             showConfirmButton: false,
             position: 'center',
           })
           setPdf(null)
-          setThesisTitle('')
-          setThesisAuthor('')
-          setThesisYear((new Date()).getFullYear().toString())
+          setJournalTitle('')
+          setJournalAuthor('')
+          setJournalYear((new Date()).getFullYear().toString())
           setUploadProgress(0);
           onSuccess && onSuccess();
         }
@@ -142,7 +142,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     };
 
     xhr.send(formData);
-  }, [pdf, thesisTitle, thesisAuthor, thesisYear, onSuccess])
+  }, [pdf, journalTitle, journalAuthor, journalYear, onSuccess])
 
   const onCancelUpload = () => {
     if (xhr) {
@@ -171,10 +171,10 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     }>
       <form onSubmit={onSubmit}>
         <div className="flex flex-wrap justify-center items-center gap-3">
-          <Input className="max-w-[180px] text-black" label="Thesis Title" name="title" value={thesisTitle} onChange={(e: any) => setThesisTitle(e.target.value)} disabled={isFormDisabled} required />
-          <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={thesisAuthor} onChange={(e: any) => setThesisAuthor(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={thesisYear} onChange={(e: any) => setThesisYear(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={departmentList} label="Department" name="department" value={thesisDepartment} onChange={(e: any) => setThesisDepartment(e.target.value)} disabled={isFormDisabled} required />
+          <Input className="max-w-[180px] text-black" label="Journal Title" name="title" value={journalTitle} onChange={(e: any) => setJournalTitle(e.target.value)} disabled={isFormDisabled} required />
+          <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={journalAuthor} onChange={(e: any) => setJournalAuthor(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={journalYear} onChange={(e: any) => setJournalYear(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={departmentList} label="Department" name="department" value={journalDepartment} onChange={(e: any) => setJournalDepartment(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={
@@ -244,6 +244,6 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
         </div>
       </form>
     </div>
-    <Modal open={showModal} content={<PdfViewer src={pdfUrl} />} onClose={() => setShowModal(false)} showCancelButton={false} showConfirmButton={false} header={`Thesis File Preview (${pdf?.name})`} />
+    <Modal open={showModal} content={<PdfViewer src={pdfUrl} />} onClose={() => setShowModal(false)} showCancelButton={false} showConfirmButton={false} header={`Journal File Preview (${pdf?.name})`} />
   </>)
 }

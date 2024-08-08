@@ -1,0 +1,1 @@
+import{React as e}from"/jsx/imports";function t(){return e.createElement("div",{className:"w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 "},"Dashboard")}export default t;

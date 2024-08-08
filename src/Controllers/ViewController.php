@@ -73,12 +73,12 @@ class ViewController extends Controller
     AdminPages::view("Thesis List - Admin", 'admin/theses');
   }
 
-  public function adminWeeklyList()
+  public function adminJournalList()
   {
     if (!Session::isAuthenticated()) {
-      Router::redirect("/admin/login");
+      Router::redirect("/admin/journal");
     }
-    AdminPages::view("Weekly List - Admin", 'admin/weekly');
+    AdminPages::view("Journal List - Admin", 'admin/journal');
   }
 
   public function adminDepartmentList()

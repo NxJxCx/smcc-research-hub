@@ -24,7 +24,7 @@ Router::GET('/teacher/login', [ViewController::class, 'personnelLogin']);
 Router::GET('/signup', [ViewController::class, 'studentSignup']);
 Router::GET('/admin/dashboard', [ViewController::class, 'adminDashboard']);
 Router::GET('/admin/theses', [ViewController::class, 'adminThesisList']);
-Router::GET('/admin/weekly', [ViewController::class, 'adminWeeklyList']);
+Router::GET('/admin/journal', [ViewController::class, 'adminJournalList']);
 Router::GET('/admin/departments', [ViewController::class, 'adminDepartmentList']);
 Router::GET('/admin/recent', [ViewController::class, 'adminRecentThesisDeployed']);
 Router::GET('/admin/announcements', [ViewController::class, 'adminAnnouncements']);
@@ -42,6 +42,7 @@ Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
 Router::GET('/api/test', [ApiController::class, 'test']); // test api route
 Router::GET('/api/student', [ApiController::class, 'studentInfo']);
 Router::GET('/api/thesis/all', [ApiController::class, 'thesisList']);
+Router::GET('/api/journal/all', [ApiController::class, 'journalList']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);

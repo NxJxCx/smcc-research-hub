@@ -9,6 +9,7 @@ use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\Admin;
 use Smcc\ResearchHub\Models\AdminLogs;
 use Smcc\ResearchHub\Models\Database;
+use Smcc\ResearchHub\Models\Journal;
 use Smcc\ResearchHub\Models\Personnel;
 use Smcc\ResearchHub\Models\PersonnelLogs;
 use Smcc\ResearchHub\Models\Student;
@@ -219,7 +220,19 @@ class ApiController extends Controller
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
-
+  public function journalList(): Response
+  {
+    if (!RouterSession::isAuthenticated()) {
+      return Response::json(['success' => false, 'error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $thesis = $db->getAllRows(Journal::class);
+      return Response::json(['success' => array_map(fn($t) => $t->toArray(), $thesis)]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
   public function test(): Response
   {
     // Shows all table names exists in the database
