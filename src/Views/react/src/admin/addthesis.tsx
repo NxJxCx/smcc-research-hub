@@ -12,6 +12,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
   const [pdf, setPdf] = React.useState<File|null|undefined>()
   const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
   const [showModal, setShowModal] = React.useState<boolean>(false)
+  const [uploadProgress, setUploadProgress] = React.useState<number>(0)
   const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
 
   React.useEffect(() => {
@@ -68,51 +69,71 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     formData.append('year', thesisYear);
     formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
 
-    fetch('/api/upload/pdf', {
-      method: 'POST',
-      body: formData,
-    })
-    .then(response => response.json())
-    .then(({ error, success }) => {
-      if (error) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/upload/pdf', true);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = (event.loaded / event.total) * 100;
+        setUploadProgress(percentComplete);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 201) {
+        const response = JSON.parse(xhr.responseText);
+        if (response.error) {
+          Sweetalert2.fire({
+            icon: 'error',
+            title: 'Failed to upload PDF file',
+            text: response.error,
+            toast: true,
+            timer: 2000,
+            showConfirmButton: false,
+            position: 'center',
+          })
+        } else {
+          Sweetalert2.fire({
+            icon:'success',
+            title: 'Success',
+            text: 'Thesis Document uploaded successfully.',
+            toast: true,
+            timer: 2000,
+            showConfirmButton: false,
+            position: 'center',
+          })
+          setPdf(null)
+          setThesisTitle('')
+          setThesisAuthor('')
+          setThesisYear((new Date()).getFullYear().toString())
+          setUploadProgress(0);
+        }
+      } else {
         Sweetalert2.fire({
           icon: 'error',
-          title: 'Error',
-          text: error,
+          title: 'Failed to upload PDF file',
+          text: JSON.parse(xhr.responseText)?.error,
           toast: true,
           timer: 2000,
           showConfirmButton: false,
           position: 'center',
         })
-      } else {
-        console.log(success)
-        Sweetalert2.fire({
-          icon:'success',
-          title: 'Success',
-          text: 'Thesis Document uploaded successfully.',
-          toast: true,
-          timer: 2000,
-          showConfirmButton: false,
-          position: 'center',
-        })
-        setPdf(null)
-        setThesisTitle('')
-        setThesisAuthor('')
-        setThesisYear((new Date()).getFullYear().toString())
       }
-    })
-    .catch((e) => {
+    };
+
+    xhr.onerror = (e) => {
       Sweetalert2.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to upload PDF file:' + e.message,
+        title: 'Failed to upload PDF file',
+        text: JSON.parse(xhr.responseText)?.error,
         toast: true,
         timer: 2000,
         showConfirmButton: false,
         position: 'center',
       })
-      console.log(e)
-    })
+    };
+
+    xhr.send(formData);
   }, [pdf, thesisTitle, thesisAuthor, thesisYear])
 
   return (<>
@@ -177,6 +198,21 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
             </div>
           )}
         </div>
+        {uploadProgress > 0 && (
+          <div className="w-full px-4 mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                className={
+                  clsx(
+                    "bg-blue-600 h-2.5 rounded-full",
+                    `w-[${uploadProgress}%]`
+                  )
+                }
+              ></div>
+            </div>
+            <p className="text-white text-center mt-2">{uploadProgress.toFixed(2)}%</p>
+          </div>
+        )}
         <div className="w-full py-2 flex justify-between items-center mt-2 px-4">
           <button type="submit" className="bg-sky-500 rounded-2xl px-4 py-1 text-white shadow-lg">Submit</button>
           <button type="reset" onClick={onCloseModal} className="bg-[#333D49] rounded-2xl px-4 py-1 text-white">Cancel</button>

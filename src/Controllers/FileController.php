@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
-use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\AdminLogs;
 use Smcc\ResearchHub\Models\Thesis;
 use Smcc\ResearchHub\Router\File;
