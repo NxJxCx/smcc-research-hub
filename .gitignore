@@ -3,4 +3,5 @@
 /composer.lock
 /jsxbuild
 /uploads/**/*.pdf
+/uploads/**/*.log
 .env*.local
