@@ -78,7 +78,7 @@ class Router
             if ($response instanceof Response) {
               $response->sendResponse(); // response ends here
             }
-            Logger::write_info("HTTP Response: 200");
+            Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
             exit; // if it is a view, exit here
           }
         } else if (is_callable($route)) {
@@ -86,7 +86,7 @@ class Router
           if ($response instanceof Response) {
             $response->sendResponse(); // response ends here
           }
-          Logger::write_info("HTTP Response: 200");
+          Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
           exit; // if it is a view, exit here
         } else {
           throw new Exception("Invalid route configuration for route: {$this->uri}");
@@ -94,7 +94,7 @@ class Router
       }
       // 404 Not Found
       header('HTTP/1.1 404 Not Found');
-      Logger::write_info("HTTP Response: 404");
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 404)");
       if (!empty(Router::$Router__routes['NOT_FOUND_PAGE'])) {
         // 404 Not Found page exists
         $class = Router::$Router__routes['NOT_FOUND_PAGE'][0];
@@ -112,7 +112,7 @@ class Router
     } catch (\Throwable $e) {
       // 500 Error
       header('HTTP/1.1 500 Internal Server Error');
-      Logger::write_info("HTTP Response: 500");
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 500)");
       Logger::write_error("Internal Server Error - " . $e->getMessage() . "\n" . $e->getTraceAsString());
       if (!empty(Router::$Router__routes['ERROR_PAGE'])) {
         $class = Router::$Router__routes['ERROR_PAGE'][0];
@@ -134,10 +134,18 @@ class Router
   {
     $filePath = implode(DIRECTORY_SEPARATOR, [ASSETS_PATH, substr($this->uri, 1)]);
     if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
+      $lastModified = gmdate('D, d M Y H:i:s', filemtime($filePath)) . ' GMT';
+      if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] === $lastModified) {
+        header('HTTP/1.1 304 Not Modified');
+        Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 304)");
+        exit;
+      }
       $_splitted_ext = explode('.', strtolower($filePath));
       $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
       header($_headerContentType);
       header('HTTP/1.1 200 OK');
+      header("Last-Modified: $lastModified");
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
       readfile($filePath);
       exit;
     }
@@ -155,10 +163,18 @@ class Router
       }
     }
     if (file_exists($filePath) && is_file($filePath) && is_readable($filePath)) {
+      $lastModified = gmdate('D, d M Y H:i:s', filemtime($filePath)) . ' GMT';
+      if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && $_SERVER['HTTP_IF_MODIFIED_SINCE'] === $lastModified) {
+        header('HTTP/1.1 304 Not Modified');
+        Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 304)");
+        exit;
+      }
       $_splitted_ext = explode('.', strtolower($filePath));
       $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
       header($_headerContentType);
       header('HTTP/1.1 200 OK');
+      header("Last-Modified: $lastModified");
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
       readfile($filePath);
       exit;
     }

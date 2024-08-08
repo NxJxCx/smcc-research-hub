@@ -91,7 +91,7 @@ class Response
     } else {
       echo $this->content;
     }
-    Logger::write_info("HTTP Response: {$this->statusCode->value}");
+    Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
     exit;
   }
 
