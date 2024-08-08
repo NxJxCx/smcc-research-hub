@@ -84,7 +84,7 @@ function DashboardPage() {
           </div>
           <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
             <div className="flex flex-nowrap justify-between pb-2 items-center">
-              <p className="font-[600] text-[20px]">{statistics.pubishedTheses}</p>
+              <p className="font-[600] text-[20px]">{statistics.publishedTheses}</p>
               <span className="material-symbols-outlined">list</span>
             </div>
             <div className="flex flex-nowrap justify-between pt-2">
@@ -93,7 +93,7 @@ function DashboardPage() {
           </div>
           <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
             <div className="flex flex-nowrap justify-between pb-2 items-center">
-              <p className="font-[600] text-[20px]">{statistics.pubishedJournals}</p>
+              <p className="font-[600] text-[20px]">{statistics.publishedJournals}</p>
               <span className="material-symbols-outlined">list</span>
             </div>
             <div className="flex flex-nowrap justify-between pt-2">
