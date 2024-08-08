@@ -52,7 +52,50 @@ function JournalPage() {
                 setPdfAuthor("Author/s: " + data.author + " (" + data.year + ")");
                 setPdfUrl(new URL(`/read${data.url}`, window.location.origin).toString());
               }
-            }} onDelete={(id) => {}} />,
+            }} onDelete={(id) => {
+              Sweetalert2.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete journal!'
+              }).then(({ isConfirmed }: any) => {
+                if (isConfirmed) {
+                  fetch(`/api/journal/delete?id=${id}`, { method: 'DELETE' })
+                  .then(response => response.json())
+                  .then(({ success, error }) => {
+                    if (!success) {
+                      console.log(error);
+                      Sweetalert2.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to delete thesis: ' + error,
+                        confirmButtonText: 'Try Again',
+                      });
+                    } else {
+                      fetchList();
+                      Sweetalert2.fire({
+                        icon:'success',
+                        title: 'Deleted!',
+                        text: 'Journal has been deleted successfully.',
+                        timer: 3000
+                      });
+                    }
+                  })
+                  .catch((er) => {
+                    console.log(er);
+                    Sweetalert2.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'Failed to delete journal',
+                      timer: 3000
+                    });
+                  })
+                }
+              })
+            }} />,
           }
         }))
       }

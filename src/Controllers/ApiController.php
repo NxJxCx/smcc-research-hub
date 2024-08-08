@@ -282,6 +282,24 @@ class ApiController extends Controller
     }
   }
 
+  public function deleteJournal(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getQueryParam('id');
+    if (!$id) {
+      return Response::json(['error' => 'Missing journal ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $journal = Database::getInstance()->fetchOne(Journal::class, ['id' => $id]);
+      $journal->delete();
+      return Response::json(['success'=> true]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
   public function test(): Response
   {
     // Shows all table names exists in the database

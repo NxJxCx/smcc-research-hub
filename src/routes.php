@@ -57,6 +57,7 @@ Router::POST('/api/upload/images', [FileController::class, 'uploadImages']);
 
 /* DELETE METHOD */
 Router::DELETE('/api/thesis/delete', [ApiController::class, 'deleteThesis']);
+Router::DELETE('/api/journal/delete', [ApiController::class, 'deleteJournal']);
 
 /* ERROR PAGES */
 Router::NOTFOUND([ViewController::class, 'notFound']);
