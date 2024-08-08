@@ -15,6 +15,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
   const [uploadProgress, setUploadProgress] = React.useState<number>(0)
   const [xhr, setXhr] = React.useState<XMLHttpRequest|null>(null)
   const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
+  const isFormDisabled = React.useMemo(() => uploadProgress > 0 && uploadProgress < 100, [uploadProgress]);
 
   React.useEffect(() => {
     if (open !== undefined) {
@@ -165,9 +166,9 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     }>
       <form onSubmit={onSubmit}>
         <div className="flex flex-wrap justify-center items-center gap-3">
-          <Input className="max-w-[180px] text-black" label="Thesis Title" name="title" value={thesisTitle} onChange={(e: any) => setThesisTitle(e.target.value)} required />
-          <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={thesisAuthor} onChange={(e: any) => setThesisAuthor(e.target.value)} required />
-          <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={thesisYear} onChange={(e: any) => setThesisYear(e.target.value)} required />
+          <Input className="max-w-[180px] text-black" label="Thesis Title" name="title" value={thesisTitle} onChange={(e: any) => setThesisTitle(e.target.value)} disabled={isFormDisabled} required />
+          <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={thesisAuthor} onChange={(e: any) => setThesisAuthor(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={thesisYear} onChange={(e: any) => setThesisYear(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={
@@ -211,7 +212,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
                   <span className="text-md text-gray-500">{(pdf.size / 1024 / 1024).toFixed(2)} MB</span>
                 </div>
                 <div>
-                  <button type="button" onClick={() => setPdf(null)} className="hover:text-red-600 text-red-400" title="Remove"><span className="material-symbols-outlined">cancel</span></button>
+                  <button type="button" onClick={() => setPdf(null)} disabled={isFormDisabled}  className="disabled:text-gray-500 disabled:hover:text-gray-500  disabled:cursor-not-allowed hover:text-red-600 text-red-400" title="Remove"><span className="material-symbols-outlined">cancel</span></button>
                 </div>
               </div>
             </div>
@@ -232,8 +233,8 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           </div>
         )}
         <div className="w-full py-2 flex justify-between items-center mt-2 px-4">
-          <button type="submit" disabled={uploadProgress > 0 && uploadProgress < 100} className="bg-sky-500 rounded-2xl px-4 py-1 text-white shadow-lg">Submit</button>
-          <button type="reset" onClick={() => { if (uploadProgress > 0 && uploadProgress < 100) { onCancelUpload(); onCloseModal(); } else onCloseModal(); }} className="bg-[#333D49] rounded-2xl px-4 py-1 text-white">Cancel</button>
+          <button type="submit" disabled={isFormDisabled} className="bg-sky-500 rounded-2xl px-4 py-1 text-white shadow-lg disabled:cursor-not-allowed disabled:bg-gray-400">{isFormDisabled ? "Submitting..." : "Submit"}</button>
+          <button type="reset" onClick={() => { if (isFormDisabled) { onCancelUpload(); onCloseModal(); } else onCloseModal(); }} className="bg-[#333D49] rounded-2xl px-4 py-1 text-white">Cancel</button>
         </div>
       </form>
     </div>
