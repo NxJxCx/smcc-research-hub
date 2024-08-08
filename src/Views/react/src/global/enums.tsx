@@ -22,7 +22,7 @@ export enum Courses {
 }
 
 export enum Departments {
-  CCIS = 'Computer Science and Information Systems',
+  CCIS = 'Computer Science and Information Sciences',
 }
 
 export default {

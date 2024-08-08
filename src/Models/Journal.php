@@ -14,6 +14,7 @@ class Journal extends Model
       'author' => ['VARCHAR(255)', 'NOT NULL'],
       'year' => ['YEAR', 'NOT NULL'],
       'department' => ['VARCHAR(255)', 'NOT NULL'],
+      'course' => ['VARCHAR(255)', 'NOT NULL'],
       'url' => ['TEXT', 'NOT NULL'],
       'published' => ['BOOLEAN', 'NOT NULL', 'DEFAULT FALSE'],
       'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],

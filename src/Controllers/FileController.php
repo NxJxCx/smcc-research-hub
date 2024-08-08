@@ -25,11 +25,12 @@ class FileController extends Controller
       $docTitle = $body['title'];
       $docAuthor = $body['author'];
       $docDepartment = $body['department'];
+      $docCourse = $body['course'];
       $docYear = $body['year'];
       if (!in_array($doc, ["thesis", "journal"])) {
         return Response::json(['error' => 'Invalid document type. Must be thesis or journal.'], StatusCode::BAD_REQUEST);
       }
-      if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment) {
+      if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment || !$docCourse) {
         return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
       }
       if ($file instanceof File) {
@@ -49,6 +50,7 @@ class FileController extends Controller
                 "author" => $docAuthor,
                 "year" => $docYear,
                 "department" => $docDepartment,
+                "course" => $docCourse,
                 "url" => $fileUrl,
               ]);
               $fid = $thesis->create();
@@ -58,6 +60,7 @@ class FileController extends Controller
                 "author" => $docAuthor,
                 "year" => $docYear,
                 "department" => $docDepartment,
+                "course" => $docCourse,
                 "url" => $fileUrl,
               ]);
               $fid = $journal->create();

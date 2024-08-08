@@ -1,5 +1,5 @@
 import clsx from "/jsx/global/clsx"
-import { Departments } from "/jsx/global/enums"
+import { Courses, Departments } from "/jsx/global/enums"
 import { Input, Select } from "/jsx/global/input"
 import Modal from "/jsx/global/modal"
 import PdfViewer from "/jsx/global/pdfviewer"
@@ -11,6 +11,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
   const [thesisAuthor, setThesisAuthor] = React.useState('')
   const [thesisYear, setThesisYear] = React.useState((new Date()).getFullYear().toString())
   const [thesisDepartment, setThesisDepartment] = React.useState(Departments.CCIS);
+  const [thesisCourse, setThesisCourse] = React.useState(Courses.BSIT);
   const [pdf, setPdf] = React.useState<File|null|undefined>()
   const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
   const [showModal, setShowModal] = React.useState<boolean>(false)
@@ -18,7 +19,8 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
   const [xhr, setXhr] = React.useState<XMLHttpRequest|null>(null)
   const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
   const departmentList = React.useMemo(() => Object.keys(Departments).map((d) => ({ label: Departments[d as keyof typeof Departments], value: Departments[d as keyof typeof Departments] })))
-  const isFormDisabled = React.useMemo(() => uploadProgress > 0 && uploadProgress < 100, [uploadProgress]);
+  const courseList = React.useMemo(() => Object.keys(Courses).map((d) => ({ label: Courses[d as keyof typeof Courses], value: Courses[d as keyof typeof Courses] })))
+  const isFormDisabled = React.useMemo(() => uploadProgress !== 0, [uploadProgress]);
 
   React.useEffect(() => {
     if (open !== undefined) {
@@ -73,6 +75,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     formData.append('author', thesisAuthor);
     formData.append('year', thesisYear);
     formData.append('department', thesisDepartment);
+    formData.append('course', thesisCourse);
     formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
 
     const xhr = new XMLHttpRequest();
@@ -99,6 +102,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
             showConfirmButton: false,
             position: 'center',
           })
+          setUploadProgress(0);
         } else {
           Sweetalert2.fire({
             icon:'success',
@@ -113,8 +117,9 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           setThesisTitle('')
           setThesisAuthor('')
           setThesisYear((new Date()).getFullYear().toString())
-          setUploadProgress(0);
           onSuccess && onSuccess();
+          setUploadProgress(0);
+          onCloseModal();
         }
       } else {
         Sweetalert2.fire({
@@ -126,6 +131,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           showConfirmButton: false,
           position: 'center',
         })
+        setUploadProgress(0);
       }
     };
 
@@ -139,6 +145,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
         showConfirmButton: false,
         position: 'center',
       })
+      setUploadProgress(0);
     };
 
     xhr.send(formData);
@@ -175,6 +182,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={thesisAuthor} onChange={(e: any) => setThesisAuthor(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={thesisYear} onChange={(e: any) => setThesisYear(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={departmentList} label="Department" name="department" value={thesisDepartment} onChange={(e: any) => setThesisDepartment(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={courseList} label="Course" name="course" value={thesisCourse} onChange={(e: any) => setThesisCourse(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={

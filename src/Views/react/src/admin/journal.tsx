@@ -12,6 +12,7 @@ const columns: TableColumn[] = [
   { label: "Author", key: "author", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
   { label: "Year", key: "year", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
   { label: "Department", key: "department", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
+  { label: "Course", key: "course", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
   { label: "Status", key: "status", sortable: true, cellType: TableCellType.Custom, align: CellAlign.Center },
   { label: "Action", key: "action", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
 ];
@@ -39,6 +40,7 @@ function JournalPage() {
             author: data.author,
             year: data.year,
             department: data.department,
+            course: data.course,
             status: {
               value: !data.published ? "Unpublished" : "Published",
               content: !data.published

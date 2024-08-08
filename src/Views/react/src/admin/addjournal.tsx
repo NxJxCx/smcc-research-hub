@@ -1,5 +1,5 @@
 import clsx from "/jsx/global/clsx"
-import { Departments } from "/jsx/global/enums"
+import { Courses, Departments } from "/jsx/global/enums"
 import { Input, Select } from "/jsx/global/input"
 import Modal from "/jsx/global/modal"
 import PdfViewer from "/jsx/global/pdfviewer"
@@ -10,7 +10,8 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
   const [journalTitle, setJournalTitle] = React.useState('')
   const [journalAuthor, setJournalAuthor] = React.useState('')
   const [journalYear, setJournalYear] = React.useState((new Date()).getFullYear().toString())
-  const [journalDepartment, setJournalDepartment] = React.useState("");
+  const [journalDepartment, setJournalDepartment] = React.useState(Departments.CCIS);
+  const [journalCourse, setJournalCourse] = React.useState(Courses.BSIT);
   const [pdf, setPdf] = React.useState<File|null|undefined>()
   const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
   const [showModal, setShowModal] = React.useState<boolean>(false)
@@ -18,7 +19,8 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
   const [xhr, setXhr] = React.useState<XMLHttpRequest|null>(null)
   const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
   const departmentList = React.useMemo(() => Object.keys(Departments).map((d) => ({ label: Departments[d as keyof typeof Departments], value: Departments[d as keyof typeof Departments] })))
-  const isFormDisabled = React.useMemo(() => uploadProgress > 0 && uploadProgress < 100, [uploadProgress]);
+  const courseList = React.useMemo(() => Object.keys(Courses).map((d) => ({ label: Courses[d as keyof typeof Courses], value: Courses[d as keyof typeof Courses] })))
+  const isFormDisabled = React.useMemo(() => uploadProgress !== 0, [uploadProgress]);
 
   React.useEffect(() => {
     if (open !== undefined) {
@@ -73,6 +75,7 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
     formData.append('author', journalAuthor);
     formData.append('year', journalYear);
     formData.append('department', journalDepartment);
+    formData.append('course', journalCourse);
     formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
 
     const xhr = new XMLHttpRequest();
@@ -99,6 +102,7 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
             showConfirmButton: false,
             position: 'center',
           })
+          setUploadProgress(0);
         } else {
           Sweetalert2.fire({
             icon:'success',
@@ -113,8 +117,9 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
           setJournalTitle('')
           setJournalAuthor('')
           setJournalYear((new Date()).getFullYear().toString())
-          setUploadProgress(0);
           onSuccess && onSuccess();
+          setUploadProgress(0);
+          onCloseModal();
         }
       } else {
         Sweetalert2.fire({
@@ -126,6 +131,7 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
           showConfirmButton: false,
           position: 'center',
         })
+        setUploadProgress(0)
       }
     };
 
@@ -139,6 +145,7 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
         showConfirmButton: false,
         position: 'center',
       })
+      setUploadProgress(0)
     };
 
     xhr.send(formData);
@@ -175,6 +182,7 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
           <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={journalAuthor} onChange={(e: any) => setJournalAuthor(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={journalYear} onChange={(e: any) => setJournalYear(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={departmentList} label="Department" name="department" value={journalDepartment} onChange={(e: any) => setJournalDepartment(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={courseList} label="Course" name="course" value={journalCourse} onChange={(e: any) => setJournalCourse(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={
