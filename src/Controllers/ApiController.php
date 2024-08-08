@@ -275,6 +275,20 @@ class ApiController extends Controller
     }
     try {
       $thesis = Database::getInstance()->fetchOne(Thesis::class, ['id' => $id]);
+      // remove the file associated with the thesis
+      $queryString = explode("?", $thesis->url)[1];
+      $params = [];
+      parse_str($queryString, $params);
+      if (isset($params['filename'])) {
+        try {
+          $filename = $params['filename'] . ".pdf";
+          // remove the file from the server
+          unlink(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, "thesis", $filename]));
+          Logger::write_info("Deleted thesis file: {$filename}");
+        } catch (\Throwable $e) {
+          Logger::write_debug("Failed to delete thesis file: {$filename}");
+        }
+      }
       $thesis->delete();
       return Response::json(['success'=> true]);
     } catch (\PDOException $e) {
@@ -293,6 +307,20 @@ class ApiController extends Controller
     }
     try {
       $journal = Database::getInstance()->fetchOne(Journal::class, ['id' => $id]);
+      // remove the file associated with the journal
+      $queryString = explode("?", $journal->url)[1];
+      $params = [];
+      parse_str($queryString, $params);
+      if (isset($params['filename'])) {
+        try {
+          $filename = $params['filename'] . ".pdf";
+          // remove the file from the server
+          unlink(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, "journal", $filename]));
+          Logger::write_info("Deleted journal file: {$filename}");
+        } catch (\Throwable $e) {
+          Logger::write_debug("Failed to delete journal file: {$filename}");
+        }
+      }
       $journal->delete();
       return Response::json(['success'=> true]);
     } catch (\PDOException $e) {
