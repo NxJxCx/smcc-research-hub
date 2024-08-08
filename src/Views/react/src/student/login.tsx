@@ -95,7 +95,7 @@ function StudentLogin() {
   }, [studentId, password])
 
   return showScanner ? (
-    <div className="w-full pt-16 absolute">
+    <div className="w-full pt-16 relative">
       <button type="button" onClick={() => window.location.replace("/")} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
       <div className="p-4">
         <div className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">

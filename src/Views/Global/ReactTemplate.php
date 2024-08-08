@@ -13,7 +13,7 @@ class ReactTemplate
     <body>
       <main
         id="root"
-        class="relative w-full min-h-screen"
+        class="relative w-full min-h-[calc(100vh-100px)]"
         data-react-app="<?php echo htmlspecialchars(implode('/', ['/jsx', $reactAppPath])); ?>"
         data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
       ></main>
@@ -31,7 +31,7 @@ class ReactTemplate
       <?php Header::default(); ?>
       <main
         id="root"
-        class="relative w-full min-h-screen"
+        class="relative w-full min-h-[calc(100vh - 160px)]"
         data-react-app="<?php echo htmlspecialchars(implode('/', ['/jsx', $reactAppPath])); ?>"
         data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
       ></main>
@@ -71,11 +71,11 @@ class ReactTemplate
           </div>
         </nav>
         </aside>
-        <main class="relative max-h-screen overflow-y-auto flex-grow">
+        <main class="relative max-h-screen overflow-y-auto flex-grow min-h-screen">
           <?php Header::admin(); ?>
           <div
             id="root"
-            class="w-full min-h-screen"
+            class="w-full min-h-[calc(100vh-160px)]"
             data-react-app="<?php echo htmlspecialchars(implode('/', ['/jsx', $reactAppPath])); ?>"
             data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
           ></div>

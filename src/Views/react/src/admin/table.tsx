@@ -71,21 +71,43 @@ type TableProps = {
 export function Table({ columns, items, search, children, onShowEntries = (entries: number) => {}, onSortColumn = (column: string) => {}, onSortOrder = (order: SortOrder) => {}, onSearch = (search: string) => {}, ...props }: TableProps) {
   const [searchString, setSearch] = React.useState(search || "")
   const [showEntries, setShowEntries] = React.useState<ShowEntries>(5)
-  const [sortColumn, setSortColumn] = React.useState(columns?.[0].key || "")
+  const [sortColumn, setSortColumn] = React.useState(columns?.[0].sortable ? columns[0].key : "")
   const [sortOrder, setSortOrder] = React.useState<SortOrder>(SortOrder.Ascending)
   const [page, setPage] = React.useState(items.length > 0 ? 1 : 0);
   const [editPageNumber, setEditPageNumber] = React.useState(false);
   const totalPages = React.useMemo(() => items.length > 0 ? Math.ceil(items.length / showEntries) : 0, [items, showEntries]);
   const finalItems = React.useMemo(() => {
-    const sortedItems = [...items].slice(Math.max(Math.ceil((page - 1) * showEntries)), Math.max(showEntries, Math.ceil((page - 1) * showEntries) + showEntries)).sort((a, b) => {
-      if (a[sortColumn] < b[sortColumn]) {
-        return sortOrder === SortOrder.Ascending ? -1 : 1;
-      }
-      if (a[sortColumn] > b[sortColumn]) {
-        return sortOrder === SortOrder.Ascending ? 1 : -1;
-      }
-      return 0;
-    });
+    const sortedItems = ([...items]
+      .slice(Math.max(Math.ceil((page - 1) * showEntries)), Math.max(showEntries, Math.ceil((page - 1) * showEntries) + showEntries))
+      .sort((a, b) => {
+        const col = columns.find((column) => column.key === sortColumn);
+        if (col?.cellType === TableCellType.Number) {
+          if (Number(a[sortColumn]) < Number(b[sortColumn])) {
+            return sortOrder === SortOrder.Ascending ? -1 : 1;
+          } else if (Number(a[sortColumn]) > Number(b[sortColumn])) {
+            return sortOrder === SortOrder.Ascending ? 1 : -1;
+          }
+        } else if (col?.cellType === TableCellType.Date) {
+          if ((new Date(a[sortColumn])).getTime() < (new Date(b[sortColumn])).getTime()) {
+            return sortOrder === SortOrder.Ascending ? -1 : 1;
+          } else if ((new Date(a[sortColumn])).getTime() > (new Date(b[sortColumn])).getTime()) {
+            return sortOrder === SortOrder.Ascending ? 1 : -1;
+          }
+        } else if (col?.cellType === TableCellType.Custom && col.sortable && !!a[sortColumn].content && !!b[sortColumn].content) {
+          if (a[sortColumn].value.toString().localeCompare(b[sortColumn].value) < 0) {
+            return sortOrder === SortOrder.Ascending ? -1 : 1;
+          } else if (a[sortColumn].value.toString().localeCompare(b[sortColumn].value) > 0) {
+            return sortOrder === SortOrder.Ascending ? 1 : -1;
+          }
+        } else {
+          if (a[sortColumn].toString().localeCompare(b[sortColumn]) < 0) {
+            return sortOrder === SortOrder.Ascending ? -1 : 1;
+          } else if (a[sortColumn].toString().localeCompare(b[sortColumn]) > 0) {
+            return sortOrder === SortOrder.Ascending ? 1 : -1;
+          }
+        }
+        return 0;
+      }));
 
     if (!!searchString) {
       return sortedItems.filter((item) =>
@@ -104,7 +126,7 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
     }
 
     return sortedItems;
-  }, [items, searchString, sortColumn, sortOrder, columns, page])
+  }, [items, searchString, sortColumn, sortOrder, columns, page, totalPages, showEntries])
 
   React.useEffect(() => {
     onShowEntries && onShowEntries(showEntries);

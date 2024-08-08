@@ -23,14 +23,14 @@ function AdminLogin() {
     {
       id: 1, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 2, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -38,14 +38,14 @@ function AdminLogin() {
     {
       id: 3, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 4, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -53,14 +53,14 @@ function AdminLogin() {
     {
       id: 5, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 6, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -68,14 +68,14 @@ function AdminLogin() {
     {
       id: 7, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 8, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -83,14 +83,14 @@ function AdminLogin() {
     {
       id: 9, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 10, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -98,14 +98,14 @@ function AdminLogin() {
     {
       id: 11, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 12, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -113,14 +113,14 @@ function AdminLogin() {
     {
       id: 13, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 14, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -128,14 +128,14 @@ function AdminLogin() {
     {
       id: 15, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 16, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -143,14 +143,14 @@ function AdminLogin() {
     {
       id: 17, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 18, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -158,14 +158,14 @@ function AdminLogin() {
     {
       id: 19, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 20, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -173,14 +173,14 @@ function AdminLogin() {
     {
       id: 21, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 22, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -188,14 +188,14 @@ function AdminLogin() {
     {
       id: 23, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 24, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -203,14 +203,14 @@ function AdminLogin() {
     {
       id: 25, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 26, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -218,14 +218,14 @@ function AdminLogin() {
     {
       id: 27, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 28, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
@@ -233,26 +233,25 @@ function AdminLogin() {
     {
       id: 29, created_at: "2023-01-01", title: "Thesis Title 1", author: "Author 1", year: 2024,
       status: {
-        value: "deployed",
+        value: 3,
         content: <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Deployed</button>
       },
       action: <TableRowAction id={1} />,
     },
     {
       id: 30, created_at: "2023-02-01", title: "Thesis Title 2", author: "Author 2", year: 2025,status: {
-        value: "deploy",
+        value: 2,
         content: <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Deploy</button>
       },
       action: <TableRowAction id={1} />,
     },
-  
   ])
 
   React.useEffect(() => {
 
   }, [])
   return (
-    <div className="w-full h-full bg-[#37414e] p-4">
+    <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 ">
       <Table columns={columns} items={tableData}>
         {/* Additional Toolbar Button */}
         <div className="px-4">
