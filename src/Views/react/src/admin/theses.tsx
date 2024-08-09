@@ -46,7 +46,7 @@ function ThesesPage() {
               value: !data.published_id ? 1 : (new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
               content: !data.published_id
                 ? <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Unpublished</button>
-                : <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>{(new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</button>
+                : <>{(new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</>
             },
             action: <TableRowAction id={data.id} onView={(id) => {
               if (id === data.id) {
