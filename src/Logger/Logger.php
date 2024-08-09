@@ -29,7 +29,7 @@ class Logger
   }
   static public function write_debug(string $message)
   {
-    if (PHP_ENV === 'development') {
+    if (APP_ENV === 'development') {
       $timestamp = date('Y-m-d H:i:s');
       $txt = "[USER DEBUG] [$timestamp] $message";
       error_log($txt);
