@@ -242,7 +242,6 @@ class ApiController extends Controller
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     try {
-      $db = Database::getInstance();
       $thesis = Thesis::getRowCount();
       $journal = Journal::getRowCount();
       $student = Student::getRowCount();
@@ -330,7 +329,7 @@ class ApiController extends Controller
     }
   }
 
-  public function allStudents(Request $request)
+  public function allStudents(): Response
   {
     if (!RouterSession::isAuthenticated() || !RouterSession::getUserAccountType() === 'admin') {
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
@@ -344,7 +343,7 @@ class ApiController extends Controller
     }
   }
 
-  public function allPersonnels(Request $request)
+  public function allPersonnels(): Response
   {
     if (!RouterSession::isAuthenticated() || !RouterSession::getUserAccountType() === 'admin') {
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);

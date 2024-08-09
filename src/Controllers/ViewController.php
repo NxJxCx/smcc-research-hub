@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
+use Smcc\ResearchHub\Router\Response;
 use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Global\View;
@@ -28,118 +29,118 @@ class ViewController extends Controller
     return HomePage::view("Home", $data, "/jsx/home");
   }
 
-  public function adminLogin(): View
+  public function adminLogin(): View|Response
   {
     if (Session::isAuthenticated()) {
       if (Session::getUserAccountType() === "admin") {
-        Router::redirect("/admin/dashboard");
+        return Response::redirect("/admin/dashboard");
       }
-      Router::redirect("/");
+      return Response::redirect("/");
     }
     return ReactPages::view("Admin Login", [], '/jsx/admin/login');
   }
 
-  public function studentLogin(): View
+  public function studentLogin(): View|Response
   {
     if (Session::isAuthenticated()) {
-      Router::redirect("/");
+      return Response::redirect("/");
     }
     return ReactPages::view("Student Login", [], '/jsx/student/login');
   }
 
-  public function teacherLogin(): View
+  public function teacherLogin(): View|Response
   {
     if (Session::isAuthenticated()) {
-      Router::redirect("/");
+      return Response::redirect("/");
     }
     return ReactPages::view("Teacher Login", [], '/jsx/teacher/login');
   }
 
-  public function studentSignup(): View
+  public function studentSignup(): View|Response
   {
     if (Session::isAuthenticated()) {
-      Router::redirect("/");
+      return Response::redirect("/");
     }
     $data = ['authenticated' => Session::isAuthenticated()];
     return ReactPages::view("Student Registration", $data, '/jsx/student/signup');
   }
 
-  public function redirectAdmin(): void
+  public function redirectAdmin(): Response
   {
     if (Session::isAuthenticated() && Session::getUserAccountType() === "admin") {
-      Router::redirect("/admin/dashboard");
+      return Response::redirect("/admin/dashboard");
     }
-    Router::redirect("/admin/login");
+    return Response::redirect("/admin/login");
   }
 
-  public function adminDashboard(): View
+  public function adminDashboard(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Admin Dashboard", [], '/jsx/admin/dashboard');
   }
 
-  public function adminThesisList()
+  public function adminThesisList(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Thesis List - Admin", [], '/jsx/admin/theses');
   }
 
-  public function adminJournalList(): View
+  public function adminJournalList(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Journal List - Admin", [], '/jsx/admin/journal');
   }
 
-  public function adminDepartmentList(): View
+  public function adminDepartmentList(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Department List - Admin", [], '/jsx/admin/departments');
   }
 
-  public function adminRecentThesisDeployed(): View
+  public function adminRecentThesisDeployed(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Recently Published - Admin", [], '/jsx/admin/recent');
   }
 
-  public function adminAnnouncements(): View
+  public function adminAnnouncements(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Announcements - Admin", [], '/jsx/admin/announcements');
   }
 
-  public function adminDownloads()
+  public function adminDownloads(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Downloads - Admin", [], '/jsx/admin/downloads');
   }
 
-  public function adminStudentList()
+  public function adminStudentList(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Student List - Admin", [], '/jsx/admin/students');
   }
 
-  public function adminTeacherAccounts()
+  public function adminTeacherAccounts(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
-      Router::redirect("/admin/login");
+      return Response::redirect("/admin/login");
     }
     return AdminPages::view("Teacher Accounts - Admin", [], '/jsx/admin/teachers');
   }
@@ -164,13 +165,7 @@ class ViewController extends Controller
     return Error500Page::view("Error 500 - {$this->head_title}", ["message" => $message]);
   }
 
-  public function favicon(): void
-  {
-    readfile(implode(DIRECTORY_SEPARATOR, [ASSETS_PATH,  'favicon.ico']));
-    exit;
-  }
-
-  public function logs()
+  public function logs(): View
   {
     return ReactPages::view("Logs", [], "/jsx/logs");
   }
