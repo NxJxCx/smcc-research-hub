@@ -6,7 +6,6 @@ enum LogType {
   USER_ERROR = "USER ERROR",
   USER_WARNING = "USER WARNING",
   USER_DEBUG = "USER DEBUG",
-  NONE = "",
 }
 
 interface LogMessage {
@@ -38,11 +37,11 @@ export default function LogsApp() {
         return [
           ...init,
           {
-            type: LogType.NONE,
+            type: "",
             message: msg,
           }
         ];
-      }, []).filter((v: LogMessage) => !!v.message);
+      }, []).filter((v: LogMessage) => !(!v.type && !v.message));
       mapped;
       setLogs(mapped);
       // then scroll to bottom using logRef

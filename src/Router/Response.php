@@ -100,7 +100,9 @@ class Response
       } else {
         echo $this->content;
       }
-      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
+      if ($_SERVER['REQUEST_URI'] !== '/api/logs') {
+        Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
+      }
       exit;
     } else {
       header('Cache-Control: no-cache');
