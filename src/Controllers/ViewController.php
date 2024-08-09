@@ -12,6 +12,7 @@ use Smcc\ResearchHub\Views\Pages\Admin\ReactPages;
 use Smcc\ResearchHub\Views\Pages\Error400Page;
 use Smcc\ResearchHub\Views\Pages\Error500Page;
 use Smcc\ResearchHub\Views\Pages\HomePage;
+use Smcc\ResearchHub\Views\Pages\UserPages;
 
 class ViewController extends Controller
 {
@@ -151,7 +152,7 @@ class ViewController extends Controller
       'id' => Session::getUserId(),
     ] : [];
     $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
-    return ReactPages::view("Thesis/Capstone", $data, '/jsx/main/thesis');
+    return UserPages::view("Thesis/Capstone", $data, '/jsx/main/thesis');
   }
 
   public function notFound(): View

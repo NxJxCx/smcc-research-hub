@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
-use PDO;
 use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\Admin;
 use Smcc\ResearchHub\Models\AdminLogs;
