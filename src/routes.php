@@ -6,6 +6,7 @@ namespace Smcc\ResearchHub;
 
 use Smcc\ResearchHub\Controllers\ApiController;
 use Smcc\ResearchHub\Controllers\FileController;
+use Smcc\ResearchHub\Controllers\NotificationController;
 use Smcc\ResearchHub\Controllers\ViewController;
 use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
@@ -37,7 +38,7 @@ Router::GET('/read/thesis', [FileController::class, 'viewPdfFile']);
 Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);
 Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
-Router::GET('/logs', [ViewController::class, 'viewLogs']);
+Router::GET('/logs', [ViewController::class, 'logs']);
 
 /* API GET METHOD */
 Router::GET('/api/test', [ApiController::class, 'test']); // test api route
@@ -45,6 +46,7 @@ Router::GET('/api/student', [ApiController::class, 'studentInfo']);
 Router::GET('/api/thesis/all', [ApiController::class, 'thesisList']);
 Router::GET('/api/journal/all', [ApiController::class, 'journalList']);
 Router::GET('/api/dashboard/statistics', [ApiController::class, 'dashboardStatistics']);
+Router::GET('/api/stream/logs', [NotificationController::class, 'logs']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);

@@ -47,6 +47,7 @@ enum ResponseSendType
   case FILE;
   case BLOB;
   case REDIRECT;
+  case STREAM;
 }
 
 class Response
@@ -55,13 +56,19 @@ class Response
   private StatusCode $statusCode;
   private ResponseSendType $sendType;
   private string $content;
+  private array $streamData;
+  private mixed $callback;
+  private int $interval;
 
-  public function __construct(array $headers, StatusCode $statusCode = StatusCode::OK, ResponseSendType $sendType = ResponseSendType::TEXT, string $content = '')
+  public function __construct(array $headers, StatusCode $statusCode = StatusCode::OK, ResponseSendType $sendType = ResponseSendType::TEXT, string $content = '', array $streamData = [], ?callable $onStream = null, int $interval = 5)
   {
     $this->headers = $headers;
     $this->statusCode = $statusCode;
     $this->sendType = $sendType;
     $this->content = $content;
+    $this->callback = $onStream;
+    $this->interval = $interval;
+    $this->streamData = $streamData;
   }
 
   private function getMimeType(string $filePath): string
@@ -78,21 +85,57 @@ class Response
       ResponseSendType::FILE => $this->getMimeType($this->content) . '; charset=utf-8',
       ResponseSendType::BLOB => 'application/octet-stream; charset=utf-8',
       ResponseSendType::REDIRECT => 'text/plain; charset=utf-8',
+      ResponseSendType::STREAM => 'text/event-stream; charset=utf-8',
     };
     header("Content-Type: $contentType");
     foreach ($this->headers as $key => $value) {
       header("$key: $value");
     }
-    http_response_code($this->statusCode->value);
-    if ($this->sendType === ResponseSendType::REDIRECT) {
-      Router::redirect($this->content);
-    } else if ($this->sendType === ResponseSendType::FILE) {
-      readfile($this->content);
+    if ($this->sendType !== ResponseSendType::STREAM) {
+      http_response_code($this->statusCode->value);
+      if ($this->sendType === ResponseSendType::REDIRECT) {
+        Router::redirect($this->content);
+      } else if ($this->sendType === ResponseSendType::FILE) {
+        readfile($this->content);
+      } else {
+        echo $this->content;
+      }
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
+      exit;
     } else {
-      echo $this->content;
+      header('Content-Type: text/event-stream');
+      header('Cache-Control: no-cache');
+      header('Connection: keep-alive');
+      header('Access-Control-Allow-Origin: *');
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP STREAM STARTED)");
+
+      while (true) {
+        if (connection_aborted()) {
+          break;
+        }
+        if (is_callable($this->callback)) {
+          $called = call_user_func(
+            $this->callback,
+            function(mixed $data) {
+              echo "data: " . json_encode($data) . "\n\n";
+              ob_flush();
+              flush();
+            },
+            $this->streamData,
+            fn(string $key, mixed $value) => $this->streamData[$key] = $value
+          );
+          if ($called) {
+            break;
+          }
+        }
+        sleep($this->interval);
+      }
+
+      http_response_code($this->statusCode->value);
+
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
+      exit;
     }
-    Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
-    exit;
   }
 
   public static function json(array $data, StatusCode $statusCode = StatusCode::OK, array $headers = []): Response
@@ -118,5 +161,10 @@ class Response
   public static function redirect(string $url, StatusCode $statusCode = StatusCode::FOUND): Response
   {
     return new self([], $statusCode, ResponseSendType::REDIRECT, $url);
+  }
+
+  public static function stream(callable $onStream, array $args = [], int $interval = 5, StatusCode $statusCode = StatusCode::FOUND): Response
+  {
+    return new self([], $statusCode, ResponseSendType::STREAM, '', $args, $onStream, $interval);
   }
 }

@@ -7,6 +7,8 @@ namespace Smcc\ResearchHub\Router;
 interface RequestInterface {
   public function getMethod(): string;
   public function getUri(): string;
+  public function getUriSegments(): array;
+  public function getUriSegment(int $index): ?string;
   public function getQueryParam(string $key): string;
   public function getQuery(): array;
   public function getBody(): array;
@@ -36,6 +38,13 @@ class Request implements RequestInterface {
   }
   public function getUri(): string {
     return $this->uri;
+  }
+  public function getUriSegments(): array {
+    return explode('/', trim($this->uri,'/'));
+  }
+  public function getUriSegment(int $index): ?string {
+    $segments = $this->getUriSegments();
+    return count($segments) < $index && $index > -1 ? $segments[$index] : null;
   }
   public function getQuery(): array {
     return $this->query;

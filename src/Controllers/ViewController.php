@@ -10,6 +10,7 @@ use Smcc\ResearchHub\Views\Errors\ErrorPage;
 use Smcc\ResearchHub\Views\Pages\Admin\AdminPages;
 use Smcc\ResearchHub\Views\Pages\Admin\LoginPage as AdminLoginPage;
 use Smcc\ResearchHub\Views\Pages\HomePage;
+use Smcc\ResearchHub\Views\Pages\LogsPage;
 use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
 use Smcc\ResearchHub\Views\Pages\Student\SignupPage;
 use Smcc\ResearchHub\Views\Pages\Teacher\LoginPage as TeacherLoginPage;
@@ -153,9 +154,8 @@ class ViewController extends Controller
     exit;
   }
 
-  public function viewLogs()
+  public function logs()
   {
-    readfile(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'mylogs.log']));
-    exit;
+    LogsPage::view("Logs");
   }
 }

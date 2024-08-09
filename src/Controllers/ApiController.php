@@ -328,16 +328,4 @@ class ApiController extends Controller
       return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
-
-  public function test(): Response
-  {
-    // Shows all table names exists in the database
-    $db = Database::getInstance();
-    $q = $db->getDb()->query("SHOW TABLES;");
-    $tables = $q->fetchAll(PDO::FETCH_ASSOC);
-    return Response::json([
-      "tables" => array_map(fn ($item) => $item["Tables_in_" . MYSQL_DATABASE], $tables, []),
-      "count" => count($tables)
-    ]);
-  }
 }

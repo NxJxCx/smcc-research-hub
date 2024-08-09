@@ -18,7 +18,7 @@ class HomePage
       'full_name' => Session::getUserFullName(),
       'id' => Session::getUserId(),
     ] : [];
-    DefaultTemplate::renderWithNav([HomePage::class, 'render'], ['authenticated' => Session::isAuthenticated(), 'auth_data' => $authData], 'home');
+    DefaultTemplate::renderWithNav([self::class, 'render'], ['authenticated' => Session::isAuthenticated(), 'auth_data' => $authData], 'home');
   }
   static public function render(array $data = [])
   {
