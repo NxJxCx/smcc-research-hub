@@ -281,8 +281,8 @@ class ApiController extends Controller
       $params = [];
       parse_str($queryString, $params);
       if (isset($params['filename'])) {
+        $filename = $params['filename'] . ".pdf";
         try {
-          $filename = $params['filename'] . ".pdf";
           // remove the file from the server
           unlink(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, "thesis", $filename]));
           Logger::write_info("Deleted thesis file: {$filename}");
@@ -313,8 +313,8 @@ class ApiController extends Controller
       $params = [];
       parse_str($queryString, $params);
       if (isset($params['filename'])) {
+        $filename = $params['filename'] . ".pdf";
         try {
-          $filename = $params['filename'] . ".pdf";
           // remove the file from the server
           unlink(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, "journal", $filename]));
           Logger::write_info("Deleted journal file: {$filename}");
