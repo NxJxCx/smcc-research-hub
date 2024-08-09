@@ -54,7 +54,6 @@ if (file_exists($envFile)) {
     } catch (\Exception $err) {
       $_ENV["PHP_ENV"] = $phpEnv;
     }
-    putenv("PHP_ENV=$phpEnv");
     define('PHP_ENV', $phpEnv);
   }
 }
