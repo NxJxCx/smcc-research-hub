@@ -49,7 +49,7 @@ export default function LogsApp() {
 
 
   React.useEffect(() => {
-    fetchLogs();// then scroll to bottom using logRef
+    fetchLogs();
     setTimeout(() => {
       logRef.current?.scroll({ top: logRef.current?.scrollHeight });
     }, 1000);
