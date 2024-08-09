@@ -105,7 +105,6 @@ class Model implements ModelInterface
 
   private function fetchForeignKey(string $modelClass, $fkValue)
   {
-    Logger::write_debug("Fetching foreign key $fkValue for model $modelClass");
     if (is_null($fkValue)) {
       return null;
     }
