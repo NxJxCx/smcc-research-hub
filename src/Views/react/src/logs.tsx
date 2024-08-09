@@ -44,16 +44,15 @@ export default function LogsApp() {
       }, []).filter((v: LogMessage) => !(!v.type && !v.message));
       mapped;
       setLogs(mapped);
-      // then scroll to bottom using logRef
-      setTimeout(() => {
-        logRef.current?.scroll({ top: logRef.current?.scrollHeight });
-      }, 15);
     })
   }, [logRef]);
 
 
   React.useEffect(() => {
-    fetchLogs();
+    fetchLogs();// then scroll to bottom using logRef
+    setTimeout(() => {
+      logRef.current?.scroll({ top: logRef.current?.scrollHeight });
+    }, 1000);
   }, []);
 
   React.useEffect(() => {
