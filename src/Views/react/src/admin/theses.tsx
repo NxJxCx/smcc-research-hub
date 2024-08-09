@@ -32,7 +32,6 @@ function ThesesPage() {
       if (error) {
         console.log(error);
       } else {
-        console.log(success);
         setTableData(success.map((data: any) => {
           return {
             id: data.id,
