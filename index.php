@@ -44,7 +44,7 @@ if (file_exists($envFile)) {
     }
   }
   if (!defined("APP_ENV")) {
-    $phpEnv = ($envFile === '.env.production') ? 'production' : 'development';
+    $phpEnv = str_ends_with($envFile, '.env.production') ? 'production' : 'development';
     define('APP_ENV', $phpEnv);
   }
 }
