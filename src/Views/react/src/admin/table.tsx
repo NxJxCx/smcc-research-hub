@@ -86,7 +86,6 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
   const [sortOrder, setSortOrder] = React.useState<SortOrder>(SortOrder.Ascending)
   const [page, setPage] = React.useState(items.length > 0 ? 1 : 0);
   const [editPageNumber, setEditPageNumber] = React.useState(false);
-  const totalPages = React.useMemo(() => items.length > 0 ? Math.ceil(items.length / showEntries) : 0, [items, showEntries]);
   const finalItems = React.useMemo(() => {
     const sortedItems = ([...items]
       .slice(Math.max(Math.ceil((page - 1) * showEntries)), Math.max(showEntries, Math.ceil((page - 1) * showEntries) + showEntries))
@@ -139,7 +138,8 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
     }
 
     return sortedItems;
-  }, [items, searchString, sortColumn, sortOrder, columns, page, totalPages, showEntries])
+  }, [items, searchString, sortColumn, sortOrder, columns, page, showEntries])
+  const totalPages = React.useMemo(() => finalItems.length > 0 ? Math.ceil(finalItems.length / showEntries) : 0, [finalItems, showEntries]);
 
   React.useEffect(() => {
     onShowEntries && onShowEntries(showEntries);
