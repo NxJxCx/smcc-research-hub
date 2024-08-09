@@ -29,10 +29,10 @@ function SidebarNav({ defaultShow = true, sidebarList, toggleBtn }: { defaultSho
       )
     }>
       <div className="w-full max-h-[60px] h-[60px] flex items-center justify-center bg-[#21282f]">
-        <div className="flex flex-nowrap h-full w-fit items-center justify-start">
+        <a href="/" className="flex flex-nowrap h-full w-fit items-center justify-start">
           <SMCCLogo className="aspect-square h-full py-2" />
           <h1 className="pr-3 font-[600]">RESEARCH HUB</h1>
-        </div>
+        </a>
       </div>
       <ul className="list-none p-0 bg-[#191f26] py-4 w-full">
         { sidebarList.map(({ label, url }) => (
