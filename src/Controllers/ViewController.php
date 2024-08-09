@@ -57,9 +57,18 @@ class ViewController extends Controller
     SignupPage::view("Student Registration");
   }
 
+  public function redirectAdmin()
+  {
+    if (Session::isAuthenticated() && Session::getUserAccountType() === "admin") {
+      Router::redirect("/admin/dashboard");
+    } else {
+      Router::redirect("/admin/login");
+    }
+  }
+
   public function adminDashboard()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Admin Dashboard", 'admin/dashboard');
@@ -67,7 +76,7 @@ class ViewController extends Controller
 
   public function adminThesisList()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Thesis List - Admin", 'admin/theses');
@@ -75,15 +84,15 @@ class ViewController extends Controller
 
   public function adminJournalList()
   {
-    if (!Session::isAuthenticated()) {
-      Router::redirect("/admin/journal");
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
+      Router::redirect("/admin/login");
     }
     AdminPages::view("Journal List - Admin", 'admin/journal');
   }
 
   public function adminDepartmentList()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Department List - Admin", 'admin/departments');
@@ -91,7 +100,7 @@ class ViewController extends Controller
 
   public function adminRecentThesisDeployed()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Recently Published - Admin", 'admin/recent');
@@ -99,7 +108,7 @@ class ViewController extends Controller
 
   public function adminAnnouncements()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Announcements - Admin", 'admin/announcements');
@@ -107,7 +116,7 @@ class ViewController extends Controller
 
   public function adminDownloads()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Downloads - Admin", 'admin/downloads');
@@ -115,7 +124,7 @@ class ViewController extends Controller
 
   public function adminStudentList()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Student List - Admin", 'admin/students');
@@ -123,7 +132,7 @@ class ViewController extends Controller
 
   public function adminTeacherAccounts()
   {
-    if (!Session::isAuthenticated()) {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
     AdminPages::view("Teacher Accounts - Admin", 'admin/teachers');
@@ -141,6 +150,12 @@ class ViewController extends Controller
   public function favicon()
   {
     readfile(implode(DIRECTORY_SEPARATOR, [ASSETS_PATH,  'favicon.ico']));
+    exit;
+  }
+
+  public function viewLogs()
+  {
+    readfile(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'mylogs.log']));
     exit;
   }
 }

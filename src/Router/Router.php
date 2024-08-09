@@ -140,10 +140,10 @@ class Router
         Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 304)");
         exit;
       }
-      $_splitted_ext = explode('.', strtolower($filePath));
-      $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
-      header($_headerContentType);
-      header('HTTP/1.1 200 OK');
+      // $_splitted_ext = explode('.', strtolower($filePath));
+      // $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext)];
+      // header($_headerContentType);
+      // header('HTTP/1.1 200 OK');
       header("Last-Modified: $lastModified");
       Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
       readfile($filePath);

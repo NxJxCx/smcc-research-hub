@@ -22,6 +22,7 @@ Router::GET('/login', [ViewController::class, 'studentLogin']);
 Router::GET('/admin/login', [ViewController::class, 'adminLogin']);
 Router::GET('/teacher/login', [ViewController::class, 'personnelLogin']);
 Router::GET('/signup', [ViewController::class, 'studentSignup']);
+Router::GET('/admin', [ViewController::class, 'redirectAdmin']);
 Router::GET('/admin/dashboard', [ViewController::class, 'adminDashboard']);
 Router::GET('/admin/theses', [ViewController::class, 'adminThesisList']);
 Router::GET('/admin/journal', [ViewController::class, 'adminJournalList']);
@@ -36,6 +37,7 @@ Router::GET('/read/thesis', [FileController::class, 'viewPdfFile']);
 Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);
 Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
+Router::GET('/logs', [ViewController::class, 'viewLogs']);
 
 /* API GET METHOD */
 Router::GET('/api/test', [ApiController::class, 'test']); // test api route
