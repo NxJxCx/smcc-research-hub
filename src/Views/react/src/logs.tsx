@@ -83,7 +83,7 @@ export default function LogsApp() {
                     : "text-gray-400"
                   )
                 }>
-                  {type}{type !== LogType.NONE && ": "}
+                  {type}{type && ": "}
                 </span>
                 &nbsp;
                 <span>
