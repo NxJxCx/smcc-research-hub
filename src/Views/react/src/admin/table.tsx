@@ -122,7 +122,7 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
       setPage(1);
     }
     if (!!searchString) {
-      return sortedItems.filter((item) =>
+      const result = sortedItems.filter((item) =>
         Object.entries(item).some(([key, value]) => {
           const col = columns.find((column) => column.key === key);
           if (col?.cellType === TableCellType.Number || col?.cellType === TableCellType.String) {
@@ -135,8 +135,14 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
           return false;
         })
       );
+      if (result.length === 0) {
+        setPage(0);
+      }
+      return result;
     }
-
+    if (sortedItems.length === 0) {
+      setPage(0);
+    }
     return sortedItems;
   }, [items, searchString, sortColumn, sortOrder, columns, page, showEntries])
   const totalPages = React.useMemo(() => finalItems.length > 0 ? Math.ceil(finalItems.length / showEntries) : 0, [finalItems, showEntries]);
