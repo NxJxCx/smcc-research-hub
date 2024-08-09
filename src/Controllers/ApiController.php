@@ -11,6 +11,8 @@ use Smcc\ResearchHub\Models\Database;
 use Smcc\ResearchHub\Models\Journal;
 use Smcc\ResearchHub\Models\Personnel;
 use Smcc\ResearchHub\Models\PersonnelLogs;
+use Smcc\ResearchHub\Models\PublishedJournal;
+use Smcc\ResearchHub\Models\PublishedThesis;
 use Smcc\ResearchHub\Models\Student;
 use Smcc\ResearchHub\Models\StudentLogs;
 use Smcc\ResearchHub\Models\Thesis;
@@ -215,7 +217,7 @@ class ApiController extends Controller
     try {
       $db = Database::getInstance();
       $thesis = $db->getAllRows(Thesis::class);
-      return Response::json(['success' => array_map(fn($t) => $t->toArray(), $thesis)]);
+      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $thesis)]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
@@ -228,7 +230,7 @@ class ApiController extends Controller
     try {
       $db = Database::getInstance();
       $thesis = $db->getAllRows(Journal::class);
-      return Response::json(['success' => array_map(fn($t) => $t->toArray(), $thesis)]);
+      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $thesis)]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
@@ -245,8 +247,8 @@ class ApiController extends Controller
       $journal = Journal::getRowCount();
       $student = Student::getRowCount();
       $personnel = Personnel::getRowCount();
-      $thesisPublished = count($db->fetchMany(Thesis::class, ['published' => true]));
-      $journalPublished = count($db->fetchMany(Journal::class, ['published' => true]));
+      $thesisPublished = PublishedThesis::getRowCount();
+      $journalPublished = PublishedJournal::getRowCount();
       $weeklyThesisReads = 0; // TODO: implement weekly reads statistics
       $weeklyJournalReads = 0; // TODO: implement weekly reads statistics
       return Response::json(['success' => [

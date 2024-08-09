@@ -8,6 +8,7 @@ use DateTime;
 use PDO;
 use PDOException;
 use ReflectionClass;
+use Smcc\ResearchHub\Logger\Logger;
 
 interface ModelInterface
 {
@@ -60,7 +61,7 @@ class Model implements ModelInterface
 
   public function __get(string $propertyName)
   {
-    if (!$this->isCreateOnly && array_key_exists($propertyName, $this->data)) {
+    if (!$this->isCreateOnly && (array_key_exists($propertyName, $this->data) || array_key_exists(str_replace(static::FOREIGN_KEY_PREFIX, "", $propertyName), $this->data))) {
       // check datatypes from getColumns() then cast datatypes equal to the declared types for database types
       if (array_key_exists($propertyName, $this->getColumns())) {
         $col = $this->getColumns()[$propertyName];
@@ -73,12 +74,12 @@ class Model implements ModelInterface
         } else if (str_starts_with($col[0], 'TINYINT') || str_starts_with($col[0], 'BOOLEAN')) {
           return (bool) boolval($this->data[$propertyName]);
         }
-      } else if (str_starts_with($propertyName, static::FOREIGN_KEY_PREFIX) && array_key_exists(substr($propertyName, strlen(static::FOREIGN_KEY_PREFIX)), $this->getForeignConstraints())) {
+      } else if (array_key_exists(str_replace(static::FOREIGN_KEY_PREFIX, "", $propertyName), $this->getForeignConstraints())) {
         $fkName = substr($propertyName, strlen(static::FOREIGN_KEY_PREFIX));
         [$modelClass, $onUpdate, $onDelete] = $this->getForeignConstraints()[$fkName];
         if (class_exists($modelClass)) {
           $reflection = new ReflectionClass($modelClass);
-          if ($reflection->isSubclassOf(Model::class)) {
+          if ($reflection->isSubclassOf(self::class)) {
             return $this->fetchForeignKey($modelClass, $this->getPrimaryKeyValue());
           }
         }
@@ -104,19 +105,17 @@ class Model implements ModelInterface
 
   private function fetchForeignKey(string $modelClass, $fkValue)
   {
+    Logger::write_debug("Fetching foreign key $fkValue for model $modelClass");
     if (is_null($fkValue)) {
       return null;
     }
 
     $db = Database::getInstance();
+
     $model = new $modelClass();
-    $tableName = $model->getTableName();
     $primaryKey = $model->getPrimaryKey();
 
-    $stmt = $db->getDb()->prepare("SELECT * FROM $tableName WHERE $primaryKey = :id");
-    $stmt->execute([':id' => $fkValue]);
-    $cl = new ReflectionClass($modelClass);
-    return $stmt->fetchObject($modelClass);
+    return $db->fetchOne($modelClass, [$primaryKey => $fkValue]);
   }
 
   public function createTable(Database $db): void
@@ -160,7 +159,7 @@ class Model implements ModelInterface
         [$modelClass, $onUpdate, $onDelete] = $fkDetails;
         if (class_exists($modelClass)) {
           $reflection = new ReflectionClass($modelClass);
-          if ($reflection->isSubclassOf(Model::class)) {
+          if ($reflection->isSubclassOf(self::class)) {
             $fkModel = new $modelClass();
             $referencedColumn = $fkModel->getPrimaryKey();
             $referencedTable = $fkModel->getTableName();
@@ -386,7 +385,18 @@ class Model implements ModelInterface
   /**
    * @inheritDoc
    */
-  public function toArray(): array {
+  public function toArray(bool $includeForeignKeys = false, bool $includeChildrenForeignKeys = false): array {
+    if ($includeForeignKeys) {
+      return [...$this->data] + array_reduce(
+        array_keys($this->getForeignConstraints()),
+        function($init, $fkname) use ($includeChildrenForeignKeys) {
+          $fkValue = $this->{static::FOREIGN_KEY_PREFIX . $fkname};
+          $init[static::FOREIGN_KEY_PREFIX . $fkname] = $fkValue === null ? null : $fkValue->toArray($includeChildrenForeignKeys);
+          return $init;
+        },
+        []
+      );
+    }
     return [...$this->data];
   }
 

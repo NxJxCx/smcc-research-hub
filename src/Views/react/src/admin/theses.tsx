@@ -13,7 +13,7 @@ const columns: TableColumn[] = [
   { label: "Year", key: "year", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
   { label: "Department", key: "department", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
   { label: "Course", key: "course", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
-  { label: "Status", key: "status", sortable: true, cellType: TableCellType.Custom, align: CellAlign.Center },
+  { label: "Published", key: "published", sortable: true, cellType: TableCellType.Custom, align: CellAlign.Center },
   { label: "Action", key: "action", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
 ];
 
@@ -32,6 +32,7 @@ function ThesesPage() {
       if (error) {
         console.log(error);
       } else {
+        console.log(success);
         setTableData(success.map((data: any) => {
           return {
             id: data.id,
@@ -41,11 +42,11 @@ function ThesesPage() {
             year: data.year,
             department: data.department,
             course: data.course,
-            status: {
-              value: !data.published ? "Unpublished" : "Published",
-              content: !data.published
+            published: {
+              value: !data.published_id ? 1 : (new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+              content: !data.published_id
                 ? <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Unpublished</button>
-                : <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>Published</button>
+                : <button type="button" className="bg-white px-3 py-2 text-green-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]" disabled>{(new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</button>
             },
             action: <TableRowAction id={data.id} onView={(id) => {
               if (id === data.id) {
