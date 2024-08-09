@@ -76,16 +76,16 @@ class Database implements BaseDatabase
       $model->createForeignConstraints($this);
     }
 
-    // Logger::write_debug("Database tables migrated completed successfully.");
-    // Logger::write_debug("\nTable row counts:\n"
-    // . implode(
-    //   "\n",
-    //     array_map(
-    //       fn($t) => "{$this->quoteIdentifier($dbname)}.{$this->quoteIdentifier($t->getTableName())} = {$t::getRowCount()} records",
-    //       $models
-    //     )
-    //   )
-    // );
+    Logger::write_debug("Database tables migrated completed successfully.");
+    Logger::write_debug("\nTable row counts:\n"
+    . implode(
+      "\n",
+        array_map(
+          fn($t) => "{$this->quoteIdentifier($dbname)}.{$this->quoteIdentifier($t->getTableName())} = {$t::getRowCount()} records",
+          $models
+        )
+      )
+    );
   }
 
   public function getDb(): PDO
