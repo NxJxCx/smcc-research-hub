@@ -195,6 +195,8 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
     setEditPageNumber(false);
   }, [])
 
+  const onPageInputChange = React.useCallback((e: any) => Number(e.target.value) >= page && Number(e.target.value) <= totalPages && !Number.isNaN(Number.parseInt(e.target.value)) ? setPage(Number.parseInt(e.target.value)) : setPage(0), [page]);
+
   return (
     <div className="w-full h-full" {...props}>
       <div className="flex flex-row justify-between items-center gap-x-2 text-white relative bg-[#323B46] p-4">
@@ -213,7 +215,7 @@ export function Table({ columns, items, search, children, onShowEntries = (entri
           <button type="button" onClick={() => setPage(totalPages > 0 ? 1 : 0)} className="hover:text-yellow-500"><span className="material-symbols-outlined">keyboard_double_arrow_left</span></button>
           <button type="button" onClick={() => setPage(Math.max(totalPages > 0 ? 1 : 0, Math.min(totalPages, page - 1)))} className="hover:text-yellow-500"><span className="material-symbols-outlined">chevron_left</span></button>
           {!editPageNumber && <button type="button" onClick={() => setEditPageNumber(true)} className="px-2 text-yellow-300">Page {page} / {totalPages}</button>}
-          {editPageNumber && <div className="px-2 text-yellow-300 flex flex-nowrap items-center">Page <form onSubmit={onChangePage} className="flex items-end h-full"><input type="number" name="page" onChange={(e) => { Number(e.target.value) >= page && Number(e.target.value) <= totalPages && !Number.isNaN(Number.parseInt(e.target.value)) ? setPage(Number.parseInt(e.target.value)) : setPage(0) }} className="max-w-[50px] outline-none text-center rounded bg-white text-black mx-1 hide-spinner placeholder:text-gray-500" min={totalPages > 0 ? 1 : 0} max={totalPages} placeholder={page} /><button type="submit" className="hidden">Change</button></form> / {totalPages}</div>}
+          {editPageNumber && <div className="px-2 text-yellow-300 flex flex-nowrap items-center">Page <form onSubmit={onChangePage} className="flex items-end h-full"><input type="number" name="page" onChange={onPageInputChange} onBlur={(e) => { onPageInputChange(e); setEditPageNumber(false); }} className="max-w-[50px] outline-none text-center rounded bg-white text-black mx-1 hide-spinner placeholder:text-gray-500" min={totalPages > 0 ? 1 : 0} max={totalPages} placeholder={page} /><button type="submit" className="hidden">Change</button></form> / {totalPages}</div>}
           <button type="button" onClick={() => setPage(Math.max(totalPages > 0 ? 1 : 0, Math.min(totalPages, page + 1)))} className="hover:text-yellow-500"><span className="material-symbols-outlined">chevron_right</span></button>
           <button type="button" onClick={() => setPage(totalPages)} className="hover:text-yellow-500"><span className="material-symbols-outlined">keyboard_double_arrow_right</span></button>
         </div>
