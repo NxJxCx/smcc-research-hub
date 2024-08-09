@@ -85,7 +85,7 @@ class Response
       ResponseSendType::FILE => $this->getMimeType($this->content) . '; charset=utf-8',
       ResponseSendType::BLOB => 'application/octet-stream; charset=utf-8',
       ResponseSendType::REDIRECT => 'text/plain; charset=utf-8',
-      ResponseSendType::STREAM => 'text/event-stream; charset=utf-8',
+      ResponseSendType::STREAM => 'text/event-stream',
     };
     header("Content-Type: $contentType");
     foreach ($this->headers as $key => $value) {
@@ -103,37 +103,38 @@ class Response
       Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
       exit;
     } else {
-      header('Content-Type: text/event-stream');
       header('Cache-Control: no-cache');
-      header('Connection: keep-alive');
+      // header('Connection: keep-alive');
       header('Access-Control-Allow-Origin: *');
       Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP STREAM STARTED)");
-
+      $streamData = $this->streamData;
       while (true) {
         if (connection_aborted()) {
           break;
         }
         if (is_callable($this->callback)) {
-          $called = call_user_func(
+          call_user_func(
             $this->callback,
             function(mixed $data) {
               echo "data: " . json_encode($data) . "\n\n";
               ob_flush();
               flush();
             },
-            $this->streamData,
-            fn(string $key, mixed $value) => $this->streamData[$key] = $value
+            $streamData,
+            function (string $key, mixed $value) use ($streamData) {
+              $streamData[$key] = $value;
+              return $streamData;
+            }
           );
-          if ($called) {
-            break;
-          }
         }
-        sleep($this->interval);
+        // sleep((int) $this->interval);
+        sleep(1);
       }
 
-      http_response_code($this->statusCode->value);
+      // http_response_code($this->statusCode->value);
 
-      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
+      Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP STREAM ENDED)");
+      // Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: {$this->statusCode->value})");
       exit;
     }
   }

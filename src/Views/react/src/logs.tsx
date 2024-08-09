@@ -1,4 +1,3 @@
-import clsx from "/jsx/global/clsx";
 import { React } from "/jsx/imports";
 
 interface LogMessage {
@@ -8,17 +7,21 @@ interface LogMessage {
 
 export default function LogsApp() {
   const [logs, setLogs] = React.useState<LogMessage[]>([])
+  const [testLogs, setTestLogs] = React.useState<string>()
   const [eventSource, setEventSource] = React.useState<EventSource|undefined>()
   const logEntryRegex = /\[(USER_INFO|USER_DEBUG|USER_ERROR|USER_WARNING)\] ([^\[]+)/g;
 
   const onMessage = React.useCallback((ev: MessageEvent) => {
-    const data = JSON.parse(ev.data)
-    const mappedLogs = data.logs.split("\n").map((d: string) => {
-      const match = logEntryRegex.exec(d)
-      return ({ type: match?.[1], message: match?.[2] });
-    })
-    setLogs(mappedLogs);
-  }, [])
+    const data = ev.data
+    console.log("Received message: ", data);
+    // const data = JSON.parse(ev.data)
+    // const mappedLogs = data.logs.split("\n").map((d: string) => {
+    //   const match = logEntryRegex.exec(d)
+    //   return ({ type: match?.[1], message: match?.[2] });
+    // })
+    setTestLogs(data);
+    (eventSource as EventSource)?.close()
+  }, [eventSource])
 
   const onError = React.useCallback((ev: Event) => {
     if (!!eventSource?.OPEN) {
@@ -40,6 +43,7 @@ export default function LogsApp() {
 
     return newEventSource
   }, [eventSource, onMessage, onError])
+
   React.useEffect(() => {
     const newEventSource = refreshLogs()
     console.log("event source: ", newEventSource);
@@ -55,7 +59,7 @@ export default function LogsApp() {
       <h1>Logs</h1>
       <div className="w-full p-8 min-h-[calc(100vh - 100px)]">
         <div className="bg-slate-900 p-3 text-white border border-white rounded shadow mx-auto w-full h-full">
-          {
+          {/* {
             logs.map(({ type, message }: LogMessage, index: number) => (
               <p key={index}>
                 <span className={
@@ -71,7 +75,8 @@ export default function LogsApp() {
                 </span>
               </p>
             ))
-          }
+          } */}
+          {testLogs}
         </div>
       </div>
     </div>

@@ -91,6 +91,6 @@ class NotificationController extends Controller
         $logContents = Logger::read_log_file();
         $data = ['logs' => $logContents];
         $write($data);
-      }, [], 1);
+      }, []);
     }
   }

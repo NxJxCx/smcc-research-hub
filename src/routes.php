@@ -39,6 +39,31 @@ Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);
 Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
 Router::GET('/logs', [ViewController::class, 'logs']);
+Router::GET('/logs/test', function() {
+?>
+<body>
+  <script>
+    (function() {
+    console.log('API test route hit');
+    const eventSource = new EventSource('/api/stream/logs');
+    eventSource.onmessage = (event) => {
+      console.log('Received log:', event.data);
+    };
+    eventSource.onerror = (event, msg) => {
+      console.error('Error:', event);
+      console.log("MESSAGE:", msg);
+    };
+    eventSource.onopen = () => {
+      console.log("event has open")
+    }
+    eventSource.onclose = () => {
+      console.log("event has close")
+    }
+  })();
+  </script>
+</body>
+<?php
+});
 
 /* API GET METHOD */
 Router::GET('/api/test', [ApiController::class, 'test']); // test api route
