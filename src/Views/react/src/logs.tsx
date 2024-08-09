@@ -23,7 +23,6 @@ export default function LogsApp() {
     fetch('/api/logs')
     .then(response => response.json())
     .then(({ data }) => {
-      console.log("DATA:", data);
       const splitted = data.split('\n');
       const mapped = splitted.reduce((init: LogMessage[], msg: string, index: number, orig: any) => {
         const [type, timestamp, message] = msg.substring(1).split('] ');
@@ -51,11 +50,18 @@ export default function LogsApp() {
         logRef.current?.scroll({ top: logRef.current?.scrollHeight });
       }, 15);
     })
-  }, [logRef])
+  }, [logRef]);
+
 
   React.useEffect(() => {
     fetchLogs();
   }, []);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      fetchLogs();
+    }, 1000);
+  }, [logs])
 
   return (
     <div>
