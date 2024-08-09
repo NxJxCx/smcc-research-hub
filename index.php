@@ -40,12 +40,13 @@ if (file_exists($envFile)) {
       $key = trim($key);
       $value = trim($value);
       // Add to $_ENV array
-      $_ENV[$key] = $value;
+      putenv("$key=$value");
     }
   }
-  if (!array_key_exists('PHP_ENV', $_ENV)) {
-    $_ENV['PHP_ENV'] = ($envFile === '.env.production') ? 'production' : 'development';
-    define('PHP_ENV', $_ENV['PHP_ENV']);
+  if (!array_key_exists('PHP_ENV', $_ENV) || !defined('PHP_ENV')) {
+    $phpEnv = ($envFile === '.env.production') ? 'production' : 'development';
+    putenv("PHP_ENV=$phpEnv");
+    define('PHP_ENV', $phpEnv);
   }
 }
 
