@@ -1,0 +1,1 @@
+import{React as e}from"/jsx/imports";export default function r(){return e.createElement("div",null,"Hello world!")}

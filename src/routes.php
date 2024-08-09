@@ -34,6 +34,7 @@ Router::GET('/admin/downloads', [ViewController::class, 'adminDownloads']);
 Router::GET('/admin/students', [ViewController::class, 'adminStudentList']);
 Router::GET('/admin/teachers', [ViewController::class, 'adminTeacherAccounts']);
 Router::GET('/teacher/login', [ViewController::class, 'teacherLogin']);
+Router::GET('/thesis', [ViewController::class, 'thesis']);
 Router::GET('/read/thesis', [FileController::class, 'viewPdfFile']);
 Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);

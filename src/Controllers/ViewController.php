@@ -23,7 +23,8 @@ class ViewController extends Controller
       'full_name' => Session::getUserFullName(),
       'id' => Session::getUserId(),
     ] : [];
-    return HomePage::view("Home", ['authenticated' => Session::isAuthenticated(), 'authData' => $authData], "/jsx/home");
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return HomePage::view("Home", $data, "/jsx/home");
   }
 
   public function adminLogin(): View
@@ -140,6 +141,17 @@ class ViewController extends Controller
       Router::redirect("/admin/login");
     }
     return AdminPages::view("Teacher Accounts - Admin", [], '/jsx/admin/teachers');
+  }
+
+  public function thesis(): View
+  {
+    $authData = Session::isAuthenticated() ? [
+      'account' => Session::getUserAccountType(),
+      'full_name' => Session::getUserFullName(),
+      'id' => Session::getUserId(),
+    ] : [];
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return ReactPages::view("Thesis/Capstone", $data, '/jsx/main/thesis');
   }
 
   public function notFound(): View

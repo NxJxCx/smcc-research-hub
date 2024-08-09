@@ -88,6 +88,8 @@ class Router
           $response = call_user_func($route, new Request($this->method, $this->uri, $this->query, $this->body, $this->files, getallheaders()));
           if ($response instanceof Response) {
             $response->sendResponse(); // response ends here
+          } else if ($response instanceof View) {
+            $response->render();
           }
           Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
           exit; // if it is a view, exit here
