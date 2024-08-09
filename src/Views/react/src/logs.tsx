@@ -25,13 +25,13 @@ export default function LogsApp() {
     .then(({ data }) => {
       const splitted = data.split('\n');
       const mapped = splitted.reduce((init: LogMessage[], msg: string, index: number, orig: any) => {
-        const [type, timestamp, message] = msg.substring(1).split('] ');
-        if (Object.values(LogType).includes(type as LogType)) {
+        const result = msg.substring(1).split('] ');
+        if (Object.values(LogType).includes(result[0] as LogType)) {
           return [
             ...init,
             {
-              type,
-              message: timestamp + "] " + message,
+              type: result[0],
+              message: result[1] + "] " + result[2],
             }
           ];
         }
