@@ -21,7 +21,7 @@ async function render() {
     root.render(<App />);
   } catch (error) {
     ["https://fonts.googleapis.com/css?family=Nunito:400,700", "/css/style.css"].forEach(addLinkElement);
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     root.render(
       <div id="notfound">
         <div className="notfound">

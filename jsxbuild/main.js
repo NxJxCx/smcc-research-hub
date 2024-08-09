@@ -19,7 +19,7 @@ async function render() {
     }
     catch (error) {
         ["https://fonts.googleapis.com/css?family=Nunito:400,700", "/css/style.css"].forEach(addLinkElement);
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         root.render(React.createElement("div", { id: "notfound" },
             React.createElement("div", { className: "notfound" },
                 React.createElement("div", { className: "notfound-404" }),
