@@ -74,7 +74,7 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
                 <a href={item.url} className="indent-4">
                   <div className={
                     `hover:text-sky-500 transition duration-300 w-full
-                    ${(item.url === "/" && pathname === "/") || pathname.startsWith(item.url)
+                    ${(item.url === "/" && pathname === "/") || (pathname !== "/" && pathname.startsWith(item.url))
                     ? "text-black border-l-4 border-sky-300 font-700"
                     : "text-gray-500 w-full"}`
                   }>
