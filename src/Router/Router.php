@@ -105,7 +105,12 @@ class Router
         // Create an instance of the class
         $instance = new $class();
         if (method_exists($class, $method)) {
-          call_user_func([$instance, $method]);
+          $view = call_user_func([$instance, $method]);
+          if ($view instanceof Response) {
+            $view->sendResponse();
+          } else if ($view instanceof View) {
+            $view->render();
+          }
           exit;
         }
       }
@@ -123,7 +128,12 @@ class Router
         // Create an instance of the class
         $instance = new $class();
         if (method_exists($class, $method)) {
-          call_user_func([$instance, $method], "Internal Server Error - " . str_replace("\n", "<br />", $e->getMessage() . "\n" . $e->getTraceAsString()));
+          $view = call_user_func([$instance, $method], "Internal Server Error - " . str_replace("\n", "<br />", $e->getMessage() . "\n" . $e->getTraceAsString()));
+          if ($view instanceof Response) {
+            $view->sendResponse();
+          } else if ($view instanceof View) {
+            $view->render();
+          }
           exit;
         }
       }
