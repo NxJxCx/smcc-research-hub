@@ -80,7 +80,7 @@ class Model implements ModelInterface
         if (class_exists($modelClass)) {
           $reflection = new ReflectionClass($modelClass);
           if ($reflection->isSubclassOf(self::class)) {
-            return $this->fetchForeignKey($modelClass, $this->getPrimaryKeyValue());
+            return $this->fetchForeignKey($modelClass, $this->{str_replace(static::FOREIGN_KEY_PREFIX, "", $propertyName)});
           }
         }
       }
