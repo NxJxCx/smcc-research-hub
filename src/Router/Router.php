@@ -141,7 +141,8 @@ class Router
         exit;
       }
       $_splitted_ext = explode('.', strtolower($filePath));
-      $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext) . "; charset=utf-8"];
+      $ContentType = MIMETYPES['.' . array_pop($_splitted_ext)] . "; charset=utf-8";
+      $_headerContentType = "Content-Type: $ContentType";
       header($_headerContentType);
       // header('HTTP/1.1 200 OK');
       header("Last-Modified: $lastModified");
@@ -170,9 +171,10 @@ class Router
         exit;
       }
       $_splitted_ext = explode('.', strtolower($filePath));
-      $_headerContentType = "Content-Type: " . MIMETYPES['.' . array_pop($_splitted_ext) . "; charset=utf-8"];
+      $ContentType = MIMETYPES['.' . array_pop($_splitted_ext)] . "; charset=utf-8";
+      $_headerContentType = "Content-Type: $ContentType";
       header($_headerContentType);
-      header('HTTP/1.1 200 OK');
+      // header('HTTP/1.1 200 OK');
       header("Last-Modified: $lastModified");
       Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
       readfile($filePath);

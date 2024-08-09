@@ -155,7 +155,6 @@ class ViewController extends Controller
 
   public function viewLogs()
   {
-    header('Content-Type: application/json; charset=UTF-8');
     readfile(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'mylogs.log']));
     exit;
   }

@@ -73,11 +73,11 @@ class Response
   public function sendResponse(): void
   {
     $contentType = match ($this->sendType) {
-      ResponseSendType::JSON => 'application/json',
-      ResponseSendType::TEXT => 'text/plain',
-      ResponseSendType::FILE => $this->getMimeType($this->content),
-      ResponseSendType::BLOB => 'application/octet-stream',
-      ResponseSendType::REDIRECT => 'text/plain',
+      ResponseSendType::JSON => 'application/json; charset=utf-8',
+      ResponseSendType::TEXT => 'text/plain; charset=utf-8',
+      ResponseSendType::FILE => $this->getMimeType($this->content) . '; charset=utf-8',
+      ResponseSendType::BLOB => 'application/octet-stream; charset=utf-8',
+      ResponseSendType::REDIRECT => 'text/plain; charset=utf-8',
     };
     header("Content-Type: $contentType");
     foreach ($this->headers as $key => $value) {
