@@ -104,7 +104,7 @@ class Response
       exit;
     } else {
       header('Cache-Control: no-cache');
-      // header('Connection: keep-alive');
+      header('Connection: keep-alive');
       header('Access-Control-Allow-Origin: *');
       Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP STREAM STARTED)");
       $streamData = $this->streamData;
@@ -113,7 +113,7 @@ class Response
           break;
         }
         if (is_callable($this->callback)) {
-          call_user_func(
+          $called_to_exit = call_user_func(
             $this->callback,
             function(mixed $data) {
               echo "data: " . json_encode($data) . "\n\n";
@@ -126,9 +126,11 @@ class Response
               return $streamData;
             }
           );
+          if ($called_to_exit) {
+            break;
+          }
         }
-        // sleep((int) $this->interval);
-        sleep(1);
+        sleep((int) $this->interval);
       }
 
       // http_response_code($this->statusCode->value);

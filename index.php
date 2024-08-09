@@ -45,6 +45,7 @@ if (file_exists($envFile)) {
   }
   if (!array_key_exists('PHP_ENV', $_ENV)) {
     $_ENV['PHP_ENV'] = ($envFile === '.env.production') ? 'production' : 'development';
+    define('PHP_ENV', $_ENV['PHP_ENV']);
   }
 }
 

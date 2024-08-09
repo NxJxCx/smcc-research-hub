@@ -16,7 +16,7 @@ use Smcc\ResearchHub\Router\StatusCode;
 
 class NotificationController extends Controller
 {
-    public function getNotifications(Request $request): Response
+    public function getNotificationsStream(Request $request): Response
     {
       if (!RouterSession::isAuthenticated()) {
         return Response::json(['error' => 'Authentication required'], StatusCode::UNAUTHORIZED);
@@ -47,18 +47,30 @@ class NotificationController extends Controller
       if ($ni === -1 && count($data) === 0) {
         $setArgsData("ni", count($data));
         $write($data);
-      } elseif ($unreadOnly && count($data) !== $ni) {
+      } else if ($unreadOnly && count($data) !== $ni) {
         $setArgsData("ni", count($data));
         $write($data);
-      } elseif (!$unreadOnly && count(array_filter($data, fn($v) => !$v['is_read'])) !== $ni) {
+      } else if (!$unreadOnly && count(array_filter($data, fn($v) => !$v['is_read'])) !== $ni) {
         $setArgsData("ni", count(array_filter($data, fn($v) => !$v['is_read'])));
         $write($data);
       }
     }
 
-    private function getMyNotifications(string|int $myAccountId, string $myAccountType, bool $unreadOnly): ?array
+    public function getNotifications(Request $request): Response
     {
-      $result = null;
+      if (!RouterSession::isAuthenticated()) {
+        return Response::json(['error' => 'Authentication required'], StatusCode::UNAUTHORIZED);
+      }
+      $accountType = RouterSession::getUserAccountType();
+      $userId = RouterSession::getUserId();
+      $unreadOnly = $request->getQueryParam('unread') === '1';
+      $data = $this->getMyNotifications($userId, $accountType, $unreadOnly);
+      return Response::json(['notifications' => $data, "length" => count($data)]);
+    }
+
+    private function getMyNotifications(string|int $myAccountId, string $myAccountType, bool $unreadOnly): array
+    {
+      $result = [];
       try {
         $db = Database::getInstance();
         switch($myAccountType) {
@@ -87,10 +99,7 @@ class NotificationController extends Controller
 
     public function logs(): Response
     {
-      return Response::stream(function(callable $write, mixed $argsData, callable $setArgsData) {
-        $logContents = Logger::read_log_file();
-        $data = ['logs' => $logContents];
-        $write($data);
-      }, []);
+      $logContents = Logger::read_log_file();
+      return Response::json(["data" => $logContents]);
     }
   }

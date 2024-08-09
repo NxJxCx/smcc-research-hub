@@ -39,31 +39,6 @@ Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);
 Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
 Router::GET('/logs', [ViewController::class, 'logs']);
-Router::GET('/logs/test', function() {
-?>
-<body>
-  <script>
-    (function() {
-    console.log('API test route hit');
-    const eventSource = new EventSource('/api/stream/logs');
-    eventSource.onmessage = (event) => {
-      console.log('Received log:', event.data);
-    };
-    eventSource.onerror = (event, msg) => {
-      console.error('Error:', event);
-      console.log("MESSAGE:", msg);
-    };
-    eventSource.onopen = () => {
-      console.log("event has open")
-    }
-    eventSource.onclose = () => {
-      console.log("event has close")
-    }
-  })();
-  </script>
-</body>
-<?php
-});
 
 /* API GET METHOD */
 Router::GET('/api/test', [ApiController::class, 'test']); // test api route
@@ -71,7 +46,7 @@ Router::GET('/api/student', [ApiController::class, 'studentInfo']);
 Router::GET('/api/thesis/all', [ApiController::class, 'thesisList']);
 Router::GET('/api/journal/all', [ApiController::class, 'journalList']);
 Router::GET('/api/dashboard/statistics', [ApiController::class, 'dashboardStatistics']);
-Router::GET('/api/stream/logs', [NotificationController::class, 'logs']);
+Router::GET('/api/logs', [NotificationController::class, 'logs']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);

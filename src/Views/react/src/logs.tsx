@@ -1,73 +1,84 @@
+import clsx from "/jsx/global/clsx";
 import { React } from "/jsx/imports";
 
+enum LogType {
+  USER_INFO = "USER INFO",
+  USER_ERROR = "USER ERROR",
+  USER_WARNING = "USER WARNING",
+  USER_DEBUG = "USER DEBUG",
+  NONE = "",
+}
+
 interface LogMessage {
-  type: string,
+  type: LogType,
   message: string,
 }
 
+
 export default function LogsApp() {
   const [logs, setLogs] = React.useState<LogMessage[]>([])
-  const [testLogs, setTestLogs] = React.useState<string>()
-  const [eventSource, setEventSource] = React.useState<EventSource|undefined>()
-  const logEntryRegex = /\[(USER_INFO|USER_DEBUG|USER_ERROR|USER_WARNING)\] ([^\[]+)/g;
+  const logRef = React.useRef(null);
 
-  const onMessage = React.useCallback((ev: MessageEvent) => {
-    const data = ev.data
-    console.log("Received message: ", data);
-    // const data = JSON.parse(ev.data)
-    // const mappedLogs = data.logs.split("\n").map((d: string) => {
-    //   const match = logEntryRegex.exec(d)
-    //   return ({ type: match?.[1], message: match?.[2] });
-    // })
-    setTestLogs(data);
-    (eventSource as EventSource)?.close()
-  }, [eventSource])
-
-  const onError = React.useCallback((ev: Event) => {
-    if (!!eventSource?.OPEN) {
-      eventSource.close()
-    }
-  }, [eventSource])
-
-  const refreshLogs = React.useCallback(() => {
-    if (!!eventSource?.OPEN) {
-      eventSource.close()
-    }
-    const url = new URL('/api/stream/logs', window.location.origin)
-    const newEventSource = new EventSource(url, { withCredentials: true });
-    setEventSource(newEventSource)
-
-    newEventSource.onmessage = onMessage;
-
-    newEventSource.onerror = onError;
-
-    return newEventSource
-  }, [eventSource, onMessage, onError])
+  const fetchLogs = React.useCallback(() => {
+    fetch('/api/logs')
+    .then(response => response.json())
+    .then(({ data }) => {
+      console.log("DATA:", data);
+      const splitted = data.split('\n');
+      const mapped = splitted.reduce((init: LogMessage[], msg: string, index: number, orig: any) => {
+        const [type, message] = msg.substring(1).split('] ');
+        if (Object.values(LogType).includes(type as LogType)) {
+          return [
+            ...init,
+            {
+              type,
+              message,
+            }
+          ];
+        }
+        return [
+          ...init,
+          {
+            type: LogType.NONE,
+            message: msg,
+          }
+        ];
+      }, []).filter((v: LogMessage) => !!v.message);
+      mapped;
+      setLogs(mapped);
+      // then scroll to bottom using logRef
+      setTimeout(() => {
+        logRef.current?.scroll({ top: logRef.current?.scrollHeight });
+      }, 15);
+    })
+  }, [logRef])
 
   React.useEffect(() => {
-    const newEventSource = refreshLogs()
-    console.log("event source: ", newEventSource);
-    return () => {
-      if (!!newEventSource?.OPEN) {
-        newEventSource.close();
-      }
-    };
+    fetchLogs();
   }, []);
 
   return (
     <div>
-      <h1>Logs</h1>
-      <div className="w-full p-8 min-h-[calc(100vh - 100px)]">
-        <div className="bg-slate-900 p-3 text-white border border-white rounded shadow mx-auto w-full h-full">
-          {/* {
+      <h1 className="p-8 text-2xl pb-0">Server Logs</h1>
+      <div className="w-full p-8">
+        <div ref={logRef} className="bg-slate-900 p-3 text-white border border-white rounded shadow mx-auto h-full max-h-[calc(100vh-250px)] overflow-x-hidden overflow-y-auto">
+          {
             logs.map(({ type, message }: LogMessage, index: number) => (
-              <p key={index}>
+              <p key={index} className="text-wrap">
                 <span className={
                   clsx(
-                    "text-green-300"
+                    type === LogType.USER_INFO
+                    ? "text-green-300"
+                    : type === LogType.USER_ERROR
+                    ? "text-red-500"
+                    : type === LogType.USER_WARNING
+                    ? "text-yellow-400"
+                    : type === LogType.USER_DEBUG
+                    ? "text-gray-500"
+                    : "text-gray-400"
                   )
                 }>
-                  {type}
+                  {type}{type !== LogType.NONE && ": "}
                 </span>
                 &nbsp;
                 <span>
@@ -75,8 +86,7 @@ export default function LogsApp() {
                 </span>
               </p>
             ))
-          } */}
-          {testLogs}
+          }
         </div>
       </div>
     </div>

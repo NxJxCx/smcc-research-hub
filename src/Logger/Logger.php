@@ -26,7 +26,7 @@ class Logger
   }
   static public function write_debug(string $message)
   {
-    if ($_ENV['PHP_ENV'] !== 'production') {
+    if (PHP_ENV === 'development') {
       $txt = "[USER DEBUG] $message";
       error_log($txt);
       error_log($txt . PHP_EOL, 3,LOGGER_FILE_PATH);
