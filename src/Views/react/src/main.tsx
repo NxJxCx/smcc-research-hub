@@ -16,7 +16,6 @@ function addLinkElement(href: string) {
 root.render(<Loading className="h-[calc(100vh-160px)] w-full flex items-center justify-center p-0 m-0" />);
 async function render() {
   try {
-    console.log("react app", jsxAppPath);
     const App = (await import(jsxAppPath as string))?.default;
     root.render(<App />);
   } catch (error) {

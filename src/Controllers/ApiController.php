@@ -328,4 +328,68 @@ class ApiController extends Controller
       return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
+
+  public function allStudents(Request $request)
+  {
+    if (!RouterSession::isAuthenticated() || !RouterSession::getUserAccountType() === 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $students = $db->getAllRows(Student::class);
+      return Response::json(['success' => array_map(fn($s) => $s->toArray(), $students)]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function allPersonnels(Request $request)
+  {
+    if (!RouterSession::isAuthenticated() || !RouterSession::getUserAccountType() === 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $personnel = $db->getAllRows(Personnel::class);
+      return Response::json(['success' => array_map(fn($s) => $s->toArray(), $personnel)]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function deleteStudent(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getQueryParam('id');
+    if (!$id) {
+      return Response::json(['error' => 'Missing Student ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $student = Database::getInstance()->fetchOne(Student::class, ['student_id' => $id]);
+      $student->delete();
+      return Response::json(['success'=> true]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function deletePersonnel(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getQueryParam('id');
+    if (!$id) {
+      return Response::json(['error' => 'Missing Teacher ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $personnel = Database::getInstance()->fetchOne(Personnel::class, ['personnel_id' => $id]);
+      $personnel->delete();
+      return Response::json(['success'=> true]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
 }

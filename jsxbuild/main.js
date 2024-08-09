@@ -13,7 +13,6 @@ function addLinkElement(href) {
 root.render(React.createElement(Loading, { className: "h-[calc(100vh-160px)] w-full flex items-center justify-center p-0 m-0" }));
 async function render() {
     try {
-        console.log("react app", jsxAppPath);
         const App = (await import(jsxAppPath))?.default;
         root.render(React.createElement(App, null));
     }

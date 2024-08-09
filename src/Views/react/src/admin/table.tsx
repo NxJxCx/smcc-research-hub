@@ -36,19 +36,30 @@ export interface TableRow {
 }
 
 
-export function TableRowAction({ id, onView = (id: string|number) => {}, onDelete = (id: string|number) => {} }: { id: string|number, onView?: (id: string|number) => void, onDelete?: (id: string|number) => void }) {
+export function TableRowAction({ id, onView, onEdit, onDelete }: { id: string|number, onView?: (id: string|number) => void, onEdit?: (id: string|number) => void, onDelete?: (id: string|number) => void }) {
   return (
     <div className="grid grid-cols-2 gap-x-1 max-w-[80px] mx-auto items-center">
-      <button type="button" className="p-1 text-white hover:text-green-500" title="Preview" onClick={() => onView(id)}>
-        <span className="material-symbols-outlined">
-          preview
-        </span>
-      </button>
-      <button type="button" className="p-1 text-red-500" title="Delete" onClick={() => onDelete(id)}>
-        <span className="material-symbols-outlined">
-          delete
-        </span>
-      </button>
+      {onView && (
+        <button type="button" className="p-1 text-white hover:text-green-500" title="Preview" onClick={() => onView(id)}>
+          <span className="material-symbols-outlined">
+            preview
+          </span>
+        </button>
+      )}
+      {onEdit && (
+        <button type="button" className="p-1 text-sky-500 hover:text-white" title="Delete" onClick={() => onEdit(id)}>
+          <span className="material-symbols-outlined">
+            edit
+          </span>
+        </button>
+      )}
+      {onDelete && (
+        <button type="button" className="p-1 text-red-500 hover:text-red-300" title="Delete" onClick={() => onDelete(id)}>
+          <span className="material-symbols-outlined">
+            delete
+          </span>
+        </button>
+      )}
     </div>
   )
 }

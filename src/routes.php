@@ -47,6 +47,8 @@ Router::GET('/api/thesis/all', [ApiController::class, 'thesisList']);
 Router::GET('/api/journal/all', [ApiController::class, 'journalList']);
 Router::GET('/api/dashboard/statistics', [ApiController::class, 'dashboardStatistics']);
 Router::GET('/api/logs', [NotificationController::class, 'logs']);
+Router::GET('/api/student/all', [ApiController::class,'allStudents']);
+Router::GET('/api/teacher/all', [ApiController::class,'allPersonnels']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);
@@ -62,6 +64,8 @@ Router::POST('/api/upload/images', [FileController::class, 'uploadImages']);
 /* DELETE METHOD */
 Router::DELETE('/api/thesis/delete', [ApiController::class, 'deleteThesis']);
 Router::DELETE('/api/journal/delete', [ApiController::class, 'deleteJournal']);
+Router::DELETE('/api/student/delete', [ApiController::class, 'deleteStudent']);
+Router::DELETE('/api/teacher/delete', [ApiController::class, 'deletePersonnel']);
 
 /* ERROR PAGES */
 Router::NOTFOUND([ViewController::class, 'notFound']);
