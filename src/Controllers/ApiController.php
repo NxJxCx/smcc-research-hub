@@ -25,8 +25,9 @@ class ApiController extends Controller
 
   public function studentInfo(Request $request): Response
   {
+    $q = $request->getQueryParam("q");
     try {
-      switch (['q']) {
+      switch ($q) {
         case 'exist':
           $db = Database::getInstance();
           $studentId = $request->getQueryParam('id');
