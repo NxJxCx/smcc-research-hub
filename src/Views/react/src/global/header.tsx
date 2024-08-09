@@ -21,7 +21,7 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
   const navRef = React.useRef<HTMLDivElement|null>(null);
   const ulRef = React.useRef<HTMLUListElement|null>(null);
   const toggleShow = React.useCallback(() => setShow(!show), [show]);
-  const pageData = React.useMemo(() => JSON.parse(document.getElementById('root')!.dataset.pageData as string), []);
+  const pageData = React.useMemo(() => JSON.parse(document.getElementById('root')?.dataset?.pageData as string), []);
 
   const pathname = React.useMemo(() => window.location.pathname, []);
 
@@ -56,10 +56,10 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
         <SearchInput search={search} setSearch={setSearch} />
         <ul className="flex flex-col gap-2 w-full h-full font-[500]" ref={ulRef}>
           <li>
-            { pageData.authenticated ? (
+            { pageData?.authenticated ? (
                 <div className="px-4 py-3 text-sm text-gray-900">
-                  <div>{pageData.auth_data.full_name}</div>
-                  <div className="font-medium truncate capitalize">{pageData.auth_data.account}</div>
+                  <div>{pageData?.authData?.full_name}</div>
+                  <div className="font-medium truncate capitalize">{pageData?.authData?.account}</div>
                 </div>
               ) : (
                 <div className="px-4 flex flex-col gap-2">
@@ -85,7 +85,7 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
             ))
           }
           <li>
-            { pageData.authenticated ? (
+            { pageData?.authenticated ? (
                 <form action="/logout" method="post">
                   <a href="/settings" className="block px-4 py-2 hover:bg-gray-200">Settings</a>
                   <button type="submit" className="block px-4 pt-2 text-red-400 hover:text-red-700 w-full text-start">Sign out</button>

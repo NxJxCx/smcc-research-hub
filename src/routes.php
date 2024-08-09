@@ -18,7 +18,7 @@ Session::index();
 Router::STATIC('/jsx', REACT_DIST_PATH, 'js');
 
 /* GET METHOD */
-Router::GET('/', [ViewController::class, 'index']);
+Router::GET('/', [ViewController::class, 'home']);
 Router::GET('/login', [ViewController::class, 'studentLogin']);
 Router::GET('/admin/login', [ViewController::class, 'adminLogin']);
 Router::GET('/teacher/login', [ViewController::class, 'personnelLogin']);

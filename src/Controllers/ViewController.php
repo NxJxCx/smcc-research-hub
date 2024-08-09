@@ -6,24 +6,27 @@ namespace Smcc\ResearchHub\Controllers;
 
 use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
-use Smcc\ResearchHub\Views\Errors\ErrorPage;
+use Smcc\ResearchHub\Views\Global\View;
 use Smcc\ResearchHub\Views\Pages\Admin\AdminPages;
-use Smcc\ResearchHub\Views\Pages\Admin\LoginPage as AdminLoginPage;
+use Smcc\ResearchHub\Views\Pages\Admin\ReactPages;
+use Smcc\ResearchHub\Views\Pages\Error400Page;
+use Smcc\ResearchHub\Views\Pages\Error500Page;
 use Smcc\ResearchHub\Views\Pages\HomePage;
-use Smcc\ResearchHub\Views\Pages\LogsPage;
-use Smcc\ResearchHub\Views\Pages\Student\LoginPage;
-use Smcc\ResearchHub\Views\Pages\Student\SignupPage;
-use Smcc\ResearchHub\Views\Pages\Teacher\LoginPage as TeacherLoginPage;
 
 class ViewController extends Controller
 {
 
-  public function index()
+  public function home(): View
   {
-    HomePage::view("Home");
+    $authData = Session::isAuthenticated() ? [
+      'account' => Session::getUserAccountType(),
+      'full_name' => Session::getUserFullName(),
+      'id' => Session::getUserId(),
+    ] : [];
+    return HomePage::view("Home", ['authenticated' => Session::isAuthenticated(), 'authData' => $authData], "/jsx/home");
   }
 
-  public function adminLogin()
+  public function adminLogin(): View
   {
     if (Session::isAuthenticated()) {
       if (Session::getUserAccountType() === "admin") {
@@ -31,48 +34,48 @@ class ViewController extends Controller
       }
       Router::redirect("/");
     }
-    AdminLoginPage::view("Admin Login");
+    return ReactPages::view("Admin Login", [], '/jsx/admin/login');
   }
 
-  public function studentLogin()
+  public function studentLogin(): View
   {
     if (Session::isAuthenticated()) {
       Router::redirect("/");
     }
-    LoginPage::view("Student Login");
+    return ReactPages::view("Student Login", [], '/jsx/student/login');
   }
 
-  public function teacherLogin()
+  public function teacherLogin(): View
   {
     if (Session::isAuthenticated()) {
       Router::redirect("/");
     }
-    TeacherLoginPage::view("Teacher Login");
+    return ReactPages::view("Teacher Login", [], '/jsx/teacher/login');
   }
 
-  public function studentSignup()
+  public function studentSignup(): View
   {
     if (Session::isAuthenticated()) {
       Router::redirect("/");
     }
-    SignupPage::view("Student Registration");
+    $data = ['authenticated' => Session::isAuthenticated()];
+    return ReactPages::view("Student Registration", $data, '/jsx/student/signup');
   }
 
-  public function redirectAdmin()
+  public function redirectAdmin(): void
   {
     if (Session::isAuthenticated() && Session::getUserAccountType() === "admin") {
       Router::redirect("/admin/dashboard");
-    } else {
-      Router::redirect("/admin/login");
     }
+    Router::redirect("/admin/login");
   }
 
-  public function adminDashboard()
+  public function adminDashboard(): View
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Admin Dashboard", 'admin/dashboard');
+    return AdminPages::view("Admin Dashboard", [], '/jsx/admin/dashboard');
   }
 
   public function adminThesisList()
@@ -80,39 +83,39 @@ class ViewController extends Controller
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Thesis List - Admin", 'admin/theses');
+    return AdminPages::view("Thesis List - Admin", [], '/jsx/admin/theses');
   }
 
-  public function adminJournalList()
+  public function adminJournalList(): View
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Journal List - Admin", 'admin/journal');
+    return AdminPages::view("Journal List - Admin", [], '/jsx/admin/journal');
   }
 
-  public function adminDepartmentList()
+  public function adminDepartmentList(): View
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Department List - Admin", 'admin/departments');
+    return AdminPages::view("Department List - Admin", [], '/jsx/admin/departments');
   }
 
-  public function adminRecentThesisDeployed()
+  public function adminRecentThesisDeployed(): View
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Recently Published - Admin", 'admin/recent');
+    return AdminPages::view("Recently Published - Admin", [], '/jsx/admin/recent');
   }
 
-  public function adminAnnouncements()
+  public function adminAnnouncements(): View
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Announcements - Admin", 'admin/announcements');
+    return AdminPages::view("Announcements - Admin", [], '/jsx/admin/announcements');
   }
 
   public function adminDownloads()
@@ -120,7 +123,7 @@ class ViewController extends Controller
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Downloads - Admin", 'admin/downloads');
+    return AdminPages::view("Downloads - Admin", [], '/jsx/admin/downloads');
   }
 
   public function adminStudentList()
@@ -128,7 +131,7 @@ class ViewController extends Controller
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Student List - Admin", 'admin/students');
+    return AdminPages::view("Student List - Admin", [], '/jsx/admin/students');
   }
 
   public function adminTeacherAccounts()
@@ -136,19 +139,19 @@ class ViewController extends Controller
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       Router::redirect("/admin/login");
     }
-    AdminPages::view("Teacher Accounts - Admin", 'admin/teachers');
+    return AdminPages::view("Teacher Accounts - Admin", [], '/jsx/admin/teachers');
   }
 
-  public function notFound()
+  public function notFound(): View
   {
-    ErrorPage::notFound("Page not found - {$this->head_title}");
+    return Error400Page::view("Page not found - {$this->head_title}");
   }
-  public function error($message)
+  public function error($message): View
   {
-    ErrorPage::internalServerError("Error 500 - {$this->head_title}", $message);
+    return Error500Page::view("Error 500 - {$this->head_title}", ["message" => $message]);
   }
 
-  public function favicon()
+  public function favicon(): void
   {
     readfile(implode(DIRECTORY_SEPARATOR, [ASSETS_PATH,  'favicon.ico']));
     exit;
@@ -156,6 +159,6 @@ class ViewController extends Controller
 
   public function logs()
   {
-    LogsPage::view("Logs");
+    return ReactPages::view("Logs", [], "/jsx/logs");
   }
 }

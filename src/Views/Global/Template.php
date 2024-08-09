@@ -4,17 +4,59 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Global;
 
-class ReactTemplate
+class Template
 {
-  static public function render(string $reactAppPath, array $data)
+  static public function default(string $title, callable $method, ?array $data = [], ?string $reactFileName = null)
   {
-?>
+    Head::default($title);
+  ?>
+    <body>
+      <main
+        id="root"
+        class="relative w-full"
+        data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+      >
+        <?php if (is_callable($method)) { $method($data); }?>
+      </main>
+      <?php Footer::default(); ?>
+      <?php if (!empty($reactFileName)) { ?>
+        <script type="module" src="<?php echo $reactFileName; ?>"></script>
+      <?php } ?>
+    </body>
+  <?php
+  }
 
+  static public function defaultWithNav(string $title, callable $method, ?array $data = [], ?string $reactFileName = null)
+  {
+    Head::default($title);
+  ?>
+    <body>
+      <?php Header::default(); ?>
+      <main
+        id="root"
+        class="relative w-full"
+        data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+      >
+        <?php if (is_callable($method)) { $method($data); }?>
+      </main>
+      <?php Footer::default(); ?>
+      <script type="module" src="/jsx/global/header"></script>
+      <?php if (!empty($reactFileName)) { ?>
+      <script type="module" src="<?php echo $reactFileName; ?>"></script>
+      <?php } ?>
+    </body>
+  <?php
+  }
+
+  static public function react(string $title, string $reactAppPath, array $data)
+  {
+    Head::default($title);
+  ?>
     <body>
       <main
         id="root"
         class="relative w-full min-h-[calc(100vh-100px)]"
-        data-react-app="<?php echo htmlspecialchars(implode('/', ['/jsx', $reactAppPath])); ?>"
+        data-react-app="<?php echo htmlspecialchars($reactAppPath); ?>"
         data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
       ></main>
       <?php Footer::default(); ?>
@@ -23,29 +65,29 @@ class ReactTemplate
   <?php
   }
 
-  static public function renderWithNav(string $reactAppPath, array $data)
+  static public function reactWithNav(string $title, string $reactAppPath, array $data)
   {
+    Head::default($title);
   ?>
-
     <body>
       <?php Header::default(); ?>
       <main
         id="root"
         class="relative w-full min-h-[calc(100vh - 160px)]"
-        data-react-app="<?php echo htmlspecialchars(implode('/', ['/jsx', $reactAppPath])); ?>"
+        data-react-app="<?php echo htmlspecialchars($reactAppPath); ?>"
         data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
       ></main>
       <?php Footer::default(); ?>
       <script type="module" src="/jsx/global/header"></script>
       <script type="module" src="/jsx/main"></script>
     </body>
-<?php
+  <?php
   }
 
-  static public function renderWithSidebar(string $reactAppPath, array $data, array $sidebarListData)
+  static public function reactWithSidebar(string $title, string $reactAppPath, array $data, array $sidebarListData)
   {
+    Head::default($title);
   ?>
-
     <body>
       <div class="container-fluid relative flex max-h-screen overflow-hidden w-full">
         <aside id="sidebar-nav" class="min-w-[250px] bg-[#262e36] max-h-screen h-screen" data-sidebar-list="<?php echo htmlspecialchars(json_encode($sidebarListData)); ?>">
@@ -76,7 +118,7 @@ class ReactTemplate
           <div
             id="root"
             class="w-full min-h-[calc(100vh-160px)]"
-            data-react-app="<?php echo htmlspecialchars(implode('/', ['/jsx', $reactAppPath])); ?>"
+            data-react-app="<?php echo htmlspecialchars($reactAppPath); ?>"
             data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
           ></div>
           <?php Footer::default(); ?>
@@ -86,6 +128,6 @@ class ReactTemplate
       <script type="module" src="/jsx/admin/header"></script>
       <script type="module" src="/jsx/main"></script>
     </body>
-<?php
+  <?php
   }
 }

@@ -6,20 +6,12 @@ const jsxAppPath = rootDOM?.dataset.reactApp;
 const pageData = rootDOM?.dataset.pageData;
 const root = ReactDOM.createRoot(rootDOM);
 
-function addLinkElement(href: string) {
-  const link = document.createElement('link');
-  link.href = href;
-  link.rel = "stylesheet";
-  document.head.appendChild(link);
-}
-
 root.render(<Loading className="h-[calc(100vh-160px)] w-full flex items-center justify-center p-0 m-0" />);
 async function render() {
   try {
     const App = (await import(jsxAppPath as string))?.default;
     root.render(<App />);
   } catch (error) {
-    addLinkElement("https://fonts.googleapis.com/css?family=Nunito:400,700");
     root.render(
       <div className="relative h-full">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[560px] w-full leading-[1.1] px-[15px] pt-[110px] md:pl-[160px] md:pt-0 md:pr-0">

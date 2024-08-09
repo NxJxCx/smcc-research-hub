@@ -6,6 +6,7 @@ namespace Smcc\ResearchHub\Router;
 
 use Exception;
 use Smcc\ResearchHub\Logger\Logger;
+use Smcc\ResearchHub\Views\Global\View;
 
 class Router
 {
@@ -77,6 +78,8 @@ class Router
             $response = call_user_func([$instance, $method], new Request($this->method, $this->uri, $this->query, $this->body, $this->files, getallheaders()));
             if ($response instanceof Response) {
               $response->sendResponse(); // response ends here
+            } else if ($response instanceof View) {
+              $response->render(); // response ends here
             }
             Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
             exit; // if it is a view, exit here

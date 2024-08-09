@@ -4,25 +4,16 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Pages;
 
-use Smcc\ResearchHub\Router\Session;
-use Smcc\ResearchHub\Views\Global\DefaultTemplate;
-use Smcc\ResearchHub\Views\Global\HeadTemplate;
+use Smcc\ResearchHub\Views\Global\Template;
+use Smcc\ResearchHub\Views\Global\View;
 
-class HomePage
+class HomePage extends View
 {
-  static public function view(string $title)
+  public function render(): void
   {
-    HeadTemplate::default($title);
-    $authData = Session::isAuthenticated() ? [
-      'account' => Session::getUserAccountType(),
-      'full_name' => Session::getUserFullName(),
-      'id' => Session::getUserId(),
-    ] : [];
-    DefaultTemplate::renderWithNav([self::class, 'render'], ['authenticated' => Session::isAuthenticated(), 'auth_data' => $authData], 'home');
-  }
-  static public function render(array $data = [])
-  {
-    // Render page here
+    Template::defaultWithNav(
+      $this->getTitle(),
+      function () {
 ?>
   <div class="flex flex-col justify-center items-center text-center my-8 font-[Poppins] font-[600] text-[48px] leading-[72px] text-[#16507B]">
     <h1>Where Knowledge Meets</h1>
@@ -47,5 +38,9 @@ class HomePage
     &nbsp;
   </div>
 <?php
+      },
+      $this->getData(),
+      $this->getReactAppPath()
+    );
   }
 }
