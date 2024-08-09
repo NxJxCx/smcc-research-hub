@@ -43,9 +43,9 @@ if (file_exists($envFile)) {
       $_ENV[$key] = $value;
     }
   }
-  if (!defined("APP_ENV")) {
+  if (!isset($_ENV['PHP_ENV'])) {
     $phpEnv = str_ends_with($envFile, '.env.production') ? 'production' : 'development';
-    define('APP_ENV', $phpEnv);
+    $_ENV['PHP_ENV'] = $phpEnv;
   }
 }
 
