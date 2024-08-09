@@ -79,6 +79,10 @@ class Response
 
   public function sendResponse(): void
   {
+    if ($this->sendType === ResponseSendType::REDIRECT) {
+      header("Location: {$this->content}");
+      exit;
+    }
     $contentType = match ($this->sendType) {
       ResponseSendType::JSON => 'application/json; charset=utf-8',
       ResponseSendType::TEXT => 'text/plain; charset=utf-8',
@@ -93,9 +97,7 @@ class Response
     }
     if ($this->sendType !== ResponseSendType::STREAM) {
       http_response_code($this->statusCode->value);
-      if ($this->sendType === ResponseSendType::REDIRECT) {
-        Router::redirect($this->content);
-      } else if ($this->sendType === ResponseSendType::FILE) {
+    if ($this->sendType === ResponseSendType::FILE) {
         readfile($this->content);
       } else {
         echo $this->content;
