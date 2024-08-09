@@ -43,7 +43,7 @@ if (file_exists($envFile)) {
       putenv("$key=$value");
     }
   }
-  if (!array_key_exists('PHP_ENV', $_ENV) || !defined('PHP_ENV')) {
+  if (!array_key_exists('PHP_ENV', $_ENV)) {
     $phpEnv = ($envFile === '.env.production') ? 'production' : 'development';
     putenv("PHP_ENV=$phpEnv");
     define('PHP_ENV', $phpEnv);
