@@ -391,7 +391,7 @@ class Model implements ModelInterface
         array_keys($this->getForeignConstraints()),
         function($init, $fkname) use ($includeChildrenForeignKeys) {
           $fkValue = $this->{static::FOREIGN_KEY_PREFIX . $fkname};
-          $init[static::FOREIGN_KEY_PREFIX . $fkname] = $fkValue === null ? null : $fkValue->toArray($includeChildrenForeignKeys);
+          $init[static::FOREIGN_KEY_PREFIX . $fkname] = !$fkValue ? $fkValue : $fkValue->toArray($includeChildrenForeignKeys);
           return $init;
         },
         []
