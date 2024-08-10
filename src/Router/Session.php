@@ -22,12 +22,6 @@ class Session
       $db = Database::getInstance();
       $cookieSession = Cookies::get('session_id');
       if (!$cookieSession) {
-        Logger::write_debug("Check if ip address exists in the database session table");
-        $sessionOld = $db->fetchOne(SessionModel::class, ['ip_address' => self::getClientIpAddress(), 'user_agent' => self::getClientAgent()]);
-        if ($sessionOld) {
-          Logger::write_debug("Found old session: session_id={$sessionOld->session_id}; Deleting old session");
-          $sessionOld->delete();
-        }
         Logger::write_debug("No session cookie found");
         $cookieSession = Cookies::set('session_id', bin2hex(random_bytes(16)), 60 * 60 * 8);
         // Initialize session data to database
