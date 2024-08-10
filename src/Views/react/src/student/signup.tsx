@@ -190,8 +190,8 @@ function StudentSignup() {
             <select value={department} onChange={(e: any) => setDepartment(e.target.value)} title="Department" className="p-4 w-full border-2 border-gray-300 rounded-lg bg-sky-50" required>
               <option value="">-- Select Department --</option>
               {
-                Object.entries(Departments).map(([key, value]) => (
-                  <option key={key} value={value}>{value}</option>
+                Object.keys(DepartmentCourses).map((value: Departments|string, index: number) => (
+                  <option key={"department_" + index} value={value}>{value}</option>
                 ))
               }
             </select>

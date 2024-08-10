@@ -1,5 +1,5 @@
 import clsx from "/jsx/global/clsx"
-import { Courses, Departments } from "/jsx/global/enums"
+import { Courses, DepartmentCourses, Departments } from "/jsx/global/enums"
 import { Input, Select } from "/jsx/global/input"
 import Modal from "/jsx/global/modal"
 import PdfViewer from "/jsx/global/pdfviewer"
@@ -18,8 +18,8 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
   const [uploadProgress, setUploadProgress] = React.useState<number>(0)
   const [xhr, setXhr] = React.useState<XMLHttpRequest|null>(null)
   const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
-  const departmentList = React.useMemo(() => Object.keys(Departments).map((d) => ({ label: Departments[d as keyof typeof Departments], value: Departments[d as keyof typeof Departments] })))
-  const courseList = React.useMemo(() => Object.keys(Courses).map((d) => ({ label: Courses[d as keyof typeof Courses], value: Courses[d as keyof typeof Courses] })))
+  const departmentList = React.useMemo(() => Object.keys(DepartmentCourses).map((d) => ({ label: d, value: d })))
+  const courseList = React.useMemo(() => DepartmentCourses[journalDepartment].map((d) => ({ label: d, value: d })))
   const isFormDisabled = React.useMemo(() => uploadProgress !== 0, [uploadProgress]);
 
   React.useEffect(() => {
