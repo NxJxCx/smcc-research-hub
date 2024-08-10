@@ -53,6 +53,7 @@ function ThesesPage() {
                         title: 'Is this thesis published?',
                         text: 'Are you sure you want this thesis to be marked as published?',
                         input: 'textarea',
+                        label: 'Abstract (required)',
                         inputAttributes: {
                           id: 'abstract',
                           name: 'abstract',

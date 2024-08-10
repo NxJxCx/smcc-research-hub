@@ -53,6 +53,7 @@ function JournalPage() {
                         title: 'Is this journal published?',
                         text: 'Are you sure you want this journal to be marked as published?',
                         input: 'textarea',
+                        label: 'Abstract (required)',
                         inputAttributes: {
                           id: 'abstract',
                           name: 'abstract',
