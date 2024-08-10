@@ -272,10 +272,10 @@ class ApiController extends Controller
     }
     $id = $request->getQueryParam('id');
     if (!$id) {
-      return Response::json(['error' => 'Missing thesis ID.'], StatusCode::BAD_REQUEST);
+      return Response::json(['error' => 'Missing Thesis ID.'], StatusCode::BAD_REQUEST);
     }
     try {
-      $thesis = Database::getInstance()->fetchOne(Thesis::class, ['id' => $id]);
+      $thesis = Database::getInstance()->fetchOne(Thesis::class, [(new Thesis())->getPrimaryKey() => $id]);
       // remove the file associated with the thesis
       $queryString = explode("?", $thesis->url)[1];
       $params = [];
@@ -304,10 +304,10 @@ class ApiController extends Controller
     }
     $id = $request->getQueryParam('id');
     if (!$id) {
-      return Response::json(['error' => 'Missing journal ID.'], StatusCode::BAD_REQUEST);
+      return Response::json(['error' => 'Missing Journal ID.'], StatusCode::BAD_REQUEST);
     }
     try {
-      $journal = Database::getInstance()->fetchOne(Journal::class, ['id' => $id]);
+      $journal = Database::getInstance()->fetchOne(Journal::class, [(new Journal())->getPrimaryKey() => $id]);
       // remove the file associated with the journal
       $queryString = explode("?", $journal->url)[1];
       $params = [];
