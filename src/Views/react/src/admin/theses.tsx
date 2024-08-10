@@ -51,13 +51,14 @@ function ThesesPage() {
                       Sweetalert2.fire({
                         icon: 'question',
                         title: 'Is this thesis published?',
-                        text: 'Are you sure you want this thesis to be marked as published?',
+                        text: 'Abstract (required)',
                         input: 'textarea',
-                        label: 'Abstract (required)',
                         inputAttributes: {
                           id: 'abstract',
                           name: 'abstract',
                           autocapitalize: "off",
+                          label: 'Abstract (required)',
+                          placeholder: 'Abstract (required)',
                           rows: 5,
                           cols: 30,
                           required: true,

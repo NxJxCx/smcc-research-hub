@@ -51,12 +51,13 @@ function JournalPage() {
                       Sweetalert2.fire({
                         icon: 'question',
                         title: 'Is this journal published?',
-                        text: 'Are you sure you want this journal to be marked as published?',
+                        text: 'Abstract (required)',
                         input: 'textarea',
-                        label: 'Abstract (required)',
                         inputAttributes: {
                           id: 'abstract',
                           name: 'abstract',
+                          label: 'Abstract (required)',
+                          placeholder: 'Abstract (required)',
                           autocapitalize: "off",
                           rows: 5,
                           cols: 30,
