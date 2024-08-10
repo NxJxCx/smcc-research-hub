@@ -57,6 +57,8 @@ Router::POST('/api/login', [ApiController::class, 'login']);
 Router::POST('/api/signup', [ApiController::class, 'signup']);
 Router::POST('/api/upload/pdf', [FileController::class, 'uploadPdf']);
 Router::POST('/api/upload/images', [FileController::class, 'uploadImages']);
+Router::POST('/api/thesis/publish', [ApiController::class, 'publishThesis']);
+Router::POST('/api/journal/publish', [ApiController::class, 'publishJournal']);
 
 /* PUT METHOD */
 

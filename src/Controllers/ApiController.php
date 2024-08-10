@@ -285,7 +285,7 @@ class ApiController extends Controller
       $published_id = $publish->create();
       $thesis->published_id = $published_id;
       $success = $thesis->update();
-      return Response::json(['success'=> $success]);
+      return Response::json(['success'=> $success], $success ? StatusCode::CREATED : StatusCode::OK);
     } catch (\PDOException $e) {
       return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
@@ -312,7 +312,7 @@ class ApiController extends Controller
       $published_id = $publish->create();
       $journal->published_id = $published_id;
       $success = $journal->update();
-      return Response::json(['success'=> $success]);
+      return Response::json(['success'=> $success], $success ? StatusCode::CREATED : StatusCode::OK);
     } catch (\PDOException $e) {
       return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
