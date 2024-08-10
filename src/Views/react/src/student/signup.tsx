@@ -1,4 +1,4 @@
-import { Courses, Departments, IDRegExFormat, Year } from "/jsx/global/enums";
+import { Courses, DepartmentCourses, Departments, IDRegExFormat, Year } from "/jsx/global/enums";
 import SMCCLogo from "/jsx/global/smcclogo";
 import { React, Sweetalert2 } from "/jsx/imports";
 import Scanner from "/jsx/qrscan";
@@ -18,6 +18,7 @@ function StudentSignup() {
   const [errors, setErrors] = React.useState<any>({
     password: ''
   });
+  const departmentCourses = React.useMemo(() => DepartmentCourses[department] || [], [department]);
 
   const disableSubmit = React.useMemo(() => showScanner || !email || !password || !department || !course || !year, [showScanner, email, password, department, course, year]);
 
@@ -199,8 +200,8 @@ function StudentSignup() {
             <select value={course} onChange={(e: any) => setCourse(e.target.value)} title="Course" className="p-4 w-full border-2 border-gray-300 rounded-lg bg-sky-50" required>
             <option value="">-- Select Course --</option>
               {
-                Object.entries(Courses).map(([key, value]) => (
-                  <option key={key} value={value}>{value}</option>
+                departmentCourses.map((value: Courses, index: number) => (
+                  <option key={"course_" + index} value={value}>{value}</option>
                 ))
               }
             </select>
