@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Router;
 
+use Exception;
 use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\Admin;
 use Smcc\ResearchHub\Models\AdminLogs;
@@ -11,21 +12,44 @@ use Smcc\ResearchHub\Models\Database;
 use Smcc\ResearchHub\Models\PersonnelLogs;
 use Smcc\ResearchHub\Models\Session as SessionModel;
 use Smcc\ResearchHub\Models\StudentLogs;
+use Smcc\ResearchHub\Views\Pages\Error500Page;
 
 class Session
 {
   public static function index(): void
   {
-    if (!Cookies::has('session_id')) {
-      Logger::write_debug("No session cookie found");
-      $cookieSession = Cookies::set('session_id', bin2hex(random_bytes(16)), 60 * 60 * 8);
-      // Initialize session data to database
-      $session = new SessionModel(['session_id' => $cookieSession]);
-      $session->create();
-      Logger::write_info("New session created: session_id={$cookieSession}");
+    try {
+      $db = Database::getInstance();
+      $cookieSession = Cookies::get('session_id');
+      if (!$cookieSession) {
+        Logger::write_debug("Check if ip address exists in the database session table");
+        $sessionOld = $db->fetchOne(SessionModel::class, ['ip_address' => self::getClientIpAddress(), 'user_agent' => self::getClientAgent()]);
+        if ($sessionOld) {
+          Logger::write_debug("Found old session: session_id={$sessionOld->session_id}; Deleting old session");
+          $sessionOld->delete();
+        }
+        Logger::write_debug("No session cookie found");
+        $cookieSession = Cookies::set('session_id', bin2hex(random_bytes(16)), 60 * 60 * 8);
+        // Initialize session data to database
+        $session = new SessionModel(['session_id' => $cookieSession, 'ip_address' => self::getClientIpAddress(), 'user_agent' => self::getClientAgent()]);
+        $session->create();
+        Logger::write_info("New session created: session_id={$cookieSession}");
+      } else {
+        Logger::write_debug("Session cookie found");
+        $session = $db->fetchOne(SessionModel::class, ['session_id' => $cookieSession, 'ip_address' => self::getClientIpAddress(), 'user_agent' => self::getClientAgent()]);
+        if (!$session) {
+          Logger::write_debug("Session not found in the database");
+          unset($_SESSION['auth']);
+          // decode JWT token to get user id and expiration time
+          Cookies::delete('session_id');
+        }
+      }
+      // seed an admin account if not exists
+      Admin::seed();
+    } catch (\Throwable $e) {
+      Logger::write_error("Failed to initialize session: ". $e->getMessage());
+      new Error500Page('Internal Server Error', ["message" => $e->getMessage() . "\n" . $e->getTraceAsString()]);
     }
-    // seed an admin account if not exists
-    Admin::seed();
   }
 
   public static function getSession(): ?array
@@ -51,6 +75,9 @@ class Session
         $_SESSION['auth'] = json_encode($payload['data']);
         return true;
       }
+      $session->delete();
+      Cookies::delete('session_id');
+      Logger::write_debug("Session expired or invalid: session_id={$session_cookie}");
     }
     unset($_SESSION['auth']);
     return false;
@@ -73,17 +100,20 @@ class Session
       Cookies::set('session_id', $cookie_session, 60 * 60 * 8);
     }
     Logger::write_debug("Updating session in database");
-    $session = $db->fetchOne(SessionModel::class, ['session_id' => $cookie_session]);
-    Logger::write_debug("Fetched session:");
+    $session = $db->fetchOne(SessionModel::class, ['session_id' => $cookie_session, 'ip_address' => self::getClientIpAddress(), 'user_agent' => self::getClientAgent()]);
     if (!$session) {
-      $session = new SessionModel(['session_id' => $cookie_session, 'token' => $token]);
-      $session->create();
+      try {
+        $session = new SessionModel(['session_id' => $cookie_session, 'token' => $token, 'ip_address' => self::getClientIpAddress(), 'user_agent' => self::getClientAgent()]);
+        $session->create();
+      } catch (\PDOException $e) {
+        Logger::write_debug("Session Expired. Refresh the page and try again.\n". $e->getMessage());
+        throw new Exception("Session Expired. Please refresh the page.");
+      }
     } else {
       $session->token = $token;
       sleep(1);
-      Logger::write_debug("Updating session in database");
       $session->update();
-      Logger::write_debug("Session updated: ". json_encode($session->toArray()));
+      Logger::write_debug("Updated session in database");
     }
     Logger::write_debug("User auth session created for: account={$account}, id={$id}, full_name={$full_name}");
     return self::isAuthenticated();
@@ -115,9 +145,9 @@ class Session
       $uid = self::getUserId();
       $ipAddr = self::getClientIpAddress();
       $accType = ucfirst($accountType);
-      Logger::write_debug("$accType ID {$uid} logged out: session_id={$session_cookie} name={$fullName} IP: {$ipAddr}");
       $session->delete();
       Cookies::delete('session_id');
+      Logger::write_debug("$accType ID {$uid} logged out: session_id={$session_cookie} name={$fullName} IP: {$ipAddr}");
       switch ($accountType) {
         case 'admin':
           (new AdminLogs(['admin_id' => $uid, 'activity' => "$accType ID {$uid} has Logged out at {$ipAddr}"]))->create();
@@ -155,5 +185,11 @@ class Session
       Logger::write_error("Error retrieving client IP address: {$e->getMessage()}");
     }
     return '';
-}
+  }
+
+  public static function getClientAgent(): string
+  {
+    Logger::write_debug("GETTING USER AGENT");
+    return $_SERVER['HTTP_USER_AGENT'];
+  }
 }

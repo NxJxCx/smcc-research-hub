@@ -144,6 +144,8 @@ class Model implements ModelInterface
       // Close the SQL statement
       $sql .= ") ENGINE=InnoDB;";
 
+      // Logger::write_debug("Creating table: $sql");
+
       // Execute the table creation
       $db->getDb()->exec($sql);
     }
