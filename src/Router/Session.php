@@ -115,7 +115,9 @@ class Session
       $session->update();
       Logger::write_debug("Updated session in database");
     }
-    Logger::write_debug("User auth session created for: account={$account}, id={$id}, full_name={$full_name}");
+    $ipadd = self::getClientIpAddress();
+    $ua = self::getClientAgent();
+    Logger::write_info("User auth session created for: account={$account}, id={$id}, full_name={$full_name}, ip_address={$ipadd}, user_agent={$ua}");
     return self::isAuthenticated();
   }
 
