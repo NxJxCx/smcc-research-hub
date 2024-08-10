@@ -117,7 +117,7 @@ class Session
     }
     $ipadd = self::getClientIpAddress();
     $ua = self::getClientAgent();
-    Logger::write_info("User auth session created for: account={$account}, id={$id}, full_name={$full_name}, ip_address={$ipadd}, user_agent={$ua}");
+    Logger::write_info("User authorized for: account={$account}, id={$id}, full_name={$full_name}, ip_address={$ipadd}, user_agent={$ua}");
     return self::isAuthenticated();
   }
 
