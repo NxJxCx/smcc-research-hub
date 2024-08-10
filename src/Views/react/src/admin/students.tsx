@@ -26,6 +26,7 @@ function StudentsPage() {
       } else {
         setTableData(success.map((data: any) => {
           return {
+            id: data.student_id,
             student_id: data.student_id,
             created_at: data.created_at,
             full_name: data.full_name,

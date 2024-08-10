@@ -24,6 +24,7 @@ function TeachersPage() {
       } else {
         setTableData(success.map((data: any) => {
           return {
+            id: data.personnel_id,
             personnel_id: data.personnel_id,
             created_at: data.created_at,
             full_name: data.full_name,
