@@ -21,8 +21,7 @@ class Session extends Model
   public function getUniqueKeys(): array
   {
     return [
-      ['session_id'],
-      ['ip_address', 'user_agent'],
+      ['session_id', 'ip_address', 'user_agent'],
     ];
   }
 }
