@@ -26,7 +26,6 @@ function StudentsPage() {
       } else {
         setTableData(success.map((data: any) => {
           return {
-            id: data.student_id,
             student_id: data.student_id,
             created_at: data.created_at,
             full_name: data.full_name,
@@ -34,11 +33,12 @@ function StudentsPage() {
             year: data.year,
             department: data.department,
             course: data.course,
-            action: <TableRowAction id={data.id} onEdit={(id) => {
-              if (id === data.id) {
+            action: <TableRowAction id={data.student_id} onEdit={(id) => {
+              if (id === data.student_id) {
                 // TODO: Implement edit functionality
               }
             }} onDelete={(id) => {
+              console.log("ON DELETE STUDENT ID:", id);
               Sweetalert2.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",

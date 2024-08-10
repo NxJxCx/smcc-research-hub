@@ -30,7 +30,7 @@ function TeachersPage() {
             full_name: data.full_name,
             email: data.email,
             department: data.department,
-            action: <TableRowAction id={data.id} onEdit={(id) => {
+            action: <TableRowAction id={data.personnel_id} onEdit={(id) => {
               if (id === data.id) {
                 // TODO: Implement edit functionality
               }

@@ -367,7 +367,7 @@ class ApiController extends Controller
       return Response::json(['error' => 'Missing Student ID.'], StatusCode::BAD_REQUEST);
     }
     try {
-      $student = Database::getInstance()->fetchOne(Student::class, ['student_id' => $id]);
+      $student = Database::getInstance()->fetchOne(Student::class, [(new Student())->getPrimaryKey() => $id]);
       $student->delete();
       return Response::json(['success'=> true]);
     } catch (\PDOException $e) {
@@ -385,7 +385,7 @@ class ApiController extends Controller
       return Response::json(['error' => 'Missing Teacher ID.'], StatusCode::BAD_REQUEST);
     }
     try {
-      $personnel = Database::getInstance()->fetchOne(Personnel::class, ['personnel_id' => $id]);
+      $personnel = Database::getInstance()->fetchOne(Personnel::class, [(new Personnel())->getPrimaryKey() => $id]);
       $personnel->delete();
       return Response::json(['success'=> true]);
     } catch (\PDOException $e) {
