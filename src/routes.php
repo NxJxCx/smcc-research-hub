@@ -46,6 +46,8 @@ Router::GET('/api/test', [ApiController::class, 'test']); // test api route
 Router::GET('/api/student', [ApiController::class, 'studentInfo']);
 Router::GET('/api/thesis/all', [ApiController::class, 'thesisList']);
 Router::GET('/api/journal/all', [ApiController::class, 'journalList']);
+Router::GET('/api/thesis/published/all', [ApiController::class, 'allPublishedTheses']);
+Router::GET('/api/journal/published/all', [ApiController::class, 'allPublishedJournal']);
 Router::GET('/api/dashboard/statistics', [ApiController::class, 'dashboardStatistics']);
 Router::GET('/api/logs', [NotificationController::class, 'logs']);
 Router::GET('/api/student/all', [ApiController::class,'allStudents']);

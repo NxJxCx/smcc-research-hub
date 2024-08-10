@@ -382,6 +382,34 @@ class ApiController extends Controller
     }
   }
 
+  public function allPublishedTheses(): Response
+  {
+    if (!RouterSession::isAuthenticated()) {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $thesis = $db->getAllRows(PublishedThesis::class);
+      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $thesis)]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function allPublishedJournal(): Response
+  {
+    if (!RouterSession::isAuthenticated()) {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $journal = $db->getAllRows(PublishedJournal::class);
+      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $journal)]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
   public function allStudents(): Response
   {
     if (!RouterSession::isAuthenticated() || !RouterSession::getUserAccountType() === 'admin') {
