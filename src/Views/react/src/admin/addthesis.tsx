@@ -181,8 +181,8 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           <Input className="max-w-[180px] text-black" label="Thesis Title" name="title" value={thesisTitle} onChange={(e: any) => setThesisTitle(e.target.value)} disabled={isFormDisabled} required />
           <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={thesisAuthor} onChange={(e: any) => setThesisAuthor(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={thesisYear} onChange={(e: any) => setThesisYear(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={departmentList} label="Department" name="department" value={thesisDepartment} onChange={(e: any) => setThesisDepartment(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={courseList} label="Course" name="course" value={thesisCourse} onChange={(e: any) => setThesisCourse(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Department --", value: "" }, ...departmentList]} label="Department" name="department" value={thesisDepartment} onChange={(e: any) => { setThesisDepartment(e.target.value); setThesisCourse(""); }} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Course --", value: "" }, ...courseList]} label="Course" name="course" value={thesisCourse} onChange={(e: any) => setThesisCourse(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={

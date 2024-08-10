@@ -181,8 +181,8 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
           <Input className="max-w-[180px] text-black" label="Journal Title" name="title" value={journalTitle} onChange={(e: any) => setJournalTitle(e.target.value)} disabled={isFormDisabled} required />
           <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={journalAuthor} onChange={(e: any) => setJournalAuthor(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={journalYear} onChange={(e: any) => setJournalYear(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={departmentList} label="Department" name="department" value={journalDepartment} onChange={(e: any) => setJournalDepartment(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={courseList} label="Course" name="course" value={journalCourse} onChange={(e: any) => setJournalCourse(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Department --", value: "" }, ...departmentList]} label="Department" name="department" value={journalDepartment} onChange={(e: any) => { setJournalDepartment(e.target.value); setJournalCourse(""); }} disabled={isFormDisabled} required />
+          <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Course --", value: "" }, ...courseList]} label="Course" name="course" value={journalCourse} onChange={(e: any) => setJournalCourse(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={

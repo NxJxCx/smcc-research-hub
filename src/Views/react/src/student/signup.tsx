@@ -187,7 +187,7 @@ function StudentSignup() {
             <input type="email" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Email Address" value={email} onChange={(e: any) => setEmail(e.target.value)} required />
           </div>
           <div className="flex justify-center px-4">
-            <select value={department} onChange={(e: any) => setDepartment(e.target.value)} title="Department" className="p-4 w-full border-2 border-gray-300 rounded-lg bg-sky-50" required>
+            <select value={department} onChange={(e: any) => { setDepartment(e.target.value); setCourse(""); }} title="Department" className="p-4 w-full border-2 border-gray-300 rounded-lg bg-sky-50" required>
               <option value="">-- Select Department --</option>
               {
                 Object.keys(DepartmentCourses).map((value: Departments|string, index: number) => (
