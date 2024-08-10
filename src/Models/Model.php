@@ -269,8 +269,8 @@ class Model implements ModelInterface
         $db->getDb()->rollBack();
         return false;
       }
-      $db->getDb()->commit();
-      return $result;
+      $ok = $db->getDb()->commit();
+      return $ok;
     }
     return false;
   }

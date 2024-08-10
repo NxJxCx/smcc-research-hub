@@ -265,6 +265,59 @@ class ApiController extends Controller
     }
   }
 
+  public function publishThesis(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getBodyParam('id');
+    $abstract = $request->getBodyParam('abstract');
+    if (!$id) {
+      return Response::json(['error' => 'Missing Thesis ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $thesis = Database::getInstance()->fetchOne(Thesis::class, [(new Thesis())->getPrimaryKey() => $id]);
+      // publish the thesis
+      $publish = new PublishedThesis([
+        'thesis_id' => $thesis->getPrimaryKeyValue(),
+        'abstract' => $abstract,
+      ]);
+      $published_id = $publish->create();
+      $thesis->published_id = $published_id;
+      $success = $thesis->update();
+      return Response::json(['success'=> $success]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
+  public function publishJournal(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getBodyParam('id');
+    $abstract = $request->getBodyParam('abstract');
+    if (!$id) {
+      return Response::json(['error' => 'Missing Thesis ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $journal = Database::getInstance()->fetchOne(Journal::class, [(new Journal())->getPrimaryKey() => $id]);
+      // publish the thesis
+      $publish = new PublishedJournal([
+        'journal_id' => $journal->getPrimaryKeyValue(),
+        'abstract' => $abstract,
+      ]);
+      $published_id = $publish->create();
+      $journal->published_id = $published_id;
+      $success = $journal->update();
+      return Response::json(['success'=> $success]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
   public function deleteThesis(Request $request): Response
   {
     if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {

@@ -12,6 +12,7 @@ interface RequestInterface {
   public function getQueryParam(string $key): string;
   public function getQuery(): array;
   public function getBody(): array;
+  public function getBodyParam(string $key): mixed;
   public function getFiles(string $key): array|File|null;
   public function getAllFiles(): array;
   public function getHeaders(): array;
@@ -51,6 +52,9 @@ class Request implements RequestInterface {
   }
   public function getBody(): array {
     return $this->body;
+  }
+  public function getBodyParam(string $key): mixed {
+    return $this->body[$key] ?? null;
   }
   public function getFiles(string $key): array|File|null {
     return $this->files[$key] ?? null;

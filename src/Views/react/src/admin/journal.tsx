@@ -32,8 +32,7 @@ function JournalPage() {
       if (error) {
         console.log(error);
       } else {
-        setTableData(success.map((data: any) => {
-          return {
+        setTableData(success.map((data: any) => ({
             id: data.id,
             created_at: data.created_at,
             title: data.title,
@@ -44,62 +43,140 @@ function JournalPage() {
             published: {
               value: !data.published_id ? 1 : (new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
               content: !data.published_id
-                ? <button type="button" className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]">Unpublished</button>
-                : <>{(new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</>
+                ? (
+                  <button
+                    type="button"
+                    className="bg-white px-3 py-2 text-red-500 rounded-2xl font-[500] leading-[14.63px] text-[12px]"
+                    onClick={() => {
+                      Sweetalert2.fire({
+                        icon: 'question',
+                        title: 'Is this journal published?',
+                        text: 'Are you sure you want this journal to be marked as published?',
+                        input: 'textarea',
+                        inputAttributes: {
+                          id: 'abstract',
+                          name: 'abstract',
+                          autocapitalize: "off",
+                          rows: 5,
+                          cols: 30,
+                          required: true,
+                        },
+                        confirmButtonText: 'Yes, Mark as Published',
+                        confirmButtonColor: '#3085d6',
+                        showDenyButton: true,
+                        denyButtonText: 'No, Cancel',
+                        denyButtonColor: '#d33',
+                        showLoaderOnConfirm: true,
+                        preConfirm: async (abstract: string) => {
+                          try {
+                            if (!abstract) {
+                              throw new Error('Abstract is required');
+                            }
+                            const publishUrl = new URL('/api/journal/publish', window.location.origin);
+                            const response = await fetch(publishUrl, {
+                              method: 'POST',
+                              body: JSON.stringify({ id: data.id, abstract }),
+                              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            })
+                            if (!response.ok) {
+                              const { error } = await response.json()
+                              return Sweetalert2.showValidationMessage('Failed to publish: ' + error);
+                            }
+                            return response.json();
+                          } catch (error) {
+                            Sweetalert2.showValidationMessage('Failed to publish: ' + error);
+                          }
+                        },
+                        allowOutsideClick: () => !Sweetalert2.isLoading()
+                      }).then((result: any) => {
+                        if (result.isConfirmed) {
+                          if (result.value?.error) {
+                            Sweetalert2.fire({
+                              icon: 'error',
+                              title: 'Error',
+                              text: 'Failed to publish journal: ' + result.value.error,
+                              timer: 3000,
+                              toast: true,
+                              position: 'center'
+                            })
+                          } else {
+                            Sweetalert2.fire({
+                              icon: 'success',
+                              title: 'Journal Published',
+                              text: 'Journal has been marked as published successfully.',
+                              timer: 3000,
+                              toast: true,
+                              position: 'center'
+                            });
+                            fetchList();
+                          }
+                        }
+                      })
+                    }}
+                  >
+                    Unpublished
+                  </button>
+                ) : <>{(new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</>
             },
-            action: <TableRowAction id={data.id} onView={(id) => {
-              if (id === data.id) {
-                // Open the view journal modal
-                setPdfTitle(data.title);
-                setPdfAuthor("Author/s: " + data.author + " (" + data.year + ")");
-                setPdfUrl(new URL(`/read${data.url}`, window.location.origin).toString());
-              }
-            }} onDelete={(id) => {
-              Sweetalert2.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete journal!'
-              }).then(({ isConfirmed }: any) => {
-                if (isConfirmed) {
-                  fetch(`/api/journal/delete?id=${id}`, { method: 'DELETE' })
-                  .then(response => response.json())
-                  .then(({ success, error }) => {
-                    if (!success) {
-                      console.log(error);
-                      Sweetalert2.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to delete thesis: ' + error,
-                        confirmButtonText: 'Try Again',
-                      });
-                    } else {
-                      fetchList();
-                      Sweetalert2.fire({
-                        icon:'success',
-                        title: 'Deleted!',
-                        text: 'Journal has been deleted successfully.',
-                        timer: 3000
-                      });
+            action: (
+              <TableRowAction
+                id={data.id}
+                onView={(id) => {
+                  if (id === data.id) {
+                    // Open the view journal modal
+                    setPdfTitle(data.title);
+                    setPdfAuthor("Author/s: " + data.author + " (" + data.year + ")");
+                    setPdfUrl(new URL(`/read${data.url}`, window.location.origin).toString());
+                  }
+                }}
+                onDelete={(id) => {
+                  Sweetalert2.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete journal!'
+                  }).then(({ isConfirmed }: any) => {
+                    if (isConfirmed) {
+                      fetch(`/api/journal/delete?id=${id}`, { method: 'DELETE' })
+                      .then(response => response.json())
+                      .then(({ success, error }) => {
+                        if (!success) {
+                          console.log(error);
+                          Sweetalert2.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to delete thesis: ' + error,
+                            confirmButtonText: 'Try Again',
+                          });
+                        } else {
+                          fetchList();
+                          Sweetalert2.fire({
+                            icon:'success',
+                            title: 'Deleted!',
+                            text: 'Journal has been deleted successfully.',
+                            timer: 3000
+                          });
+                        }
+                      })
+                      .catch((er) => {
+                        console.log(er);
+                        Sweetalert2.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          text: 'Failed to delete journal',
+                          timer: 3000
+                        });
+                      })
                     }
                   })
-                  .catch((er) => {
-                    console.log(er);
-                    Sweetalert2.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: 'Failed to delete journal',
-                      timer: 3000
-                    });
-                  })
-                }
-              })
-            }} />,
+                }}
+              />
+            ),
           }
-        }))
+        )))
       }
     })
     .catch((e) => {
