@@ -61,7 +61,7 @@ function DashboardPage() {
   }, [])
 
   return (
-    <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 text-white">
+    <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 text-white min-w-fit">
       <div className="w-full pb-8 pt-4 px-6 divide-y divide-gray-500">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  justify-evenly gap-2 min-w-[120px]">
           <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">

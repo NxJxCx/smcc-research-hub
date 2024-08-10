@@ -103,7 +103,7 @@ function TeachersPage() {
   }, [])
 
   return (
-    <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 ">
+    <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 min-w-fit">
       <h1 className="text-white text-2xl my-2">Teacher List</h1>
       <Table columns={columns} items={tableData}>
         {/* Additional Toolbar Button */}
