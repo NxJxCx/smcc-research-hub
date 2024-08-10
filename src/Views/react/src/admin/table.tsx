@@ -72,6 +72,8 @@ type TableProps = {
   columns: TableColumn[],
   items: TableRow[],
   search?: string,
+  defaultSortOrder?: SortOrder,
+  defaultSortColumn?: string,
   onShowEntries?: (entries: number) => void,
   onSortColumn?: (column: string) => void,
   onSortOrder?: (order: SortOrder) => void,
@@ -79,11 +81,11 @@ type TableProps = {
   children?: React.ReactNode
 }
 
-export function Table({ columns, items, search, children, onShowEntries = (entries: number) => {}, onSortColumn = (column: string) => {}, onSortOrder = (order: SortOrder) => {}, onSearch = (search: string) => {}, ...props }: TableProps) {
+export function Table({ columns, items, search, children, defaultSortOrder, defaultSortColumn, onShowEntries = (entries: number) => {}, onSortColumn = (column: string) => {}, onSortOrder = (order: SortOrder) => {}, onSearch = (search: string) => {}, ...props }: TableProps) {
   const [searchString, setSearch] = React.useState(search || "")
   const [showEntries, setShowEntries] = React.useState<ShowEntries>(5)
-  const [sortColumn, setSortColumn] = React.useState(columns?.[0].sortable ? columns[0].key : "")
-  const [sortOrder, setSortOrder] = React.useState<SortOrder>(SortOrder.Ascending)
+  const [sortColumn, setSortColumn] = React.useState(defaultSortColumn || (columns?.[0].sortable ? columns[0].key : ""))
+  const [sortOrder, setSortOrder] = React.useState<SortOrder>(defaultSortOrder || SortOrder.Ascending)
   const [page, setPage] = React.useState(items.length > 0 ? 1 : 0);
   const [editPageNumber, setEditPageNumber] = React.useState(false);
   const finalItems = React.useMemo(() => {

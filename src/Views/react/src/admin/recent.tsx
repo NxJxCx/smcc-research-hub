@@ -1,4 +1,4 @@
-import { CellAlign, Table, TableCellType, TableColumn, TableRow, TableRowAction } from "/jsx/admin/table";
+import { CellAlign, SortOrder, Table, TableCellType, TableColumn, TableRow, TableRowAction } from "/jsx/admin/table";
 import { Tab, Tabs } from "/jsx/admin/tabs";
 import Modal from "/jsx/global/modal";
 import PdfViewer from "/jsx/global/pdfviewer";
@@ -17,9 +17,7 @@ const columns: TableColumn[] = [
   { label: "Action", key: "action", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
 ];
 
-
-function ThesesPage() {
-  const [openAddThesisForm, setShowAddThesisForm] = React.useState(false)
+function RecentPage() {
   const [pdfUrl, setPdfUrl] = React.useState("")
   const [pdfTitle, setPdfTitle] = React.useState("")
   const [pdfAuthor, setPdfAuthor] = React.useState("")
@@ -141,7 +139,7 @@ function ThesesPage() {
       >
         <Tab tabKey="thesis">
           <h1 className="text-white text-2xl my-2">Published Thesis</h1>
-          <Table columns={columns} items={thesisData}>
+          <Table columns={columns} items={thesisData} defaultSortColumn="created_at" defaultSortOrder={SortOrder.Descending}>
             {/* Additional Toolbar Button */}
             <div className="px-4">
               {/* Refresh Button */}
@@ -151,7 +149,7 @@ function ThesesPage() {
         </Tab>
         <Tab tabKey="journal">
           <h1 className="text-white text-2xl my-2">Published Journal</h1>
-          <Table columns={columns} items={journalData}>
+          <Table columns={columns} items={journalData} defaultSortColumn="created_at" defaultSortOrder={SortOrder.Descending}>
             {/* Additional Toolbar Button */}
             <div className="px-4">
               {/* Refresh Button */}
@@ -165,4 +163,4 @@ function ThesesPage() {
   )
 }
 
-export default ThesesPage
+export default RecentPage
