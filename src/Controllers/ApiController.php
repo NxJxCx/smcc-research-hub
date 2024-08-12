@@ -23,7 +23,7 @@ use Smcc\ResearchHub\Router\StatusCode;
 
 class ApiController extends Controller
 {
-  public function test(Request $request): Response
+  public function test(): Response
   {
     return Response::json(['message' => 'API Test Successful']);
   }
