@@ -6,6 +6,8 @@ namespace Smcc\ResearchHub\Controllers;
 
 use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\AdminLogs;
+use Smcc\ResearchHub\Models\Database;
+use Smcc\ResearchHub\Models\Downloadables;
 use Smcc\ResearchHub\Models\Journal;
 use Smcc\ResearchHub\Models\JournalPersonnelReads;
 use Smcc\ResearchHub\Models\JournalReads;
@@ -48,7 +50,7 @@ class FileController extends Controller
           return Response::json(['error' => 'Invalid file type. Only PDF files are allowed.'], StatusCode::BAD_REQUEST);
         } else {
           try {
-            $newFilename = uniqid("thesis_");
+            $newFilename = uniqid("{$doc}_");
             $file->moveTo(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, $doc]), $newFilename);
             $fileUrl = "/$doc?filename=$newFilename";
             if ($doc === 'thesis') {
@@ -77,7 +79,7 @@ class FileController extends Controller
               $fid = $journal->create();
             }
             $doc = ucfirst($doc);
-            (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
+              (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
             return Response::json(['success' => isset($fid)], StatusCode::CREATED);
           } catch (\PDOException $e) {
             // SQL error handling
@@ -186,7 +188,57 @@ class FileController extends Controller
     return Response::file($filePath, StatusCode::OK, ["Content-Disposition" => "inline; filename=\"$filename\""]);
   }
 
-  public function downloadPdfFile(Request $request): Response
+
+  public function uploadFile(Request $request): Response
+  {
+    if (Session::isAuthenticated() && Session::getUserAccountType() === 'admin') {
+      $docTitle = $request->getBodyParam(key: 'title');
+      $file = $request->getFiles("file");
+
+      if (!$docTitle) {
+        return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
+      }
+
+      if ($file instanceof File) {
+        if ($file->getError() !== UPLOAD_ERR_OK) {
+          return Response::json(['error' => "Error uploading file. Error Code ".$file->getError()], StatusCode::INTERNAL_SERVER_ERROR);
+        }
+        if (!$file->getType()) {
+          return Response::json(['error' => 'Invalid file type.'], StatusCode::BAD_REQUEST);
+        } else {
+          try {
+            $newFilename = uniqid("downloadable_");
+            $file->moveTo(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'downloadable']), $newFilename);
+            $fileUrl = "/downloadable?filename=$newFilename";
+            $downloadables = new Downloadables([
+              "name" => $newFilename,
+              "title" => $docTitle,
+              "ext" => $file->getExtension(),
+              "url" => $fileUrl,
+              "downloadable" => false,
+            ]);
+            $fid = $downloadables->create();
+            $doc = ucfirst('downloadable');
+            (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "Uploaded $doc ID $fid: $docTitle url $fileUrl"]))->create();
+            return Response::json(['success' => isset($fid)], StatusCode::CREATED);
+          } catch (\PDOException $e) {
+            // SQL error handling
+            $doc = ucfirst('downloadable');
+            return Response::json(['error' => $e->getCode() === "23000" ? "$doc name already exists. Please enter another title." : $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+          } catch (\Throwable $e) {
+            // upload error handling
+            return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+          }
+        }
+      } else {
+        return Response::json(['error' => 'Only one file is allowed at a time.'], StatusCode::BAD_REQUEST);
+      }
+    }
+    return Response::json(['error' => 'You must be authenticated as an admin to upload files.'], StatusCode::UNAUTHORIZED);
+  }
+
+
+  public function downloadFile(Request $request): Response
   {
     if (!Session::isAuthenticated()) {
       return Response::json(['error' => 'Unauthorized'], StatusCode::UNAUTHORIZED);
@@ -198,7 +250,17 @@ class FileController extends Controller
     if (!$filenameNoExt) {
       return Response::json(['error' => 'Filename not provided'], StatusCode::BAD_REQUEST);
     }
-    $filename = "$filenameNoExt.pdf";
+    if ($docType === "downloadable") {
+      $db = Database::getInstance();
+      $d = $db->fetchOne(Downloadables::class, ['name' => $filenameNoExt]);
+      if ($d) {
+        $filename = "{$d->name}{$d->ext}";
+      } else {
+        return Response::json(['error' => 'File not found'], StatusCode::NOT_FOUND);
+      }
+    } else {
+      $filename = "$filenameNoExt.pdf";
+    }
     $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, $docType, $filename]);
     if (!file_exists($filePath) ||!is_readable($filePath)) {
       return Response::json(['error' => 'File not found'], StatusCode::NOT_FOUND);

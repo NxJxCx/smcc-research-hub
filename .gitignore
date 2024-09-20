@@ -4,4 +4,5 @@
 /jsxbuild
 /uploads/**/*.pdf
 /uploads/**/*.log
+/uploads/downloadable/**/*.*
 .env*.local

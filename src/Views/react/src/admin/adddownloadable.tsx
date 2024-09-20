@@ -1,26 +1,13 @@
-import clsx from "/jsx/global/clsx"
-import { Courses, DepartmentCourses, Departments } from "/jsx/global/enums"
-import { Input, Select, TextArea } from "/jsx/global/input"
-import Modal from "/jsx/global/modal"
-import PdfViewer from "/jsx/global/pdfviewer"
-import { React, Sweetalert2 } from "/jsx/imports"
+import clsx from "/jsx/global/clsx";
+import { Input } from "/jsx/global/input";
+import { React, Sweetalert2 } from "/jsx/imports";
 
-export default function AddThesisForm({ open, defaultOpen, className = "", onClose = () => {}, onSuccess = () => {} }: { open?: boolean, defaultOpen?: boolean, className?: string, onClose?: () => void, onSuccess?: () => void }) {
+export default function AddDownloadableForm({ open, defaultOpen, className = "", onClose = () => {}, onSuccess = () => {} }: { open?: boolean, defaultOpen?: boolean, className?: string, onClose?: () => void, onSuccess?: () => void }) {
   const [show, setShow] = React.useState(open === undefined ? defaultOpen || false : open);
-  const [thesisTitle, setThesisTitle] = React.useState('')
-  const [thesisAuthor, setThesisAuthor] = React.useState('')
-  const [thesisYear, setThesisYear] = React.useState((new Date()).getFullYear().toString())
-  const [thesisDepartment, setThesisDepartment] = React.useState(Departments.CCIS);
-  const [thesisCourse, setThesisCourse] = React.useState(Courses.BSIT);
-  const [thesisAbstract, setThesisAbstract] = React.useState('');
-  const [pdf, setPdf] = React.useState<File|null|undefined>()
-  const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
-  const [showModal, setShowModal] = React.useState<boolean>(false)
+  const [fileTitle, setFileTitle] = React.useState('')
+  const [file, setFile] = React.useState<File|null|undefined>()
   const [uploadProgress, setUploadProgress] = React.useState<number>(0)
   const [xhr, setXhr] = React.useState<XMLHttpRequest|null>(null)
-  const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
-  const departmentList = React.useMemo(() => Object.keys(DepartmentCourses).map((d) => ({ label: d, value: d })))
-  const courseList = React.useMemo(() => DepartmentCourses[thesisDepartment].map((d) => ({ label: d, value: d })))
   const isFormDisabled = React.useMemo(() => uploadProgress !== 0, [uploadProgress]);
 
   React.useEffect(() => {
@@ -39,27 +26,9 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     onClose && onClose();
   }, [open, onClose]);
 
-  const openViewPdf = React.useCallback(() => {
-    if (pdf) {
-      setShowModal(true)
-    }
-  }, [pdf])
-
-  React.useEffect(() => {
-    if (!!pdf) {
-      const blob = new Blob([pdf], { type: pdf.type })
-      const url = URL.createObjectURL(blob)
-      setPdfUrl(url)
-      return () => {
-        URL.revokeObjectURL(url)
-        setPdfUrl(null)
-      }
-    }
-  }, [pdf])
-
   const onSubmit = React.useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!pdf) {
+    if (!file) {
       Sweetalert2.fire({
         icon: 'warning',
         text: 'Please upload Thesis Document in PDF format.',
@@ -71,18 +40,12 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
       return;
     }
     const formData = new FormData();
-    formData.append('document', 'thesis');
-    formData.append('title', thesisTitle);
-    formData.append('author', thesisAuthor);
-    formData.append('year', thesisYear);
-    formData.append('department', thesisDepartment);
-    formData.append('course', thesisCourse);
-    formData.append('abstract', thesisAbstract);
-    formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
+    formData.append('title', fileTitle);
+    formData.append('file', new Blob([file], { type: file.type }), file.name);
 
     const xhr = new XMLHttpRequest();
     setXhr(xhr);
-    xhr.open('POST', '/api/upload/pdf', true);
+    xhr.open('POST', '/api/upload/file', true);
 
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
@@ -115,10 +78,8 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
             showConfirmButton: false,
             position: 'center',
           })
-          setPdf(null)
-          setThesisTitle('')
-          setThesisAuthor('')
-          setThesisYear((new Date()).getFullYear().toString())
+          setFile(null)
+          setFileTitle('')
           onSuccess && onSuccess();
           setUploadProgress(0);
           onCloseModal();
@@ -151,7 +112,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     };
 
     xhr.send(formData);
-  }, [pdf, thesisTitle, thesisAuthor, thesisYear, onSuccess])
+  }, [file, fileTitle, file, onSuccess, onCloseModal])
 
   const onCancelUpload = () => {
     if (xhr) {
@@ -180,18 +141,13 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     }>
       <form onSubmit={onSubmit}>
         <div className="flex flex-wrap justify-center items-center gap-3">
-          <Input className="max-w-[180px] text-black" label="Thesis Title" name="title" value={thesisTitle} onChange={(e: any) => setThesisTitle(e.target.value)} disabled={isFormDisabled} required />
-          <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={thesisAuthor} onChange={(e: any) => setThesisAuthor(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={thesisYear} onChange={(e: any) => setThesisYear(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Department --", value: "" }, ...departmentList]} label="Department" name="department" value={thesisDepartment} onChange={(e: any) => { setThesisDepartment(e.target.value); setThesisCourse(""); }} disabled={isFormDisabled} required />
-          <Select className="max-w-[370px] text-black" items={[{ label: "-- Select Course --", value: "" }, ...courseList]} label="Course" name="course" value={thesisCourse} onChange={(e: any) => setThesisCourse(e.target.value)} disabled={isFormDisabled} required />
-          <TextArea className="max-w-[370px] text-black" label="Abstract" rows={3} name="abstract" value={thesisAbstract} onChange={(e: any) => setThesisAbstract(e.target.value)} disabled={isFormDisabled} required />
+          <Input className="max-w-[350px] text-black" label="File Title" name="title" value={fileTitle} onChange={(e: any) => setFileTitle(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={
             clsx(
               "flex flex-col items-center justify-center w-full h-32 border border-gray-500 border-dashed rounded-lg cursor-pointer",
-              !pdf ? "" : "hidden"
+              !file ? "" : "hidden"
             )}
           >
             <div className="flex flex-col items-center justify-center">
@@ -199,9 +155,9 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
               </svg>
               <p className="mb-2 text-sm text-white"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-              <p className="text-xs text-gray-500">PDF (MAX 10MB)</p>
+              <p className="text-xs text-gray-500 px-4 text-center">PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ODT, TXT, PNG, JPEG, GIF (MAX 10MB)</p>
             </div>
-            <input id="dropzone-file" type="file" name="pdf" className="hidden" accept=".pdf" value={""} onChange={(e) => {
+            <input id="dropzone-file" type="file" name="file" className="hidden" accept=".pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .odt, .txt, .png, .jpg, .jpeg, .gif" value={""} onChange={(e) => {
               const file = e.target.files?.[0];
               if (file && file.size > 30 * 1024 * 1024) { // limit to 30MB
                 Sweetalert2.fire({
@@ -214,22 +170,22 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
                 });
                 e.target.value = "";
               } else {
-                setPdf(file);
+                setFile(file);
               }
             }} />
           </label>
-          { !!pdf && (
+          { !!file && (
             <div className={"border border-gray-500 border-dashed p-4 rounded-lg w-full h-32 flex items-center justify-center"}>
               <div className="flex justify-between border border-white p-3 rounded gap-x-3 items-center">
                 <span className="text-white material-symbols-outlined">upload_file</span>
-                <button type="button" onClick={openViewPdf}>
-                  <span className="text-md text-white">{pdf.name}</span>
+                <button type="button">
+                  <span className="text-md text-white">{file.name}</span>
                 </button>
                 <div>
-                  <span className="text-md text-gray-500">{(pdf.size / 1024 / 1024).toFixed(2)} MB</span>
+                  <span className="text-md text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
                 </div>
                 <div>
-                  <button type="button" onClick={() => setPdf(null)} disabled={isFormDisabled}  className="disabled:text-gray-500 disabled:hover:text-gray-500  disabled:cursor-not-allowed hover:text-red-600 text-red-400" title="Remove"><span className="material-symbols-outlined">cancel</span></button>
+                  <button type="button" onClick={() => setFile(null)} disabled={isFormDisabled}  className="disabled:text-gray-500 disabled:hover:text-gray-500  disabled:cursor-not-allowed hover:text-red-600 text-red-400" title="Remove"><span className="material-symbols-outlined">cancel</span></button>
                 </div>
               </div>
             </div>
@@ -255,6 +211,5 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
         </div>
       </form>
     </div>
-    <Modal open={showModal} content={<PdfViewer src={pdfUrl} />} onClose={() => setShowModal(false)} showCancelButton={false} showConfirmButton={false} header={`Thesis File Preview (${pdf?.name})`} />
   </>)
 }

@@ -9,6 +9,7 @@ use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\Admin;
 use Smcc\ResearchHub\Models\AdminLogs;
 use Smcc\ResearchHub\Models\Database;
+use Smcc\ResearchHub\Models\Downloadables;
 use Smcc\ResearchHub\Models\Journal;
 use Smcc\ResearchHub\Models\JournalFavorites;
 use Smcc\ResearchHub\Models\JournalPersonnelFavorites;
@@ -716,7 +717,6 @@ class ApiController extends Controller
     }
   }
 
-
   public function allFavorites(): Response
   {
     if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() === 'admin') {
@@ -755,6 +755,89 @@ class ApiController extends Controller
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
     return Response::json(['error'=> 'Bad Request'], StatusCode::BAD_REQUEST);
+  }
+
+
+  public function allDownloadables(): Response
+  {
+    if (!RouterSession::isAuthenticated()) {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $data = $db->getAllRows(Downloadables::class);
+      return Response::json(['success' => array_map(fn($d) => $d->toArray(true), $data)]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function allAvaiableDownloadables(): Response
+  {
+    if (!RouterSession::isAuthenticated()) {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $data = $db->fetchMany(Downloadables::class, ['downloadable' => true]);
+      usort($data, fn($a, $b) => $b->created_at - $a->created_at);
+      return Response::json(['success' => $data]);
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function publishDownloadables(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getBodyParam('id');
+    $downloadable = boolval($request->getBodyParam('downloadable'));
+    if (!$id) {
+      return Response::json(['error' => 'Missing ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $download = Database::getInstance()->fetchOne(Downloadables::class, [(new Downloadables())->getPrimaryKey() => $id]);
+      // update the downloadable
+      $download->downloadable = $downloadable;
+      $success = $download->update();
+      return Response::json(['success'=> $success], $success ? StatusCode::CREATED : StatusCode::OK);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function deleteDownloadable(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getQueryParam('id');
+    if (!$id) {
+      return Response::json(['error' => 'Missing Downlodable File ID.'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $downloadable = Database::getInstance()->fetchOne(Downloadables::class, [(new Downloadables())->getPrimaryKey() => $id]);
+      // remove the file associated with the downloadables
+      $queryString = explode("?", $downloadable->url)[1];
+      $params = [];
+      parse_str($queryString, $params);
+      if (isset($params['filename'])) {
+        $filename = $params['filename'] . ".pdf";
+        try {
+          // remove the file from the server
+          unlink(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, "downloadable", $filename]));
+          Logger::write_info("Deleted downloadable file: {$filename}");
+        } catch (\Throwable $e) {
+          Logger::write_debug("Failed to delete downloadable file: {$filename}");
+        }
+      }
+      $downloadable->delete();
+      return Response::json(['success'=> true]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
   }
 
 }

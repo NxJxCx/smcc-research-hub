@@ -36,7 +36,7 @@ export interface TableRow {
 }
 
 
-export function TableRowAction({ id, onView, onEdit, onDelete }: { id: string|number, onView?: (id: string|number) => void, onEdit?: (id: string|number) => void, onDelete?: (id: string|number) => void }) {
+export function TableRowAction({ id, onView, onEdit, onDelete, onDownload }: { id: string|number, onView?: (id: string|number) => void, onEdit?: (id: string|number) => void, onDelete?: (id: string|number) => void, onDownload?: (id: string|number) => void }) {
   return (
     <div className="grid grid-cols-2 gap-x-1 max-w-[80px] mx-auto items-center">
       {onView && (
@@ -50,6 +50,13 @@ export function TableRowAction({ id, onView, onEdit, onDelete }: { id: string|nu
         <button type="button" className="p-1 text-sky-500 hover:text-white" title="Delete" onClick={() => onEdit(id)}>
           <span className="material-symbols-outlined">
             edit
+          </span>
+        </button>
+      )}
+      {onDownload && (
+        <button type="button" className="p-1 text-white hover:text-green-500" title="Preview" onClick={() => onDownload(id)}>
+          <span className="material-symbols-outlined">
+            download
           </span>
         </button>
       )}

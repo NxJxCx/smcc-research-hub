@@ -213,7 +213,7 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
               if (file && file.size > 30 * 1024 * 1024) { // limit to 30MB
                 Sweetalert2.fire({
                   icon: 'warning',
-                  text: 'File size exceeds the maximum limit of 10MB.',
+                  text: 'File size exceeds the maximum limit of 30MB.',
                   toast: true,
                   timer: 2000,
                   showConfirmButton: false,

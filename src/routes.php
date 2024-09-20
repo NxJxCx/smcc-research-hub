@@ -40,8 +40,7 @@ Router::GET('/about', [ViewController::class, 'aboutUs']);
 Router::GET('/library', [ViewController::class, 'library']);
 Router::GET('/read/thesis', [FileController::class, 'viewPdfFile']);
 Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
-Router::GET('/download/thesis', [FileController::class, 'downloadPdfFile']);
-Router::GET('/download/journal', [FileController::class, 'downloadPdfFile']);
+Router::GET('/download/downloadable', [FileController::class, 'downloadFile']);
 Router::GET('/logs', [ViewController::class, 'logs']);
 
 /* API GET METHOD */
@@ -56,6 +55,7 @@ Router::GET('/api/logs', [NotificationController::class, 'logs']);
 Router::GET('/api/student/all', [ApiController::class,'allStudents']);
 Router::GET('/api/teacher/all', [ApiController::class,'allPersonnels']);
 Router::GET('/api/favorites/all', [ApiController::class,'allFavorites']);
+Router::GET('/api/downloadables/all', [ApiController::class,'allDownloadables']);
 
 
 /* POST METHOD */
@@ -65,10 +65,12 @@ Router::POST('/api/signup', [ApiController::class, 'signup']);
 Router::POST('/api/update', [ApiController::class, 'update']);
 Router::POST('/api/upload/pdf', [FileController::class, 'uploadPdf']);
 Router::POST('/api/upload/images', [FileController::class, 'uploadImages']);
+Router::POST('/api/upload/file', [FileController::class, 'uploadFile']);
 Router::POST('/api/thesis/publish', [ApiController::class, 'publishThesis']);
 Router::POST('/api/journal/publish', [ApiController::class, 'publishJournal']);
-Router::POST('/api/thesis/markfavorite', callable: [ApiController::class, 'thesisMarkFavorite']);
-Router::POST('/api/journal/markfavorite', callable: [ApiController::class, 'journalMarkFavorite']);
+Router::POST('/api/thesis/markfavorite', [ApiController::class, 'thesisMarkFavorite']);
+Router::POST('/api/journal/markfavorite', [ApiController::class, 'journalMarkFavorite']);
+Router::POST('/api/downloadables/publish', [ApiController::class, 'publishDownloadables']);
 
 /* PUT METHOD */
 
@@ -79,6 +81,7 @@ Router::DELETE('/api/thesis/delete', [ApiController::class, 'deleteThesis']);
 Router::DELETE('/api/journal/delete', [ApiController::class, 'deleteJournal']);
 Router::DELETE('/api/student/delete', [ApiController::class, 'deleteStudent']);
 Router::DELETE('/api/teacher/delete', [ApiController::class, 'deletePersonnel']);
+Router::DELETE('/api/downloadables/delete', [ApiController::class, 'deleteDownloadable']);
 
 /* ERROR PAGES */
 Router::NOTFOUND([ViewController::class, 'notFound']);
