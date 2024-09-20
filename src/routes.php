@@ -56,7 +56,7 @@ Router::GET('/api/student/all', [ApiController::class,'allStudents']);
 Router::GET('/api/teacher/all', [ApiController::class,'allPersonnels']);
 Router::GET('/api/favorites/all', [ApiController::class,'allFavorites']);
 Router::GET('/api/downloadables/all', [ApiController::class,'allDownloadables']);
-
+Router::GET('/api/downloadables/available', callable: [ApiController::class,'allAvaiableDownloadables']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);

@@ -779,8 +779,8 @@ class ApiController extends Controller
     }
     try {
       $db = Database::getInstance();
-      $data = $db->fetchMany(Downloadables::class, ['downloadable' => true]);
-      usort($data, fn($a, $b) => $b->created_at - $a->created_at);
+      $fetched = $db->fetchMany(Downloadables::class, ['downloadable' => true]);
+      $data = array_map(fn($d) => $d->toArray(true), $fetched);
       return Response::json(['success' => $data]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
