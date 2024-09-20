@@ -145,10 +145,10 @@ export default function Thesis() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const { success, error } = await response.json();
-      console.log
       if (error) {
         throw new Error(`HTTP error: ${error.message}`);
       } else if (success) {
+        success.sort((a: any, b: any) => (new Date(a.created_at)).getTime() > (new Date(b.created_at)).getTime() ? -1 : (new Date(a.created_at)).getTime() == (new Date(b.created_at)).getTime() ? 0 : 1);
         setData(success);
       }
     } catch (e) {
