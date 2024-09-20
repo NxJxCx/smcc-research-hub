@@ -1,1 +1,1 @@
-import{React as t}from"/jsx/imports";export default function e(){return t.createElement("div",null,"Downloads")}
+import{React as e}from"/jsx/imports";export default function t(){return e.createElement("div",{className:"min-h-[calc(100vh-150px)]"},e.createElement("h1",{className:"text-2xl font-bold my-8"},"Downloadables"),e.createElement("div",{className:""}))}

@@ -186,7 +186,7 @@ export default function Thesis() {
             <div className="lg:col-span-2 xl:col-span-3 mx-auto">
               <div className="h-[200px] mb-2">
                 <div className="border-2 border-gray-300 rounded-lg p-4">
-                  <div className="text-gray-500">No theses found.</div>
+                  <div className="text-gray-500">No journal found.</div>
                 </div>
               </div>
             </div>
