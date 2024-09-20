@@ -1,1 +1,1 @@
-import{React as e}from"/jsx/imports";export default function t(){return e.createElement("div",{className:"min-h-[calc(100vh-150px)]"},e.createElement("h1",{className:"text-2xl font-bold my-8"},"Downloadables"),e.createElement("div",{className:""}))}
+import{React as e}from"/jsx/imports";export default function t(){return e.createElement("div",{className:"min-h-[calc(100vh-200px)] py-4 px-4 lg:px-8"},e.createElement("h1",{className:"text-2xl font-bold mt-8 mb-4"},"Downloadables"),e.createElement("div",{className:"border-t"}))}
