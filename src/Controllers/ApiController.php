@@ -824,7 +824,7 @@ class ApiController extends Controller
       $params = [];
       parse_str($queryString, $params);
       if (isset($params['filename'])) {
-        $filename = $params['filename'] . ".pdf";
+        $filename = $params['filename'] . $downloadable->ext;
         try {
           // remove the file from the server
           unlink(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, "downloadable", $filename]));
