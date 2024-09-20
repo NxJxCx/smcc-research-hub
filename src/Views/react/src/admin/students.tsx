@@ -1,4 +1,7 @@
 import { CellAlign, Table, TableCellType, TableColumn, TableRow, TableRowAction } from "/jsx/admin/table";
+import { Courses, Departments, Year } from "/jsx/global/enums";
+import { Input, Select } from "/jsx/global/input";
+import Modal from "/jsx/global/modal";
 import { React, Sweetalert2 } from "/jsx/imports";
 
 
@@ -14,8 +17,68 @@ const columns: TableColumn[] = [
 ];
 
 
-function StudentsPage() {
+function EditStudent({
+  formData,
+  onChange,
+}:
+{
+  formData: any,
+  onChange: (data: any) => void
+}) {
+  return (
+    <div className="p-8">
+      <Input disabled label="Student ID" inputClassName="border-black" className="mb-2" labelColor="black" name="edit_student_id" placeholder="Student ID" value={formData.username} onChange={(e: any) => onChange({...formData, username: e.target.value })} />
+      <Input disabled label="Full Name" inputClassName="border-black"  className="mb-2" labelColor="black" name="edit_full_name" placeholder="Full Name" value={formData.full_name} onChange={(e: any) => onChange({...formData, full_name: e.target.value })} required />
+      <Input type="email" label="Email Address" inputClassName="border-black"  className="mb-2" labelColor="black" name="edit_email" placeholder="Email Address" value={formData.email} onChange={(e: any) => onChange({...formData, email: e.target.value })} required />
+      <Select labelColor="black" items={Object.entries(Departments).map(([key, value]) => ({ label: value, value }))} label="Department" name="edit_department" placeholder="Department" value={formData.department} onChange={(e: any) => onChange({...formData, department: e.target.value })} required />
+      <Select labelColor="black" items={Object.entries(Courses).map(([key, value]) => ({ label: value, value }))} label="Course" name="edit_course" placeholder="Course" value={formData.course} onChange={(e: any) => onChange({...formData, course: e.target.value })} required />
+      <Select labelColor="black" items={Object.entries(Year).map(([key, value]) => ({ label: value, value }))} label="Year" name="edit_year" placeholder="Year" value={formData.year} onChange={(e: any) => onChange({...formData, year: e.target.value })} required />
+      <Input type="password" label="Password" inputClassName="border-black"  className="mb-2" labelColor="black" name="edit_password" placeholder="Password (Leave blank if not change)" value={formData.password} onChange={(e: any) => onChange({...formData, password: e.target.value })} />
+    </div>
+  )
+}
+
+export default function StudentsPage() {
   const [tableData, setTableData] = React.useState<TableRow[]>([])
+  const [formData, setFormData] = React.useState({
+    account: 'student',
+    username: '',
+    full_name: '',
+    email: '',
+    password: '',
+    department: Departments.CCIS,
+    course: Courses.BSIT,
+    year: Year.FirstYear,
+  })
+
+  const onCloseModal = React.useCallback(() => {
+    setFormData({
+      account: 'student',
+      username: '',
+      full_name: '',
+      email: '',
+      password: '',
+      department: Departments.CCIS,
+      course: Courses.BSIT,
+      year: Year.FirstYear,
+    })
+  }, [])
+
+  const [openEditStudent, setOpenEditStudent] = React.useState<boolean>(false)
+
+  const onOpenEditStudent = React.useCallback((data: any) => {
+    setFormData({
+      account: 'student',
+      username: data.student_id,
+      full_name: data.full_name,
+      email: data.email,
+      password: '',
+      department: data.department,
+      course: data.course,
+      year: data.year,
+    })
+    setOpenEditStudent(true)
+  }, [])
 
   const fetchList = () => {
     fetch('/api/student/all')
@@ -35,7 +98,7 @@ function StudentsPage() {
             course: data.course,
             action: <TableRowAction id={data.student_id} onEdit={(id) => {
               if (id === data.student_id) {
-                // TODO: Implement edit functionality
+                onOpenEditStudent(data);
               }
             }} onDelete={(id) => {
               console.log("ON DELETE STUDENT ID:", id);
@@ -106,7 +169,52 @@ function StudentsPage() {
     fetchList();
   }, [])
 
-  return (
+  const handleEditStudent = React.useCallback(async (close: () => void) => {
+    console.log(formData)
+    try {
+      const response = await fetch('/api/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+      const data = await response.json()
+
+      if (data.success) {
+        close()
+        onCloseModal()
+        Sweetalert2.fire({
+          icon:'success',
+          title: 'Success',
+          text: 'Student account has been updated successfully.',
+          timer: 3000
+        })
+        setTimeout(() => fetchList(), 100)
+      } else {
+        Sweetalert2.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: data.error,
+        })
+      }
+    } catch (e) {
+      console.log(e)
+      Sweetalert2.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to update student account',
+        confirmButtonText: 'Try Again',
+        showCancelButton: true,
+      }).then(({ isConfirmed }: any) => {
+        if (isConfirmed) {
+          setTimeout(() => handleEditStudent(close), 100)
+        }
+      })
+    }
+  }, [formData]);
+
+  return (<>
     <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 min-w-fit">
       <h1 className="text-white text-2xl my-2">Student List</h1>
       <Table columns={columns} items={tableData}>
@@ -117,7 +225,6 @@ function StudentsPage() {
         </div>
       </Table>
     </div>
-  )
+    <Modal open={openEditStudent} header={'Edit Student Account'} content={<EditStudent formData={formData} onChange={setFormData} />} onConfirm={handleEditStudent} onCancel={onCloseModal} onClose={() => setOpenEditStudent(false)} />
+  </>)
 }
-
-export default StudentsPage

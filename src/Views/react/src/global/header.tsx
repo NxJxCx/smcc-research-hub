@@ -53,7 +53,7 @@ function ResponsiveHeader({ navList, authAvatarList }: { navList: NavItems[], au
   return (<>
     <div ref={navRef} className="absolute bg-white top-full right-0 border w-full h-0 max-h-fit overflow-hidden -z-10 transition-[height] duration-500 delay-10 ease-in-out origin-top shadow-lg">
       <div className="flex w-full h-full px-10 pb-6 pt-4 flex-col justify-start items-start gap-y-4">
-        <SearchInput search={search} setSearch={setSearch} />
+        {/* <SearchInput search={search} setSearch={setSearch} /> */}
         <ul className="flex flex-col gap-2 w-full h-full font-[500]" ref={ulRef}>
           <li>
             { pageData?.authenticated ? (

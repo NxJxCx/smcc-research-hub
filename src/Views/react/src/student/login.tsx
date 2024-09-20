@@ -3,7 +3,7 @@ import SMCCLogo from "/jsx/global/smcclogo";
 import { React, Sweetalert2 } from "/jsx/imports";
 import Scanner from "/jsx/qrscan";
 
-function StudentLogin() {
+export default function StudentLogin() {
   const searchParams = React.useMemo(() => new URLSearchParams(window.location.search), [window.location.search]);
   const { student_id } = React.useMemo(() => ({ student_id: searchParams.get('student_id'), full_name: searchParams.get('full_name') }), [searchParams]);
   const [showScanner, setShowScanner] = React.useState(false);
@@ -41,7 +41,7 @@ function StudentLogin() {
           text: 'Failed to retrieve student information:' + e.message,
           toast: true,
           showConfirmButton: false,
-          position: 'center',
+          position: 'top',
           timer: 3000,
         })
       })
@@ -68,7 +68,7 @@ function StudentLogin() {
           title: error,
           toast: true,
           showConfirmButton: false,
-          position: 'center',
+          position: 'top',
           timer: 3000,
         })
         console.log(error)
@@ -83,7 +83,7 @@ function StudentLogin() {
         text: 'Failed to login. Please try again.',
         toast: true,
         showConfirmButton: false,
-        position: 'center',
+        position: 'top',
         timer: 3000,
       })
       console.log(e)
@@ -141,5 +141,3 @@ function StudentLogin() {
     </div>
   )
 }
-
-export default StudentLogin

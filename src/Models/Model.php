@@ -26,6 +26,7 @@ interface ModelInterface
   function update(): bool;
   function delete(): bool;
   function toArray(): array;
+  function setAttributes(array $attributes): void;
 }
 
 // superclass for all model classes
@@ -93,6 +94,13 @@ class Model implements ModelInterface
   {
     if (!$this->isCreateOnly && array_key_exists($propertyName, $this->getColumns())) {
       $this->data[$propertyName] = $value;
+    }
+  }
+
+  public function setAttributes(array $attributes): void
+  {
+    foreach ($attributes as $key => $value) {
+      $this->__set($key, $value);
     }
   }
 

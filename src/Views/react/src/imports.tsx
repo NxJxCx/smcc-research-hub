@@ -2,6 +2,7 @@
 import { Scanner as ReactQrScanner } from "https://esm.sh/@yudiel/react-qr-scanner@2.0.4";
 import confetti from "https://esm.sh/canvas-confetti@1.9.3";
 import ReactDOM from "https://esm.sh/react-dom@18.3.1/client";
+import ReactDOMServer from "https://esm.sh/react-dom@18.3.1/server";
 import * as ReactPDF from "https://esm.sh/react-pdf@9.1.0";
 import ReactPlayer from "https://esm.sh/react-player@2.16.0";
 import ReactPlayerYoutube from "https://esm.sh/react-player@2.16.0/youtube";
@@ -15,7 +16,7 @@ ReactPDF.pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 export {
   confetti, React,
-  ReactDOM, ReactPDF, ReactPlayer,
+  ReactDOM, ReactDOMServer, ReactPDF, ReactPlayer,
   ReactPlayerYoutube,
   ReactQrScanner, Sweetalert2
 };
@@ -23,6 +24,7 @@ export {
 const imports = {
   React,
   ReactDOM,
+  ReactDOMServer,
   confetti,
   ReactPlayer,
   ReactPlayerYoutube,

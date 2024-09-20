@@ -10,7 +10,7 @@ class ThesisReads extends Model
   {
     return [
       'id' => ['BIGINT', 'NOT NULL', 'AUTO_INCREMENT'],
-      'published_thesis_id' => ['BIGINT', 'NOT NULL'],
+      'thesis_id' => ['BIGINT', 'NOT NULL'],
       'student_id' => ['BIGINT', 'NOT NULL'],
       'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],
       'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
@@ -20,7 +20,7 @@ class ThesisReads extends Model
   public function getForeignConstraints(): array
   {
     return [
-      'published_thesis_id' => [PublishedThesis::class, 'CASCADE', 'CASCADE'],
+      'thesis_id' => [Thesis::class, 'CASCADE', 'CASCADE'],
       'student_id' => [Student::class, 'CASCADE', 'CASCADE'],
     ];
   }

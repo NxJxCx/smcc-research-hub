@@ -3,7 +3,7 @@ import SMCCLogo from "/jsx/global/smcclogo";
 import { React, Sweetalert2 } from "/jsx/imports";
 import Scanner from "/jsx/qrscan";
 
-function StudentSignup() {
+export default function StudentSignup() {
   const searchParams = React.useMemo(() => new URLSearchParams(window.location.search), [window.location.search]);
   const { student_id, full_name } = React.useMemo(() => ({ student_id: searchParams.get('student_id'), full_name: searchParams.get('full_name') }), [searchParams]);
   const showScanner = React.useMemo(() => !IDRegExFormat.studentId.test(student_id) || !IDRegExFormat.studentName.test(full_name), [student_id, full_name]);
@@ -237,5 +237,3 @@ function StudentSignup() {
     </div>
   )
 }
-
-export default StudentSignup

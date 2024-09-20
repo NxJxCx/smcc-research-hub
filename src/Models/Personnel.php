@@ -18,4 +18,11 @@ class Personnel extends Model
       'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
     ];
   }
+
+  public function getUniqueKeys(): array
+  {
+    return [
+      ['personnel_id']
+    ];
+  }
 }

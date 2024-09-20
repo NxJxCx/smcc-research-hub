@@ -1,7 +1,7 @@
 import SMCCLogo from "/jsx/global/smcclogo";
 import { React, Sweetalert2 } from "/jsx/imports";
 
-function StudentLogin() {
+export default function TeacherLogin() {
   const [personnelId, setPersonnelId] = React.useState('');
   const [password, setPassword] = React.useState('')
   const [pending, setPending] = React.useState(false)
@@ -26,7 +26,7 @@ function StudentLogin() {
           title: error,
           toast: true,
           showConfirmButton: false,
-          position: 'center',
+          position: 'top',
           timer: 3000,
         })
         console.log(error)
@@ -41,7 +41,7 @@ function StudentLogin() {
         text: 'Failed to login. Please try again.',
         toast: true,
         showConfirmButton: false,
-        position: 'center',
+        position: 'top',
         timer: 3000,
       })
       console.log(e)
@@ -78,5 +78,3 @@ function StudentLogin() {
     </div>
   )
 }
-
-export default StudentLogin

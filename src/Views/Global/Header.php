@@ -47,11 +47,11 @@ class Header
           <?php
           }
           ?>
-          <button>
+          <!-- <button>
             <span class="material-symbols-outlined">
               search
             </span>
-          </button>
+          </button> -->
         </nav>
         <nav id="responsive-nav-small" data-navlist="<?php echo htmlspecialchars(json_encode($menuItems)); ?>">
         </nav>
@@ -112,15 +112,15 @@ class Header
           <button type="button" id="sidebar-toggle-btn" class="aspect-square p-4">
             <span class="material-symbols-outlined">menu</span>
           </button>
-          <div id="search-header" class="hidden lg:block relative flex-grow lg:w-[400px] max-w-[400px]"></div>
+          <!-- <div id="search-header" class="hidden lg:block relative flex-grow lg:w-[400px] max-w-[400px]"></div> -->
         </div>
         <ul class="flex items-center justify-start h-full gap-x-4 pr-4">
           <li class="flex items-center relative">
-            <button id="notifications-dropdown-btn" type="button" class="hover:text-sky-500">
+            <!-- <button id="notifications-dropdown-btn" type="button" class="hover:text-sky-500">
               <span class="material-symbols-outlined">
                 notifications
               </span>
-            </button>
+            </button> -->
             <div id="notifications-dropdown" class="absolute top-full left-0 w-full mt-3 z-20 hidden bg-sky-50 divide-y divide-slate-300 rounded-lg shadow-lg scale-y-0 transition-transform ease-in-out delay-10 duration-200 origin-top border"></div>
           </li>
           <li class="relative">

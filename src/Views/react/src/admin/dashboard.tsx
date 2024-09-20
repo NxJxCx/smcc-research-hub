@@ -11,7 +11,7 @@ interface DashboardStatistics {
   weeklyJournalReads: number,
 }
 
-function DashboardPage() {
+export default function DashboardPage() {
   const [statistics, setStatistics] = React.useState<DashboardStatistics>({
     theses: 0,
     journals: 0,
@@ -21,6 +21,10 @@ function DashboardPage() {
     teachers: 0,
     weeklyThesisReads: 0,
     weeklyJournalReads: 0,
+    monthlyThesisReads: 0,
+    monthlyJournalReads: 0,
+    yearlyThesisReads: 0,
+    yearlyJournalReads: 0,
   });
 
   const fetchData = React.useCallback(() => {
@@ -88,7 +92,7 @@ function DashboardPage() {
               <span className="material-symbols-outlined">list</span>
             </div>
             <div className="flex flex-nowrap justify-between pt-2">
-              <p className="font-[400] text-[18px]">Published Theses</p>
+              <p className="font-[400] text-[18px]">Publicly Viewed Theses</p>
             </div>
           </div>
           <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
@@ -97,7 +101,7 @@ function DashboardPage() {
               <span className="material-symbols-outlined">list</span>
             </div>
             <div className="flex flex-nowrap justify-between pt-2">
-              <p className="font-[400] text-[18px]">Published Journals</p>
+              <p className="font-[400] text-[18px]">Publicly Viewed Journals</p>
             </div>
           </div>
           <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
@@ -124,7 +128,7 @@ function DashboardPage() {
               <span className="material-symbols-outlined">list</span>
             </div>
             <div className="flex flex-nowrap justify-between pt-2">
-              <p className="font-[400] text-[18px]">Weekly Thesis Reads</p>
+              <p className="font-[400] text-[18px]">Weekly Thesis Reads <span className="text-xs">(Mon-Sun)</span></p>
             </div>
           </div>
           <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
@@ -133,16 +137,50 @@ function DashboardPage() {
               <span className="material-symbols-outlined">list</span>
             </div>
             <div className="flex flex-nowrap justify-between pt-2">
-              <p className="font-[400] text-[18px]">Weekly Journal Reads</p>
+              <p className="font-[400] text-[18px]">Weekly Journal Reads <span className="text-xs">(Mon-Sun)</span></p>
+            </div>
+          </div>
+          <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
+            <div className="flex flex-nowrap justify-between pb-2 items-center">
+              <p className="font-[600] text-[20px]">{statistics.monthlyThesisReads}</p>
+              <span className="material-symbols-outlined">list</span>
+            </div>
+            <div className="flex flex-nowrap justify-between pt-2">
+              <p className="font-[400] text-[18px]">Monthly Thesis Reads <span className="text-xs">(Mon-Sun)</span></p>
+            </div>
+          </div>
+          <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
+            <div className="flex flex-nowrap justify-between pb-2 items-center">
+              <p className="font-[600] text-[20px]">{statistics.monthlyJournalReads}</p>
+              <span className="material-symbols-outlined">list</span>
+            </div>
+            <div className="flex flex-nowrap justify-between pt-2">
+              <p className="font-[400] text-[18px]">Monthly Journal Reads <span className="text-xs">(Mon-Sun)</span></p>
+            </div>
+          </div>
+          <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
+            <div className="flex flex-nowrap justify-between pb-2 items-center">
+              <p className="font-[600] text-[20px]">{statistics.yearlyThesisReads}</p>
+              <span className="material-symbols-outlined">list</span>
+            </div>
+            <div className="flex flex-nowrap justify-between pt-2">
+              <p className="font-[400] text-[18px]">Yearly Thesis Reads <span className="text-xs">(Mon-Sun)</span></p>
+            </div>
+          </div>
+          <div className="h-[120px] px-8 py-6 bg-[#262E37] w-full divide-y rounded">
+            <div className="flex flex-nowrap justify-between pb-2 items-center">
+              <p className="font-[600] text-[20px]">{statistics.yearlyJournalReads}</p>
+              <span className="material-symbols-outlined">list</span>
+            </div>
+            <div className="flex flex-nowrap justify-between pt-2">
+              <p className="font-[400] text-[18px]">Yearly Journal Reads <span className="text-xs">(Mon-Sun)</span></p>
             </div>
           </div>
         </div>
         <div className="mt-8 pt-4 px-4">
-          -- Suggest Some Widgets here --
+          {/* More Widgets for Dashboard here */}
         </div>
       </div>
     </div>
   )
 }
-
-export default DashboardPage

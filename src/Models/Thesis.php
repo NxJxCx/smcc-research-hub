@@ -16,7 +16,8 @@ class Thesis extends Model
       'department' => ['VARCHAR(255)', 'NOT NULL'],
       'course' => ['VARCHAR(255)', 'NOT NULL'],
       'url' => ['TEXT', 'NOT NULL'],
-      'published_id' => ['BIGINT', 'DEFAULT NULL'],
+      'abstract' => ['TEXT', 'NOT NULL'],
+      'is_public' => ['BOOLEAN', 'DEFAULT FALSE'],
       'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],
       'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
     ];
@@ -29,10 +30,4 @@ class Thesis extends Model
     ];
   }
 
-  public function getForeignConstraints(): array
-  {
-    return [
-      'published_id' => [PublishedThesis::class, 'CASCADE', 'SET NULL']
-    ];
-  }
 }

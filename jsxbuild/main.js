@@ -1,14 +1,23 @@
+import { MainContext } from "/jsx/context";
 import Loading from "/jsx/global/loading";
 import { React, ReactDOM } from "/jsx/imports";
 const rootDOM = document.getElementById('root');
 const jsxAppPath = rootDOM?.dataset.reactApp;
 const pageData = rootDOM?.dataset.pageData;
 const root = ReactDOM.createRoot(rootDOM);
+function Context({ children }) {
+    const [data, setData] = React.useState(JSON.parse(pageData || "{}"));
+    React.useEffect(() => {
+        setData(JSON.parse(rootDOM?.dataset?.pageData || "{}"));
+    }, [rootDOM?.dataset?.pageData]);
+    return (React.createElement(MainContext.Provider, { value: data }, children));
+}
 root.render(React.createElement(Loading, { className: "h-[calc(100vh-160px)] w-full flex items-center justify-center p-0 m-0" }));
 async function render() {
     try {
         const App = (await import(jsxAppPath))?.default;
-        root.render(React.createElement(App, null));
+        root.render(React.createElement(Context, null,
+            React.createElement(App, null)));
     }
     catch (error) {
         root.render(React.createElement("div", { className: "relative h-full" },

@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
+use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\AdminLogs;
 use Smcc\ResearchHub\Models\Journal;
+use Smcc\ResearchHub\Models\JournalPersonnelReads;
+use Smcc\ResearchHub\Models\JournalReads;
 use Smcc\ResearchHub\Models\Thesis;
+use Smcc\ResearchHub\Models\ThesisPersonnelReads;
+use Smcc\ResearchHub\Models\ThesisReads;
 use Smcc\ResearchHub\Router\File;
 use Smcc\ResearchHub\Router\Request;
 use Smcc\ResearchHub\Router\Response;
@@ -19,18 +24,20 @@ class FileController extends Controller
   public function uploadPdf(Request $request): Response
   {
     if (Session::isAuthenticated() && Session::getUserAccountType() === 'admin') {
+      $doc = $request->getBodyParam('document');
+      $docTitle = $request->getBodyParam('title');
+      $docAuthor = $request->getBodyParam('author');
+      $docDepartment = $request->getBodyParam('department');
+      $docCourse = $request->getBodyParam('course');
+      $docAbstract = $request->getBodyParam('abstract');
+      $docPublisher = $request->getBodyParam('publisher');
+      $docPublishedDate = $request->getBodyParam('published_date');
+      $docYear = $request->getBodyParam('year');
       $file = $request->getFiles("pdf");
-      $body = $request->getBody();
-      $doc = $body['document'];
-      $docTitle = $body['title'];
-      $docAuthor = $body['author'];
-      $docDepartment = $body['department'];
-      $docCourse = $body['course'];
-      $docYear = $body['year'];
       if (!in_array($doc, ["thesis", "journal"])) {
         return Response::json(['error' => 'Invalid document type. Must be thesis or journal.'], StatusCode::BAD_REQUEST);
       }
-      if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment || !$docCourse) {
+      if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment || !$docCourse || !$docAbstract) {
         return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
       }
       if ($file instanceof File) {
@@ -51,6 +58,7 @@ class FileController extends Controller
                 "year" => $docYear,
                 "department" => $docDepartment,
                 "course" => $docCourse,
+                "abstract" => $docAbstract,
                 "url" => $fileUrl,
               ]);
               $fid = $thesis->create();
@@ -62,6 +70,9 @@ class FileController extends Controller
                 "department" => $docDepartment,
                 "course" => $docCourse,
                 "url" => $fileUrl,
+                "abstract" => $docAbstract,
+                "publisher" => $docPublisher,
+                "published_date" => $docPublishedDate,
               ]);
               $fid = $journal->create();
             }
@@ -122,8 +133,55 @@ class FileController extends Controller
     }
     $filename = "$filenameNoExt.pdf";
     $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, $docType, $filename]);
-    if (!file_exists($filePath) ||!is_readable($filePath)) {
+    if (!file_exists($filePath) || !is_readable($filePath)) {
       return Response::json(['error' => 'File not found'], StatusCode::NOT_FOUND);
+    }
+    if (Session::getUserAccountType() === 'student') {
+      // Append Read
+      $id = $request->getQueryParam('id');
+      if ($id) {
+        try {
+          $readDocument = in_array('thesis', $parts)
+            ? new ThesisReads([
+              'thesis_id' => $id,
+              'student_id' => Session::getUserId(),
+            ])
+            : (in_array('journal', $parts)
+              ? new JournalReads([
+                'journal_id' => $id,
+                'student_id' => Session::getUserId(),
+              ])
+              : null);
+          if ($readDocument) {
+            $readDocument->create();
+          }
+        } catch (\Throwable $e) {
+          Logger::write_error($e->getMessage());
+        }
+      }
+    } else if (Session::getUserAccountType() === 'personnel') {
+      // Append Read
+      $id = $request->getQueryParam('id');
+      if ($id) {
+        try {
+          $readDocument = in_array('thesis', $parts)
+            ? new ThesisPersonnelReads([
+              'thesis_id' => $id,
+              'personnel_id' => Session::getUserId(),
+            ])
+            : (in_array('journal', $parts)
+              ? new JournalPersonnelReads([
+                'journal_id' => $id,
+                'personnel_id' => Session::getUserId(),
+              ])
+              : null);
+          if ($readDocument) {
+            $readDocument->create();
+          }
+        } catch (\Throwable $e) {
+          Logger::write_error($e->getMessage());
+        }
+      }
     }
     return Response::file($filePath, StatusCode::OK, ["Content-Disposition" => "inline; filename=\"$filename\""]);
   }

@@ -1,7 +1,7 @@
 import SMCCLogo from "/jsx/global/smcclogo";
 import { React, Sweetalert2 } from "/jsx/imports";
 
-function AdminLogin() {
+export default function AdminLogin() {
 
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('')
@@ -79,5 +79,3 @@ function AdminLogin() {
     </div>
   )
 }
-
-export default AdminLogin

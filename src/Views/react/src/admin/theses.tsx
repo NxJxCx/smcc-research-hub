@@ -13,12 +13,13 @@ const columns: TableColumn[] = [
   { label: "Year", key: "year", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
   { label: "Department", key: "department", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
   { label: "Course", key: "course", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
-  { label: "Published", key: "published", sortable: true, cellType: TableCellType.Custom, align: CellAlign.Center },
+  { label: "Reads", key: "reads", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
+  { label: "Status", key: "is_public", sortable: true, cellType: TableCellType.Custom, align: CellAlign.Center },
   { label: "Action", key: "action", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
 ];
 
 
-function ThesesPage() {
+export default function ThesesPage() {
   const [openAddThesisForm, setShowAddThesisForm] = React.useState(false)
   const [pdfUrl, setPdfUrl] = React.useState("")
   const [pdfTitle, setPdfTitle] = React.useState("")
@@ -40,9 +41,10 @@ function ThesesPage() {
             year: data.year,
             department: data.department,
             course: data.course,
-            published: {
-              value: !data.published_id ? 1 : (new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-              content: !data.published_id
+            reads: data.reads || 0,
+            is_public: {
+              value: !data.is_public ? 'No' : 'Yes',
+              content: !data.is_public
                 ? (
                   <button
                     type="button"
@@ -50,43 +52,28 @@ function ThesesPage() {
                     onClick={() => {
                       Sweetalert2.fire({
                         icon: 'question',
-                        title: 'Is this thesis published?',
-                        text: 'Abstract (required)',
-                        input: 'textarea',
-                        inputAttributes: {
-                          id: 'abstract',
-                          name: 'abstract',
-                          autocapitalize: "off",
-                          label: 'Abstract (required)',
-                          placeholder: 'Abstract (required)',
-                          rows: 5,
-                          cols: 30,
-                          required: true,
-                        },
-                        confirmButtonText: 'Yes, Mark as Published',
+                        title: 'Do you want to display this thesis publicly?',
+                        confirmButtonText: 'Yes, Display Thesis publicly',
                         confirmButtonColor: '#3085d6',
                         showDenyButton: true,
                         denyButtonText: 'No, Cancel',
                         denyButtonColor: '#d33',
                         showLoaderOnConfirm: true,
-                        preConfirm: async (abstract: string) => {
+                        preConfirm: async () => {
                           try {
-                            if (!abstract) {
-                              throw new Error('Abstract is required');
-                            }
                             const publishUrl = new URL('/api/thesis/publish', window.location.origin);
                             const response = await fetch(publishUrl, {
                               method: 'POST',
-                              body: JSON.stringify({ id: data.id, abstract }),
+                              body: JSON.stringify({ id: data.id, is_public: true }),
                               headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                             })
                             if (!response.ok) {
                               const { error } = await response.json()
-                              return Sweetalert2.showValidationMessage('Failed to publish: ' + error);
+                              return Sweetalert2.showValidationMessage('Failed: ' + error);
                             }
                             return response.json();
                           } catch (error) {
-                            Sweetalert2.showValidationMessage('Failed to publish: ' + error);
+                            Sweetalert2.showValidationMessage('Failed: ' + error);
                           }
                         },
                         allowOutsideClick: () => !Sweetalert2.isLoading()
@@ -96,7 +83,7 @@ function ThesesPage() {
                             Sweetalert2.fire({
                               icon: 'error',
                               title: 'Error',
-                              text: 'Failed to publish thesis: ' + result.value.error,
+                              text: 'Failed to make thesis public: ' + result.value.error,
                               timer: 3000,
                               toast: true,
                               position: 'center'
@@ -104,8 +91,7 @@ function ThesesPage() {
                           } else {
                             Sweetalert2.fire({
                               icon: 'success',
-                              title: 'Thesis Published',
-                              text: 'Thesis has been marked as published successfully.',
+                              title: 'Thesis Publicly Displayed Successfully',
                               timer: 3000,
                               toast: true,
                               position: 'center'
@@ -116,9 +102,68 @@ function ThesesPage() {
                       })
                     }}
                   >
-                    Unpublished
+                    Hidden
                   </button>
-                ) : <>{(new Date(data.fk_published_id.created_at)).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</>
+                ) : (
+                <button
+                  type="button"
+                  className="bg-white px-3 py-2 text-green-700 font-bold rounded-2xl leading-[14.63px] text-[12px]"
+                  onClick={() => {
+                    Sweetalert2.fire({
+                      icon: 'question',
+                      title: 'Do you want to hide this thesis to the public?',
+                      confirmButtonText: 'Yes, Hide Thesis',
+                      confirmButtonColor: '#3085d6',
+                      showDenyButton: true,
+                      denyButtonText: 'No, Cancel',
+                      denyButtonColor: '#d33',
+                      showLoaderOnConfirm: true,
+                      preConfirm: async () => {
+                        try {
+                          const publishUrl = new URL('/api/thesis/publish', window.location.origin);
+                          const response = await fetch(publishUrl, {
+                            method: 'POST',
+                            body: JSON.stringify({ id: data.id, is_public: false }),
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                          })
+                          if (!response.ok) {
+                            const { error } = await response.json()
+                            return Sweetalert2.showValidationMessage('Failed: ' + error);
+                          }
+                          return response.json();
+                        } catch (error) {
+                          Sweetalert2.showValidationMessage('Failed: ' + error);
+                        }
+                      },
+                      allowOutsideClick: () => !Sweetalert2.isLoading()
+                    }).then((result: any) => {
+                      if (result.isConfirmed) {
+                        if (result.value?.error) {
+                          Sweetalert2.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to make thesis hidden: ' + result.value.error,
+                            timer: 3000,
+                            toast: true,
+                            position: 'center'
+                          })
+                        } else {
+                          Sweetalert2.fire({
+                            icon: 'success',
+                            title: 'Thesis Hidden Successfully',
+                            timer: 3000,
+                            toast: true,
+                            position: 'center'
+                          });
+                          fetchList();
+                        }
+                      }
+                    })
+                  }}
+                >
+                  Public
+                </button>
+              )
             },
             action: (
               <TableRowAction
@@ -226,5 +271,3 @@ function ThesesPage() {
     </div>
   )
 }
-
-export default ThesesPage

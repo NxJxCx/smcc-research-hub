@@ -1,0 +1,1 @@
+import{React as t}from"/jsx/imports";export const MainContext=t.createContext({});

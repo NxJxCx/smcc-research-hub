@@ -1,6 +1,6 @@
 import clsx from "/jsx/global/clsx"
 import { Courses, DepartmentCourses, Departments } from "/jsx/global/enums"
-import { Input, Select } from "/jsx/global/input"
+import { Input, Select, TextArea } from "/jsx/global/input"
 import Modal from "/jsx/global/modal"
 import PdfViewer from "/jsx/global/pdfviewer"
 import { React, Sweetalert2 } from "/jsx/imports"
@@ -12,6 +12,9 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
   const [journalYear, setJournalYear] = React.useState((new Date()).getFullYear().toString())
   const [journalDepartment, setJournalDepartment] = React.useState(Departments.CCIS);
   const [journalCourse, setJournalCourse] = React.useState(Courses.BSIT);
+  const [journalAbstract, setJournalAbstract] = React.useState('')
+  const [journalPublisher, setJournalPublisher] = React.useState('')
+  const [journalPublishedDate, setJournalPublishedDate] = React.useState('')
   const [pdf, setPdf] = React.useState<File|null|undefined>()
   const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
   const [showModal, setShowModal] = React.useState<boolean>(false)
@@ -76,7 +79,11 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
     formData.append('year', journalYear);
     formData.append('department', journalDepartment);
     formData.append('course', journalCourse);
+    formData.append('abstract', journalAbstract);
+    formData.append('publisher', journalPublisher);
+    formData.append('published_date', journalPublishedDate);
     formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
+    console.log(Object.fromEntries(formData))
 
     const xhr = new XMLHttpRequest();
     setXhr(xhr);
@@ -182,7 +189,10 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
           <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={journalAuthor} onChange={(e: any) => setJournalAuthor(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={journalYear} onChange={(e: any) => setJournalYear(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Department --", value: "" }, ...departmentList]} label="Department" name="department" value={journalDepartment} onChange={(e: any) => { setJournalDepartment(e.target.value); setJournalCourse(""); }} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Course --", value: "" }, ...courseList]} label="Course" name="course" value={journalCourse} onChange={(e: any) => setJournalCourse(e.target.value)} disabled={isFormDisabled} required />
+          <Select className="max-w-[370px] text-black" items={[{ label: "-- Select Course --", value: "" }, ...courseList]} label="Course" name="course" value={journalCourse} onChange={(e: any) => setJournalCourse(e.target.value)} disabled={isFormDisabled} required />
+          <TextArea className="max-w-[370px] text-black" label="Abstract" rows={3} name="abstract" value={journalAbstract} onChange={(e: any) => setJournalAbstract(e.target.value)} disabled={isFormDisabled} required />
+          <Input className="max-w-[180px] text-black" label="Publisher" name="publisher" value={journalPublisher} onChange={(e: any) => setJournalPublisher(e.target.value)} disabled={isFormDisabled} required />
+          <Input type="date" className="max-w-[180px] text-black" label="Published Date" name="published_date" value={journalPublishedDate} onChange={(e: any) => setJournalPublishedDate(e.target.value)} disabled={isFormDisabled} required />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={

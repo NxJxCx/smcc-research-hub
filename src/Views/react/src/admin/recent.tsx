@@ -17,7 +17,7 @@ const columns: TableColumn[] = [
   { label: "Action", key: "action", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
 ];
 
-function RecentPage() {
+export default function RecentPage() {
   const [pdfUrl, setPdfUrl] = React.useState("")
   const [pdfTitle, setPdfTitle] = React.useState("")
   const [pdfAuthor, setPdfAuthor] = React.useState("")
@@ -162,5 +162,3 @@ function RecentPage() {
     </div>
   )
 }
-
-export default RecentPage

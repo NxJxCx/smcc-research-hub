@@ -4,10 +4,6 @@
     "url": "/"
   },
   {
-    "label": "Current",
-    "url": "/current"
-  },
-  {
     "label": "Thesis",
     "url": "/thesis"
   },

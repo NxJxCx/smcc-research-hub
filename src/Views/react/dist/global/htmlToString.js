@@ -1,0 +1,1 @@
+import{ReactDOMServer as r}from"/jsx/imports";export default function t(t){return r.renderToString(t)}

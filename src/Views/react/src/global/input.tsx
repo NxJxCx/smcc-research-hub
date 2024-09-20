@@ -1,7 +1,9 @@
 import clsx from "/jsx/global/clsx";
 import { React } from "/jsx/imports";
 
-export function Input({ label, name, type = "text", placeholder = "", className = "", ...props }: { label: string, name: string, placeholder?: string, className?: string, type?: React.HTMLInputTypeAttribute } & React.InputHTMLAttributes<HTMLInputElement> ) {
+export function Input({ label, name, type = "text", placeholder = "", className = "", labelColor, inputClassName, ...props }: { label: string, name: string, placeholder?: string, className?: string, type?: React.HTMLInputTypeAttribute, labelColor?: string, inputClassName?: string } & React.InputHTMLAttributes<HTMLInputElement> ) {
+  const colorLabel = React.useMemo(() => labelColor || 'text-white', [labelColor])
+  const inputClass = React.useMemo(() => clsx("disabled:bg-gray-200 px-2 py-1 w-full rounded border", inputClassName), [inputClassName])
   return (
     <div className={
       clsx(
@@ -9,8 +11,8 @@ export function Input({ label, name, type = "text", placeholder = "", className 
         className,
       )
     }>
-      <label htmlFor={name} className="text-[12px] font-[400] text-white font-['Century Gothic'] px-2">{label}</label>
-      <input className="px-2 py-1 w-full rounded" type={type} id={name} name={name} placeholder={placeholder} {...props} />
+      <label htmlFor={name} className={clsx("text-[12px] font-[400] font-['Century Gothic'] px-2", colorLabel)}>{label}</label>
+      <input className={inputClass} type={type} id={name} name={name} placeholder={placeholder} {...props} />
     </div>
   )
 }
@@ -21,7 +23,26 @@ export interface SelectItem {
   disabled?: boolean
 }
 
-export function Select({ label, name, items, className = "",  ...props }: { label: string, name: string, items: SelectItem[], className?: string } & React.InputHTMLAttributes<HTMLInputElement> ) {
+export function Select({ label, name, items, className = "", labelColor, ...props }: { label: string, name: string, items: SelectItem[], className?: string, labelColor?: string } & React.InputHTMLAttributes<HTMLInputElement> ) {
+  return (
+    <div className={
+      clsx(
+        "flex flex-col justify-start w-full",
+        className,
+      )
+    }>
+      <label htmlFor={name} className={clsx("text-[12px] font-[400] font-['Century Gothic'] px-2", labelColor ? 'text-' + labelColor : 'text-white' )}>{label}</label>
+      <select className="px-2 py-1 w-full rounded border" id={name} name={name} {...props}>
+        {items.map((item: SelectItem) => (
+          <option key={item.value} value={item.value} disabled={item.disabled}>{item.label}</option>
+        ))}
+      </select>
+    </div>
+  )
+}
+
+
+export function TextArea({ label, name, placeholder = "", className = "", ...props }: { label: string, name: string, placeholder?: string, className?: string, type?: React.HTMLInputTypeAttribute } & React.InputHTMLAttributes<HTMLInputElement> ) {
   return (
     <div className={
       clsx(
@@ -30,11 +51,8 @@ export function Select({ label, name, items, className = "",  ...props }: { labe
       )
     }>
       <label htmlFor={name} className="text-[12px] font-[400] text-white font-['Century Gothic'] px-2">{label}</label>
-      <select className="px-2 py-1 w-full rounded" id={name} name={name} {...props}>
-        {items.map((item: SelectItem) => (
-          <option key={item.value} value={item.value} disabled={item.disabled}>{item.label}</option>
-        ))}
-      </select>
+      <textarea className="px-2 py-1 w-full rounded" id={name} name={name} placeholder={placeholder} {...props}>
+      </textarea>
     </div>
   )
 }

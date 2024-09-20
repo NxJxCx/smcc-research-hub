@@ -5,7 +5,7 @@ import Modal from "/jsx/global/modal";
 import PdfViewer from "/jsx/global/pdfviewer";
 import { React, Sweetalert2 } from "/jsx/imports";
 
-function ThumbnailThesis({
+function ThumbnailJournal({
   id,
   title,
   abstract,
@@ -14,6 +14,8 @@ function ThumbnailThesis({
   year,
   favorite,
   url,
+  publisher,
+  publishedDate,
   onViewPdf,
   onRefresh,
 }: {
@@ -25,6 +27,8 @@ function ThumbnailThesis({
   year: number;
   favorite: boolean;
   url: string;
+  publisher: string;
+  publishedDate: string;
   onViewPdf?: (uri: string, title: string, author: string) => void;
   onRefresh?: () => void,
 }) {
@@ -33,8 +37,7 @@ function ThumbnailThesis({
   const handleFavoriteClick = React.useCallback((e: any) => {
     e.preventDefault()
     e.stopPropagation()
-    console.log(JSON.stringify({ id, [authData?.account]: authData?.id }))
-    const url = new URL('/api/thesis/markfavorite', window.location.origin);
+    const url = new URL('/api/journal/markfavorite', window.location.origin);
     const body = JSON.stringify({ id, [authData?.account]: authData?.id })
     fetch(url, {
       method: 'POST',
@@ -50,7 +53,7 @@ function ThumbnailThesis({
           Sweetalert2.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to mark thesis as favorite: '+ error,
+            text: 'Failed to mark journal as favorite: '+ error,
             toast: true,
             showConfirmButton: false,
             position: 'center',
@@ -60,7 +63,7 @@ function ThumbnailThesis({
           Sweetalert2.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to mark thesis as favorite',
+            text: 'Failed to mark journal as favorite',
             toast: true,
             showConfirmButton: false,
             position: 'center',
@@ -89,14 +92,20 @@ function ThumbnailThesis({
       <div className="h-[75px] pt-4 px-4 font-bold leading-tight">
         {title}
       </div>
-      <div className="h-[150px] mb-2 text-justify px-4 leading-tight indent-8">
-        {abstract.substring(0, Math.min(320, abstract.length))}...
+      <div className="h-[120px] mb-2 text-justify px-4 leading-tight indent-8">
+        {abstract.substring(0, Math.min(250, abstract.length))}...
       </div>
       <div className="pt-4 px-2 leading-tight text-gray-700 italic">
         {author} ({year})
       </div>
       <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600">
         {course}
+      </div>
+      <div className="px-2 leading-tight text-gray-700 italic text-left">
+        Publisher: {publisher}
+      </div>
+      <div className="pb-2 px-2 leading-tight text-gray-700 italic text-left">
+        Published Date: {(new Date(publishedDate)).toLocaleDateString()}
       </div>
     </div>
   </>)
@@ -119,7 +128,7 @@ export default function Thesis() {
   const prevPage = React.useCallback(() => setPage((prev: number) => Math.min(totalPages, Math.max(totalPages === 0 ? 0 : 1, prev - 1))), [totalPages])
 
   const fetchData = async () => {
-    const url = new URL('/api/thesis/public/all', window.location.origin);
+    const url = new URL('/api/journal/public/all', window.location.origin);
     url.searchParams.set(authData?.account, authData?.id);
     try {
       const response = await fetch(url);
@@ -127,6 +136,7 @@ export default function Thesis() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const { success, error } = await response.json();
+      console.log
       if (error) {
         throw new Error(`HTTP error: ${error.message}`);
       } else if (success) {
@@ -154,10 +164,10 @@ export default function Thesis() {
   return (<>
     <div className="flex py-4 px-8 mt-4">
       <div className="flex-grow mt-3">
-        <h1 className="text-2xl font-bold text-center">Theses/Capstone</h1>
+        <h1 className="text-2xl font-bold text-center">Journals</h1>
         <div className="flex flex-wrap p-4 gap-4">
           { !!selectedDepartment && finalDisplay?.map((item: any) => (
-            <ThumbnailThesis
+            <ThumbnailJournal
               key={item.id}
               id={item.id}
               title={item.title}
@@ -167,6 +177,8 @@ export default function Thesis() {
               year={item.year}
               favorite={item.favorite}
               url={item.url}
+              publisher={item.publisher}
+              publishedDate={item.published_date}
               onViewPdf={handleViewPdf}
               onRefresh={fetchData}
             />
@@ -219,6 +231,6 @@ export default function Thesis() {
         </div>
       </div>
     </div>
-    <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href="/login" className="text-sky-700 underline">login</a> to view thesis.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
+    <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href="/login" className="text-sky-700 underline">login</a> to view journal.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
   </>)
 }

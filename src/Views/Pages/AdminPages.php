@@ -28,14 +28,10 @@ class AdminPages extends View
           'label' => 'Journal List',
           'url' => '/admin/journal',
         ],
-        [
-          'label' => 'Recently Published',
-          'url' => '/admin/recent',
-        ],
-        [
-          'label' => 'Announcements',
-          'url' => '/admin/announcements',
-        ],
+        // [
+        //   'label' => 'Announcements',
+        //   'url' => '/admin/announcements',
+        // ],
         [
           'label' => 'Downloads',
           'url' => '/admin/downloads',

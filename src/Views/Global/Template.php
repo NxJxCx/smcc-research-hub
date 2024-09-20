@@ -74,7 +74,7 @@ class Template
       <main
         id="root"
         class="relative w-full min-h-[calc(100vh - 160px)]"
-        data-react-app="<?php echo htmlspecialchars($reactAppPath); ?>"
+        data-react-app="<?php echo htmlspecialchars(string: $reactAppPath); ?>"
         data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
       ></main>
       <?php Footer::default(); ?>

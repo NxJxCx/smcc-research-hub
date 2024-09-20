@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
+use DateTime;
 use Smcc\ResearchHub\Logger\Logger;
 use Smcc\ResearchHub\Models\Admin;
 use Smcc\ResearchHub\Models\AdminLogs;
 use Smcc\ResearchHub\Models\Database;
 use Smcc\ResearchHub\Models\Journal;
+use Smcc\ResearchHub\Models\JournalFavorites;
+use Smcc\ResearchHub\Models\JournalPersonnelFavorites;
+use Smcc\ResearchHub\Models\JournalPersonnelReads;
+use Smcc\ResearchHub\Models\JournalReads;
 use Smcc\ResearchHub\Models\Personnel;
 use Smcc\ResearchHub\Models\PersonnelLogs;
-use Smcc\ResearchHub\Models\PublishedJournal;
-use Smcc\ResearchHub\Models\PublishedThesis;
 use Smcc\ResearchHub\Models\Student;
 use Smcc\ResearchHub\Models\StudentLogs;
 use Smcc\ResearchHub\Models\Thesis;
+use Smcc\ResearchHub\Models\ThesisFavorites;
+use Smcc\ResearchHub\Models\ThesisPersonnelFavorites;
+use Smcc\ResearchHub\Models\ThesisPersonnelReads;
+use Smcc\ResearchHub\Models\ThesisReads;
 use Smcc\ResearchHub\Router\Request;
 use Smcc\ResearchHub\Router\Response;
 use Smcc\ResearchHub\Router\Session as RouterSession;
@@ -78,6 +85,7 @@ class ApiController extends Controller
           'personnel_id' => $body['username'],
           'full_name' => $body['full_name'],
           'email' => $body['email'],
+          'department' => $body['department'],
           'password' => password_hash($body['password'], PASSWORD_DEFAULT),
         ],
         'student' => [
@@ -97,8 +105,13 @@ class ApiController extends Controller
           (new AdminLogs(['admin_id' => $id, 'activity' => "Admin ID: {$id}, username: {$model->admin_user}, fullname: {$model->full_name} has newly been registered"]))->create();
           break;
         case 'personnel':
+          $db = Database::getInstance();
+          if ($db->fetchOne(Personnel::class, ['personnel_id' => $data['personnel_id']])) {
+            return Response::json(['success' => false, 'error' => 'Employee ID already registered.']);
+          }
           $model = new Personnel($data);
           $id = $model->create(true);
+          (new AdminLogs(['admin_id' => RouterSession::getUserId(), 'activity' => "Personnel ID: {$id}, fullname: {$model->full_name} has newly been registered"]))->create();
           (new PersonnelLogs(['personnel_id' => $id, 'activity' => "Personnel ID: {$id}, fullname: {$model->full_name} has newly been registered"]))->create();
           break;
         case 'student':
@@ -120,8 +133,99 @@ class ApiController extends Controller
       Logger::write_info("Account registered: accountType={$accountType}, databaseId={$id}, full_name={$body['full_name']}");
       return Response::json(['success' => true]);
     } catch (\Throwable $e) {
-      $b = json_encode($body);
-      Logger::write_error("BODY: $b");
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function update(Request $request): Response
+  {
+    $body = $request->getBody();
+    try {
+      // Check if inputs are provided
+      if (!isset($body['account']) || !isset($body['username']) || !isset($body['full_name']) || !isset($body['email'])) {
+        return Response::json(['error' => 'Missing required inputs. ' . json_encode($body)], StatusCode::BAD_REQUEST);
+      }
+
+      // Validate account type (admin, personnel, student)
+      if (!in_array($body['account'], ['admin', 'personnel', 'student'])) {
+        return Response::json(['error' => 'Invalid account type.'], StatusCode::BAD_REQUEST);
+      }
+
+      $accountType = $body['account'];
+      // Validate and sanitize inputs here
+      $data = match ($accountType) {
+        'admin' => [
+          'full_name' => $body['full_name'],
+          'email' => $body['email'],
+        ],
+        'personnel' => [
+          'full_name' => $body['full_name'],
+          'email' => $body['email'],
+          'department' => $body['department'],
+        ],
+        'student' => [
+          'full_name' => $body['full_name'],
+          'email' => $body['email'],
+          'department' => $body['department'],
+          'course' => $body['course'],
+          'year' => intval($body['year']),
+        ],
+      };
+
+      if (!empty($body['password'])) {
+        Logger::write_debug('Password: ' . $body['password']);
+        $data['password'] = password_hash($body['password'], PASSWORD_DEFAULT);
+      }
+      $db = Database::getInstance();
+      switch ($accountType) {
+        case 'admin':
+          $id = RouterSession::getUserId();
+          $model = $db->fetchOne(Admin::class, ['id' => $id]);
+          if (!$model) {
+            return Response::json(['error' => 'Admin not found.'], StatusCode::NOT_FOUND);
+          }
+          $model->setAttributes($data);
+          if ($model->update()) {
+            (new AdminLogs(['admin_id' => $id, 'activity' => "Admin ID: {$id}, username: {$model->admin_user}, fullname: {$model->full_name} has newly been updated"]))->create();
+          }
+          break;
+        case 'personnel':
+          $id = !empty($body['username']) ? $body['username'] : RouterSession::getUserId();
+          $model = $db->fetchOne(Personnel::class, ['personnel_id' => $id]);
+          if (!$model) {
+            return Response::json(['error' => 'Teacher Account not found.'], StatusCode::NOT_FOUND);
+          }
+          $model->setAttributes($data);
+          if ($model->update()) {
+            if (empty($body['username'])) {
+              (new AdminLogs(['admin_id' => RouterSession::getUserId(), 'activity' => "Personnel ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();
+            }
+            (new PersonnelLogs(['personnel_id' => $id, 'activity' => "Personnel ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();
+          }
+          break;
+        case 'student':
+          $id_pattern = "/^20\\d{7}$/";
+          $name_pattern = "/^[A-ZÑ]+(?: [A-ZÑ]+)*?(?: [A-ZÑ]\\. )?(?:[A-ZÑ]+(?: [A-ZÑ]+)*)?(?: (?:III|IV|V|VI|VII|VIII|IX|X))?$/";
+          $id = !empty($body['username']) ? $body['username'] : RouterSession::getUserId();
+          if (!preg_match($id_pattern, strval($id)) || !preg_match($name_pattern, $data['full_name'])) {
+            return Response::json(['success' => false, 'error' => 'Invalid student ID format.']);
+          }
+          $model = $db->fetchOne(Student::class, ['student_id' => $id]);
+          if (!$model) {
+            return Response::json(['error' => 'Teacher Account not found.'], StatusCode::NOT_FOUND);
+          }
+          $model->setAttributes($data);
+          if ($model->update()) {
+            if (empty($body['username'])) {
+              (new AdminLogs(['admin_id' => RouterSession::getUserId(), 'activity' => "Student ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();
+            }
+            (new StudentLogs(['student_id' => $id, 'activity' => "Student ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();
+          }
+          break;
+      }
+      Logger::write_info("Account updated: accountType={$accountType}, databaseId={$id}, full_name={$body['full_name']}");
+      return Response::json(['success' => true]);
+    } catch (\Throwable $e) {
       return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
@@ -221,7 +325,7 @@ class ApiController extends Controller
     try {
       $db = Database::getInstance();
       $thesis = $db->getAllRows(Thesis::class);
-      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $thesis)]);
+      return Response::json(['success' => array_map(fn($t) => [...$t->toArray(true), 'reads' => count([...$db->fetchMany(ThesisReads::class, ['thesis_id' => $t->getPrimaryKeyValue()]), ...$db->fetchMany(ThesisPersonnelReads::class, ['thesis_id' => $t->getPrimaryKeyValue()])]) ], $thesis)]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
@@ -233,8 +337,9 @@ class ApiController extends Controller
     }
     try {
       $db = Database::getInstance();
-      $thesis = $db->getAllRows(Journal::class);
-      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $thesis)]);
+      $journal = $db->getAllRows(Journal::class);
+      Logger::write_debug(json_encode(array_map(fn($j) => $j->toArray(true), $journal)));
+      return Response::json(['success' => array_map(fn($j) => [...$j->toArray(true), 'reads' => count([...$db->fetchMany(JournalReads::class, ['journal_id' => $j->getPrimaryKeyValue()]), ...$db->fetchMany(JournalPersonnelReads::class, ['journal_id' => $j->getPrimaryKeyValue()])]) ], $journal)]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
@@ -246,14 +351,53 @@ class ApiController extends Controller
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     try {
+      $db = Database::getInstance();
       $thesis = Thesis::getRowCount();
       $journal = Journal::getRowCount();
       $student = Student::getRowCount();
       $personnel = Personnel::getRowCount();
-      $thesisPublished = PublishedThesis::getRowCount();
-      $journalPublished = PublishedJournal::getRowCount();
-      $weeklyThesisReads = 0; // TODO: implement weekly reads statistics
-      $weeklyJournalReads = 0; // TODO: implement weekly reads statistics
+      $allThesis = $db->getAllRows(Thesis::class);
+      $thesisPublic = array_filter($allThesis, fn($th) => $th->is_public);
+      $thesisPublished = count($thesisPublic);
+      $allJournals = $db->getAllRows(Thesis::class);
+      $journalPublic = array_filter($allJournals, fn($jn) => $jn->is_public);
+      $journalPublished = count($journalPublic);
+
+      $thesisReads = [...$db->getAllRows(modelClass: ThesisReads::class), ...$db->getAllRows(ThesisPersonnelReads::class)];
+      $journalReads = [...$db->getAllRows(modelClass: JournalReads::class), ...$db->getAllRows(JournalPersonnelReads::class)];
+      $now = new DateTime();
+      $startOfWeek = (clone $now)->modify('monday this week');
+      $endOfWeek = (clone $now)->modify('sunday this week');
+      $weeklyThesisReads = count(array_filter($thesisReads, function($tr) use ($startOfWeek, $endOfWeek) {
+        $createdAt = $tr->created_at; // Ensure this is a DateTime object
+        return $createdAt >= $startOfWeek && $createdAt <= $endOfWeek;
+      }));
+      $weeklyJournalReads = count(array_filter($journalReads, function($tr) use ($startOfWeek, $endOfWeek) {
+        $createdAt = $tr->created_at; // Ensure this is a DateTime object
+        return $createdAt >= $startOfWeek && $createdAt <= $endOfWeek;
+      }));
+      $startOfTheMonth = (clone $now)->modify('first day of this month');
+      $endOfTheMonth = (clone $now)->modify('last day of this month');
+      $monthlyThesisReads = count(array_filter($thesisReads, function($tr) use ($startOfTheMonth, $endOfTheMonth) {
+        $createdAt = $tr->created_at; // Ensure this is a DateTime object
+        return $createdAt >= $startOfTheMonth && $createdAt <= $endOfTheMonth;
+      }));
+      $monthlyJournalReads = count(array_filter($journalReads, function($tr) use ($startOfTheMonth, $endOfTheMonth) {
+          $createdAt = $tr->created_at; // Ensure this is a DateTime object
+          return $createdAt >= $startOfTheMonth && $createdAt <= $endOfTheMonth;
+      }));
+      $startOfTheYear = (clone $now)->modify('first day of this year');
+      $endOfTheYear = (clone $now)->modify('last day of this year');
+
+      $yearlyThesisReads = count(array_filter($thesisReads, function($tr) use ($startOfTheYear, $endOfTheYear) {
+        $createdAt = $tr->created_at; // Ensure this is a DateTime object
+        return $createdAt >= $startOfTheYear && $createdAt <= $endOfTheYear;
+      }));
+      $yearlyJournalReads = count(array_filter($journalReads, function($tr) use ($startOfTheYear, $endOfTheYear) {
+        $createdAt = $tr->created_at; // Ensure this is a DateTime object
+        return $createdAt >= $startOfTheYear && $createdAt <= $endOfTheYear;
+      }));
+
       return Response::json(['success' => [
         "theses" => $thesis,
         "journals" => $journal,
@@ -263,6 +407,10 @@ class ApiController extends Controller
         "teachers" => $personnel,
         "weeklyThesisReads" => $weeklyThesisReads,
         "weeklyJournalReads" => $weeklyJournalReads,
+        "monthlyThesisReads" => $monthlyThesisReads,
+        "monthlyJournalReads" => $monthlyJournalReads,
+        "yearlyThesisReads" => $yearlyThesisReads,
+        "yearlyJournalReads" => $yearlyJournalReads,
       ]]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
@@ -275,19 +423,14 @@ class ApiController extends Controller
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     $id = $request->getBodyParam('id');
-    $abstract = $request->getBodyParam('abstract');
+    $is_public = boolval($request->getBodyParam('is_public'));
     if (!$id) {
       return Response::json(['error' => 'Missing Thesis ID.'], StatusCode::BAD_REQUEST);
     }
     try {
       $thesis = Database::getInstance()->fetchOne(Thesis::class, [(new Thesis())->getPrimaryKey() => $id]);
       // publish the thesis
-      $publish = new PublishedThesis([
-        'thesis_id' => $thesis->getPrimaryKeyValue(),
-        'abstract' => $abstract,
-      ]);
-      $published_id = $publish->create();
-      $thesis->published_id = $published_id;
+      $thesis->is_public = $is_public;
       $success = $thesis->update();
       return Response::json(['success'=> $success], $success ? StatusCode::CREATED : StatusCode::OK);
     } catch (\PDOException $e) {
@@ -302,19 +445,14 @@ class ApiController extends Controller
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     $id = $request->getBodyParam('id');
-    $abstract = $request->getBodyParam('abstract');
+    $is_public = boolval($request->getBodyParam('is_public'));
     if (!$id) {
-      return Response::json(['error' => 'Missing Thesis ID.'], StatusCode::BAD_REQUEST);
+      return Response::json(['error' => 'Missing Journal ID.'], StatusCode::BAD_REQUEST);
     }
     try {
       $journal = Database::getInstance()->fetchOne(Journal::class, [(new Journal())->getPrimaryKey() => $id]);
-      // publish the thesis
-      $publish = new PublishedJournal([
-        'journal_id' => $journal->getPrimaryKeyValue(),
-        'abstract' => $abstract,
-      ]);
-      $published_id = $publish->create();
-      $journal->published_id = $published_id;
+      // publish the journal
+      $journal->is_public = $is_public;
       $success = $journal->update();
       return Response::json(['success'=> $success], $success ? StatusCode::CREATED : StatusCode::OK);
     } catch (\PDOException $e) {
@@ -386,29 +524,57 @@ class ApiController extends Controller
     }
   }
 
-  public function allPublishedTheses(): Response
+  public function allPublicTheses(Request $request): Response
   {
-    if (!RouterSession::isAuthenticated()) {
-      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
-    }
     try {
+      $student = $request->getQueryParam('student');
+      $teacher = $request->getQueryParam('personnel');
+      if (($student || $teacher) && !RouterSession::isAuthenticated()) {
+        return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+      }
       $db = Database::getInstance();
-      $thesis = $db->getAllRows(PublishedThesis::class);
-      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $thesis)]);
+      $allThesis = $db->getAllRows(Thesis::class);
+      $valueTheses = array_filter($allThesis, fn($th) => $th->is_public);
+      if ($student) {
+        $favorites = $db->fetchMany(ThesisFavorites::class, ['student_id' => $student]);
+        $mapped = array_map(fn($fav) => $fav->thesis_id, $favorites);
+        $theses = array_map( fn($thesis) => [...$thesis->toArray(true), "favorite" => in_array($thesis->id, $mapped ?? [])], $valueTheses);
+      } else if ($teacher) {
+        $favorites = $db->fetchMany(ThesisPersonnelFavorites::class, ['personnel_id' => $teacher]);
+        $mapped = array_map(fn($fav) => $fav->thesis_id, $favorites);
+        $theses = array_map( fn($thesis) => [...$thesis->toArray(true), "favorite" => in_array($thesis->getPrimaryKeyValue(), $mapped ?? [])], $valueTheses);
+      } else {
+        $theses = array_map(fn($t) => $t->toArray(true), $valueTheses);
+      }
+      return Response::json(['success' => $theses]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
 
-  public function allPublishedJournal(): Response
+  public function allPublicJournal(Request $request): Response
   {
-    if (!RouterSession::isAuthenticated()) {
-      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
-    }
     try {
+      $student = $request->getQueryParam('student');
+      $teacher = $request->getQueryParam('personnel');
+      if (($student || $teacher) && !RouterSession::isAuthenticated()) {
+        return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+      }
       $db = Database::getInstance();
-      $journal = $db->getAllRows(PublishedJournal::class);
-      return Response::json(['success' => array_map(fn($t) => $t->toArray(true), $journal)]);
+      $allJournal = $db->getAllRows(Journal::class);
+      $valueJournals = array_filter($allJournal, fn($th) => $th->is_public);
+      if ($student) {
+        $favorites = $db->fetchMany(JournalFavorites::class, ['student_id' => $student]);
+        $mapped = array_map(fn($fav) => $fav->journal_id, $favorites);
+        $theses = array_map( fn($journal) => [...$journal->toArray(true), "favorite" => in_array($journal->id, $mapped ?? [])], $valueJournals);
+      } else if ($teacher) {
+        $favorites = $db->fetchMany(JournalPersonnelFavorites::class, ['personnel_id' => $teacher]);
+        $mapped = array_map(fn($fav) => $fav->journal_id, $favorites);
+        $theses = array_map( fn($journal) => [...$journal->toArray(true), "favorite" => in_array($journal->getPrimaryKeyValue(), $mapped ?? [])], $valueJournals);
+      } else {
+        $theses = array_map(fn($t) => $t->toArray(true), $valueJournals);
+      }
+      return Response::json(['success' => $theses]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
@@ -416,7 +582,7 @@ class ApiController extends Controller
 
   public function allStudents(): Response
   {
-    if (!RouterSession::isAuthenticated() || !RouterSession::getUserAccountType() === 'admin') {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     try {
@@ -430,7 +596,7 @@ class ApiController extends Controller
 
   public function allPersonnels(): Response
   {
-    if (!RouterSession::isAuthenticated() || !RouterSession::getUserAccountType() === 'admin') {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
     try {
@@ -477,4 +643,118 @@ class ApiController extends Controller
       return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }
   }
+
+  public function thesisMarkFavorite(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() === 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getBodyParam('id');
+    $student = $request->getBodyParam('student');
+    $teacher = $request->getBodyParam('personnel');
+    if (!$id) {
+      return Response::json(['error' => 'Missing Thesis ID.'], StatusCode::BAD_REQUEST);
+    }
+    if (!$student && !$teacher) {
+      return Response::json(['error' => 'Bad Request'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $condition = $student ? ['thesis_id' => $id, 'student_id' => $student] : ['thesis_id' => $id, 'personnel_id' => $teacher];
+      $thesis = Database::getInstance()->fetchOne($student ? ThesisFavorites::class : ThesisPersonnelFavorites::class, $condition);
+      // mark favorite or unfavorite by deleting or creating
+      if ($thesis) {
+        $thesis->delete();
+      } else {
+        $thesis = $student ? new ThesisFavorites() : new ThesisPersonnelFavorites();
+        $thesis->thesis_id = $id;
+        if ($student) {
+          $thesis->student_id = $student;
+        } else if ($teacher) {
+          $thesis->personnel_id = $teacher;
+        }
+        $thesis->create();
+      }
+      return Response::json(['success'=> true]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public function journalMarkFavorite(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() === 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getBodyParam('id');
+    $student = $request->getBodyParam('student');
+    $teacher = $request->getBodyParam('personnel');
+    if (!$id) {
+      return Response::json(['error' => 'Missing Journal ID.'], StatusCode::BAD_REQUEST);
+    }
+    if (!$student && !$teacher) {
+      return Response::json(['error' => 'Bad Request'], StatusCode::BAD_REQUEST);
+    }
+    try {
+      $condition = $student ? ['journal_id' => $id, 'student_id' => $student] : ['journal_id' => $id, 'personnel_id' => $teacher];
+      $journal = Database::getInstance()->fetchOne($student ? JournalFavorites::class : JournalPersonnelFavorites::class, $condition);
+      // mark favorite or unfavorite by deleting or creating
+      if ($journal) {
+        $journal->delete();
+      } else {
+        $journal = $student ? new JournalFavorites() : new JournalPersonnelFavorites();
+        $journal->journal_id = $id;
+        if ($student) {
+          $journal->student_id = $student;
+        } else if ($teacher) {
+          $journal->personnel_id = $teacher;
+        }
+        $journal->create();
+      }
+      return Response::json(['success'=> true]);
+    } catch (\PDOException $e) {
+      return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
+  public function allFavorites(): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() === 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    try {
+      $db = Database::getInstance();
+      $accType = RouterSession::getUserAccountType();
+      $myId = RouterSession::getUserId();
+      if ($accType === 'student') {
+        $thesesFav = $db->fetchMany(ThesisFavorites::class, ['student_id' => $myId]);
+        $journalFav = $db->fetchMany(JournalFavorites::class, ['student_id' => $myId]);
+        $data = [
+          ...array_map(fn(ThesisFavorites $th) => [...$th->fk_thesis_id->toArray(), 'read_at' => $th->created_at, 'type' => 'Thesis', 'read' => $db->getRowCount(ThesisReads::class, ['thesis_id' => $th->fk_thesis_id->getPrimaryKeyValue(), 'student_id' => RouterSession::getUserId()])], $thesesFav),
+          ...array_map(fn(JournalFavorites $jn) => [...$jn->fk_journal_id->toArray(), 'read_at' => $jn->created_at,  'type' => 'Journal', 'read' => $db->getRowCount(JournalReads::class, ['journal_id' => $jn->fk_journal_id->getPrimaryKeyValue(), 'student_id' => RouterSession::getUserId()])], $journalFav),
+        ];
+        usort($data, function($a, $b) {
+          $interval = $a['read_at']->diff($b['read_at']);
+          return !$interval->invert;
+        });
+        return Response::json(['success' => $data]);
+      } else if ($accType === 'personnel') {
+        $thesesFav = $db->fetchMany(ThesisPersonnelFavorites::class, ['personnel_id' => $myId]);
+        $journalFav = $db->fetchMany(JournalPersonnelFavorites::class, ['personnel_id' => $myId]);
+        $data = [
+          ...array_map(fn(ThesisPersonnelFavorites $th) => [...$th->fk_thesis_id->toArray(), 'read_at' => $th->created_at, 'type' => 'Thesis', 'read' => $db->getRowCount(ThesisPersonnelReads::class, ['thesis_id' => $th->fk_thesis_id->getPrimaryKeyValue(), 'personnel_id' => RouterSession::getUserId()])], $thesesFav),
+          ...array_map(fn(JournalPersonnelFavorites $jn) => [...$jn->fk_journal_id->toArray(), 'read_at' => $jn->created_at, 'type' => 'Journal', 'read' => $db->getRowCount(JournalPersonnelReads::class, ['journal_id' => $jn->fk_journal_id->getPrimaryKeyValue(), 'personnel_id' => RouterSession::getUserId()])], $journalFav),
+        ];
+        usort($data, function($a, $b) {
+          $interval = $a['read_at']->diff($b['read_at']);
+          return !$interval->invert;
+        });
+        return Response::json(['success' => $data]);
+      }
+    } catch (\Throwable $e) {
+      return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+    return Response::json(['error'=> 'Bad Request'], StatusCode::BAD_REQUEST);
+  }
+
 }

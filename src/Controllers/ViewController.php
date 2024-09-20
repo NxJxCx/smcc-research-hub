@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Smcc\ResearchHub\Controllers;
 
 use Smcc\ResearchHub\Router\Response;
-use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Global\View;
 use Smcc\ResearchHub\Views\Pages\Admin\AdminPages;
@@ -153,7 +152,51 @@ class ViewController extends Controller
       'id' => Session::getUserId(),
     ] : [];
     $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
-    return UserPages::view("Thesis/Capstone", $data, '/jsx/main/thesis');
+    return UserPages::view("Thesis/Capstone", $data,'/jsx/main/thesis');
+  }
+
+  public function journal(): View
+  {
+    $authData = Session::isAuthenticated() ? [
+      'account' => Session::getUserAccountType(),
+      'full_name' => Session::getUserFullName(),
+      'id' => Session::getUserId(),
+    ] : [];
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return UserPages::view("Journal", $data,'/jsx/main/journal');
+  }
+
+  public function downloads(): View
+  {
+    $authData = Session::isAuthenticated() ? [
+      'account' => Session::getUserAccountType(),
+      'full_name' => Session::getUserFullName(),
+      'id' => Session::getUserId(),
+    ] : [];
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return UserPages::view("Downloads", $data, '/jsx/main/downloads');
+  }
+
+  public function aboutUs(): View
+  {
+    $authData = Session::isAuthenticated() ? [
+      'account' => Session::getUserAccountType(),
+      'full_name' => Session::getUserFullName(),
+      'id' => Session::getUserId(),
+    ] : [];
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return UserPages::view("About Us", $data,'/jsx/main/about');
+  }
+
+  public function library(): View
+  {
+    $authData = Session::isAuthenticated() ? [
+      'account' => Session::getUserAccountType(),
+      'full_name' => Session::getUserFullName(),
+      'id' => Session::getUserId(),
+    ] : [];
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return UserPages::view("Library", $data,'/jsx/main/library');
   }
 
   public function notFound(): View
