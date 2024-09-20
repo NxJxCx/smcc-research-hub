@@ -4,6 +4,7 @@ import { Departments } from "/jsx/global/enums";
 import Modal from "/jsx/global/modal";
 import PdfViewer from "/jsx/global/pdfviewer";
 import { React, Sweetalert2 } from "/jsx/imports";
+import SearchHeaderInput from "/jsx/main/search";
 
 function ThumbnailThesis({
   id,
@@ -33,7 +34,6 @@ function ThumbnailThesis({
   const handleFavoriteClick = React.useCallback((e: any) => {
     e.preventDefault()
     e.stopPropagation()
-    console.log(JSON.stringify({ id, [authData?.account]: authData?.id }))
     const url = new URL('/api/thesis/markfavorite', window.location.origin);
     const body = JSON.stringify({ id, [authData?.account]: authData?.id })
     fetch(url, {
@@ -104,11 +104,19 @@ function ThumbnailThesis({
 
 export default function Thesis() {
   const { authenticated, authData } = React.useContext(MainContext)
+  const [search, setSearch] = React.useState<string>((new URLSearchParams((new URL(window.location.href)).search)).get('search') || '')
+  const searchParams = React.useMemo(() => new URLSearchParams((new URL(window.location.href)).search), []);
+  const onSearch = React.useCallback((s: string) => {
+    setSearch(s)
+    searchParams.set('search', s)
+    window.history.pushState({}, '', `?${searchParams.toString()}`)
+  }, [])
+
   const [data, setData] = React.useState<any[]>([])
 
   const [selectedDepartment, setSelectedDepartment] = React.useState<Departments>(Departments.CCIS);
 
-  const displayData = React.useMemo(() => data.filter((item: any) => item.department === selectedDepartment), [data, selectedDepartment])
+  const displayData = React.useMemo(() => data.filter((item: any) => item.department === selectedDepartment && (!search || item.title.includes(search)) || item.abstract.includes(search) || item.author.includes(search) || item.year.toString().includes(search)), [data, selectedDepartment, search])
 
   const [page, setPage] = React.useState<number>(1)
   const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])
@@ -182,7 +190,7 @@ export default function Thesis() {
         </div>
       </div>
       <div className="min-w-[326px] max-w-[326px] h-[600px] flex flex-col">
-        <div className="min-h-[500px] flex-grow">
+        <div className="min-h-[400px] flex-grow">
           <div className="font-bold text-xl mb-4 w-full">
             Categories
           </div>
@@ -197,7 +205,10 @@ export default function Thesis() {
             </button>
           ))}
         </div>
-        <div className="flex-shrink text-slate-700 font-[600] max-w-full overflow-x-auto overflow-y-hidden">
+        <div className="flex-shrink text-slate-700 font-[600] w-full mb-3">
+          <SearchHeaderInput search={search} onSearch={onSearch} />
+        </div>
+        <div className="text-slate-700 font-[600] max-w-full overflow-x-auto overflow-y-hidden">
           <div className="flex">
             {Array.from({ length: totalPages }).map((_, i: number) => (
               <button
