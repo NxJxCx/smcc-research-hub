@@ -138,6 +138,7 @@ export default function Thesis() {
       if (error) {
         throw new Error(`HTTP error: ${error.message}`);
       } else if (success) {
+        success.sort((a: any, b: any) => (new Date(a.created_at)).getTime() > (new Date(b.created_at)).getTime() ? -1 : 1);
         setData(success);
       }
     } catch (e) {
