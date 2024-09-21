@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Controllers;
 
+use Smcc\ResearchHub\Models\Admin;
+use Smcc\ResearchHub\Models\Database;
+use Smcc\ResearchHub\Models\Personnel;
+use Smcc\ResearchHub\Models\Student;
 use Smcc\ResearchHub\Router\Response;
 use Smcc\ResearchHub\Router\Session;
 use Smcc\ResearchHub\Views\Global\View;
@@ -197,6 +201,39 @@ class ViewController extends Controller
     ] : [];
     $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
     return UserPages::view("Library", $data,'/jsx/main/library');
+  }
+
+  public function adminSettings(): View|Response
+  {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
+      return Response::redirect("/admin/login");
+    }
+    $db = Database::getInstance();
+    $admin = $db->getRowById(Admin::class, Session::getUserId());
+    $authData = $admin->toArray();
+    $authData['account'] = Session::getUserAccountType();
+    unset($authData['password']); // remove password for security reasons
+    unset($authData['created_at']); // remove created
+    unset($authData['updated_at']); // remove updated
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return AdminPages::view("Account Settings", $data, '/jsx/admin/settings');
+  }
+
+  public function accountSettings(): View|Response
+  {
+    if (!Session::isAuthenticated() || Session::getUserAccountType() === "admin") {
+      return Response::redirect("/");
+    }
+    $account = Session::getUserAccountType();
+    $db = Database::getInstance();
+    $user = $db->getRowById($account === 'student' ? Student::class : Personnel::class, Session::getUserId());
+    $authData = $user->toArray();
+    $authData['account'] = $account;
+    unset($authData['password']); // remove password for security reasons
+    unset($authData['created_at']); // remove created
+    unset($authData['updated_at']); // remove updated
+    $data = ['authenticated' => Session::isAuthenticated(), 'authData' => $authData];
+    return UserPages::view("Account Settings", $data, '/jsx/main/settings');
   }
 
   public function notFound(): View

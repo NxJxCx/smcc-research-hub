@@ -1,0 +1,1 @@
+import t from"/jsx/global/settings";export default t;

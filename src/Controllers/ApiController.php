@@ -143,7 +143,7 @@ class ApiController extends Controller
     $body = $request->getBody();
     try {
       // Check if inputs are provided
-      if (!isset($body['account']) || !isset($body['username']) || !isset($body['full_name']) || !isset($body['email'])) {
+      if (!isset($body['account']) || !isset($body['full_name']) || !isset($body['email'])) {
         return Response::json(['error' => 'Missing required inputs. ' . json_encode($body)], StatusCode::BAD_REQUEST);
       }
 
@@ -181,13 +181,13 @@ class ApiController extends Controller
       switch ($accountType) {
         case 'admin':
           $id = RouterSession::getUserId();
-          $model = $db->fetchOne(Admin::class, ['id' => $id]);
+          $model = $db->fetchOne(Admin::class, conditions: ['id' => $id]);
           if (!$model) {
             return Response::json(['error' => 'Admin not found.'], StatusCode::NOT_FOUND);
           }
           $model->setAttributes($data);
           if ($model->update()) {
-            (new AdminLogs(['admin_id' => $id, 'activity' => "Admin ID: {$id}, username: {$model->admin_user}, fullname: {$model->full_name} has newly been updated"]))->create();
+            (new AdminLogs(['admin_id' => $model->getPrimaryKeyValue(), 'activity' => "Admin ID: {$id}, username: {$model->admin_user}, fullname: {$model->full_name} has newly been updated"]))->create();
           }
           break;
         case 'personnel':
@@ -198,7 +198,7 @@ class ApiController extends Controller
           }
           $model->setAttributes($data);
           if ($model->update()) {
-            if (empty($body['username'])) {
+            if (!empty($body['username'])) {
               (new AdminLogs(['admin_id' => RouterSession::getUserId(), 'activity' => "Personnel ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();
             }
             (new PersonnelLogs(['personnel_id' => $id, 'activity' => "Personnel ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();
@@ -217,7 +217,7 @@ class ApiController extends Controller
           }
           $model->setAttributes($data);
           if ($model->update()) {
-            if (empty($body['username'])) {
+            if (!empty($body['username'])) {
               (new AdminLogs(['admin_id' => RouterSession::getUserId(), 'activity' => "Student ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();
             }
             (new StudentLogs(['student_id' => $id, 'activity' => "Student ID: {$id}, fullname: {$model->full_name} has been updated"]))->create();

@@ -33,6 +33,7 @@ Router::GET('/admin/announcements', [ViewController::class, 'adminAnnouncements'
 Router::GET('/admin/downloads', [ViewController::class, 'adminDownloads']);
 Router::GET('/admin/students', [ViewController::class, 'adminStudentList']);
 Router::GET('/admin/teachers', [ViewController::class, 'adminTeacherAccounts']);
+Router::GET('/admin/settings', [ViewController::class, 'adminSettings']);
 Router::GET('/thesis', [ViewController::class, 'thesis']);
 Router::GET('/journal', [ViewController::class, 'journal']);
 Router::GET('/downloads', [ViewController::class, 'downloads']);
@@ -41,6 +42,7 @@ Router::GET('/library', [ViewController::class, 'library']);
 Router::GET('/read/thesis', [FileController::class, 'viewPdfFile']);
 Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/downloadable', [FileController::class, 'downloadFile']);
+Router::GET('/settings', [ViewController::class, 'accountSettings']);
 Router::GET('/logs', [ViewController::class, 'logs']);
 
 /* API GET METHOD */
