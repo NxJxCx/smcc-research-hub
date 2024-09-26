@@ -7,14 +7,15 @@ import { React, Sweetalert2 } from "/jsx/imports";
 
 const columns: TableColumn[] = [
   { label: "#", key: "id", sortable: true, filterable: true, cellType: TableCellType.Number, align: CellAlign.Center },
+  { label: "Thumbnail", key: "thumbnail", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
   { label: "Date Created", key: "created_at", sortable: true, cellType: TableCellType.Date, align: CellAlign.Center },
   { label: "Title", key: "title", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
   { label: "Author", key: "author", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
   { label: "Year", key: "year", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
   { label: "Publisher", key: "publisher", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
   { label: "Published Date", key: "published_date", sortable: true, cellType: TableCellType.Date, align: CellAlign.Center },
-  { label: "Department", key: "department", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
-  { label: "Course", key: "course", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
+  { label: "Volume", key: "volume", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
+  { label: "No.", key: "number", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
   { label: "Reads", key: "reads", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
   { label: "Status", key: "is_public", sortable: true, cellType: TableCellType.Custom, align: CellAlign.Center },
   { label: "Action", key: "action", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
@@ -27,6 +28,71 @@ export default function JournalPage() {
   const [pdfTitle, setPdfTitle] = React.useState("")
   const [pdfAuthor, setPdfAuthor] = React.useState("")
   const [tableData, setTableData] = React.useState<TableRow[]>([])
+  const [thumbnail, setThumbnail] = React.useState('');
+
+  const handleEditThumbnail = React.useCallback((data: any) => {
+    Sweetalert2.fire({
+      title: 'Edit Thumbnail',
+      text: 'Enter the new thumbnail URL:',
+      input: 'file',
+      inputValue: data.thumbnail,
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+      cancelButtonText: 'Cancel',
+      showLoaderOnConfirm: true,
+      preConfirm: (file: File) => {
+        return new Promise((resolve, reject) => {
+          if (file && file.size > 3 * 1024 * 1024) { // limit to 3MB
+            reject('Thumbnail File size exceeds the maximum limit of 3MB.');
+          } else {
+            const searchParam = (new URLSearchParams((new URL(data.thumbnail, window.location.origin)).search))
+            const formData = new FormData();
+            formData.append('id', data.id);
+            formData.append('filename', searchParam.get('filename') || '');
+            console.log(file.type);
+            formData.append('thumbnail', new Blob([file], { type: file.type }), file.name);
+            const url = new URL('/api/thumbnail/edit', window.location.origin);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.onload = () => {
+              if (xhr.status === 201) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.error) {
+                  reject(response.error);
+                } else {
+                  resolve('Journal Document uploaded successfully.')
+                }
+              } else {
+                reject(JSON.parse(xhr.responseText)?.error || 'Failed to upload');
+              }
+            };
+            xhr.onerror = (e) => {
+              reject(JSON.parse(xhr.responseText)?.error || 'Error Uploading');
+            };
+            xhr.send(formData);
+          }
+        })
+          .then(msg => msg)
+          .catch(err => {
+            Sweetalert2.showValidationMessage(err.message);
+          });
+      }
+    })
+    .then(({ isConfirmed, value }: any) => {
+      if (isConfirmed) {
+        Sweetalert2.fire({
+          icon: 'success',
+          title: 'Thumbnail Updated',
+          text: value,
+          toast: true,
+          showConfirmButton: false,
+          position: 'center',
+          timer: 2000,
+        })
+        setTimeout(() => fetchList(), 500);
+      }
+    });
+  }, []);
 
   const fetchList = () => {
     fetch('/api/journal/all')
@@ -41,10 +107,18 @@ export default function JournalPage() {
             title: data.title,
             author: data.author,
             year: data.year,
-            department: data.department,
-            course: data.course,
+            volume: data.volume,
+            number: data.number,
             publisher: data.publisher,
             published_date: data.published_date,
+            thumbnail: {
+              value: data.thumbnail,
+              content: (<>
+                <button type="button" onClick={() => handleEditThumbnail(data)} className="relative w-[70px] h-[90px] after:absolute after:left-0 after:top-0 after:w-[70px] after:h-[90px] hover:after:bg-white/40 hover:after:content-center hover:after:content-['edit'] hover:after:drop-shadow-lg hover:after:text-black">
+                  <img src={(new URL(data.thumbnail, window?.location?.origin)).toString()} alt="thumbnail" className="w-full h-full object-contain" />
+                </button>
+              </>)
+            },
             reads: data.reads || 0,
             is_public: {
               value: !data.is_public ? 'No' : 'Yes',

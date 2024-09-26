@@ -15,6 +15,7 @@ function ThumbnailThesis({
   year,
   favorite,
   url,
+  totalViews = 0,
   onViewPdf,
   onRefresh,
 }: {
@@ -26,6 +27,7 @@ function ThumbnailThesis({
   year: number;
   favorite: boolean;
   url: string;
+  totalViews?: number;
   onViewPdf?: (uri: string, title: string, author: string) => void;
   onRefresh?: () => void,
 }) {
@@ -97,6 +99,10 @@ function ThumbnailThesis({
       </div>
       <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600">
         {course}
+      </div>
+      <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600 text-right">
+        <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
+        <div className="inline pb-1 font-[500]">{totalViews}</div>
       </div>
     </div>
   </>)
@@ -176,6 +182,7 @@ export default function Thesis() {
               year={item.year}
               favorite={item.favorite}
               url={item.url}
+              totalViews={item.totalViews}
               onViewPdf={handleViewPdf}
               onRefresh={fetchData}
             />

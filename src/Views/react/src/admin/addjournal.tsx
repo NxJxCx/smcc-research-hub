@@ -1,6 +1,5 @@
 import clsx from "/jsx/global/clsx"
-import { Courses, DepartmentCourses, Departments } from "/jsx/global/enums"
-import { Input, Select, TextArea } from "/jsx/global/input"
+import { Input, Select } from "/jsx/global/input"
 import Modal from "/jsx/global/modal"
 import PdfViewer from "/jsx/global/pdfviewer"
 import { React, Sweetalert2 } from "/jsx/imports"
@@ -10,19 +9,17 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
   const [journalTitle, setJournalTitle] = React.useState('')
   const [journalAuthor, setJournalAuthor] = React.useState('')
   const [journalYear, setJournalYear] = React.useState((new Date()).getFullYear().toString())
-  const [journalDepartment, setJournalDepartment] = React.useState(Departments.CCIS);
-  const [journalCourse, setJournalCourse] = React.useState(Courses.BSIT);
-  const [journalAbstract, setJournalAbstract] = React.useState('')
+  const [journalVolume, setJournalVolume] = React.useState('');
+  const [journalNumber, setJournalNumber] = React.useState('');
   const [journalPublisher, setJournalPublisher] = React.useState('')
   const [journalPublishedDate, setJournalPublishedDate] = React.useState('')
+  const [thumbnail, setThumbnail] = React.useState<File|null|undefined>()
   const [pdf, setPdf] = React.useState<File|null|undefined>()
   const [pdfUrl, setPdfUrl] = React.useState<string|null|undefined>()
   const [showModal, setShowModal] = React.useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = React.useState<number>(0)
   const [xhr, setXhr] = React.useState<XMLHttpRequest|null>(null)
-  const yearsList = React.useMemo(() => Array.from({ length: (new Date()).getFullYear() - 2000 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
-  const departmentList = React.useMemo(() => Object.keys(DepartmentCourses).map((d) => ({ label: d, value: d })))
-  const courseList = React.useMemo(() => DepartmentCourses[journalDepartment].map((d) => ({ label: d, value: d })))
+  const yearsList = React.useMemo(() => Array.from({ length: 500 }, (_, i) => (new Date()).getFullYear() - i).map((y) => ({ label: y.toString(), value: y.toString() })), [])
   const isFormDisabled = React.useMemo(() => uploadProgress !== 0, [uploadProgress]);
 
   React.useEffect(() => {
@@ -77,12 +74,12 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
     formData.append('title', journalTitle);
     formData.append('author', journalAuthor);
     formData.append('year', journalYear);
-    formData.append('department', journalDepartment);
-    formData.append('course', journalCourse);
-    formData.append('abstract', journalAbstract);
+    formData.append('volume', journalVolume);
+    formData.append('number', journalNumber);
     formData.append('publisher', journalPublisher);
     formData.append('published_date', journalPublishedDate);
     formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
+    formData.append('thumbnail', new Blob([thumbnail], { type: thumbnail.type }), thumbnail.name);
     console.log(Object.fromEntries(formData))
 
     const xhr = new XMLHttpRequest();
@@ -187,12 +184,28 @@ export default function AddJournalForm({ open, defaultOpen, className = "", onCl
         <div className="flex flex-wrap justify-center items-center gap-3">
           <Input className="max-w-[180px] text-black" label="Journal Title" name="title" value={journalTitle} onChange={(e: any) => setJournalTitle(e.target.value)} disabled={isFormDisabled} required />
           <Input className="max-w-[180px] text-black" label="Author/s" name="author" value={journalAuthor} onChange={(e: any) => setJournalAuthor(e.target.value)} disabled={isFormDisabled} required />
+          <Input type="number" min={1} className="max-w-[180px] text-black" label="Volume" name="volume" value={journalVolume} onChange={(e: any) => setJournalVolume(e.target.value)} disabled={isFormDisabled} required />
+          <Input type="number" min={1} className="max-w-[180px] text-black" label="No." name="number" value={journalNumber} onChange={(e: any) => setJournalNumber(e.target.value)} disabled={isFormDisabled} required />
           <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={journalYear} onChange={(e: any) => setJournalYear(e.target.value)} disabled={isFormDisabled} required />
-          <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Department --", value: "" }, ...departmentList]} label="Department" name="department" value={journalDepartment} onChange={(e: any) => { setJournalDepartment(e.target.value); setJournalCourse(""); }} disabled={isFormDisabled} required />
-          <Select className="max-w-[370px] text-black" items={[{ label: "-- Select Course --", value: "" }, ...courseList]} label="Course" name="course" value={journalCourse} onChange={(e: any) => setJournalCourse(e.target.value)} disabled={isFormDisabled} required />
-          <TextArea className="max-w-[370px] text-black" label="Abstract" rows={3} name="abstract" value={journalAbstract} onChange={(e: any) => setJournalAbstract(e.target.value)} disabled={isFormDisabled} required />
           <Input className="max-w-[180px] text-black" label="Publisher" name="publisher" value={journalPublisher} onChange={(e: any) => setJournalPublisher(e.target.value)} disabled={isFormDisabled} required />
           <Input type="date" className="max-w-[180px] text-black" label="Published Date" name="published_date" value={journalPublishedDate} onChange={(e: any) => setJournalPublishedDate(e.target.value)} disabled={isFormDisabled} required />
+          <Input type="file" className="max-w-[180px] text-black" label="Thumbnail Photo" name="thumbnail" accept=".png, .jpg, .jpeg" disabled={isFormDisabled} value={""} onChange={(e: any) => {
+              const file = e.target.files?.[0];
+              if (file && file.size > 3 * 1024 * 1024) { // limit to 3MB
+                Sweetalert2.fire({
+                  icon: 'warning',
+                  text: 'Thumbnail File size exceeds the maximum limit of 3MB.',
+                  toast: true,
+                  timer: 2000,
+                  showConfirmButton: false,
+                  position: 'center',
+                });
+                e.target.value = "";
+              } else {
+                setThumbnail(file);
+              }
+            }}
+          />
         </div>
         <div className="flex items-center justify-center w-full px-4 mt-4">
           <label htmlFor="dropzone-file" className={

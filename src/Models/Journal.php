@@ -13,10 +13,10 @@ class Journal extends Model
       'title' => ['VARCHAR(255)', 'NOT NULL'],
       'author' => ['VARCHAR(255)', 'NOT NULL'],
       'year' => ['YEAR', 'NOT NULL'],
-      'department' => ['VARCHAR(255)', 'NOT NULL'],
-      'course' => ['VARCHAR(255)', 'NOT NULL'],
       'url' => ['TEXT', 'NOT NULL'],
-      'abstract' => ['TEXT', 'NOT NULL'],
+      'volume' => ['VARCHAR(255)', "DEFAULT ''"],
+      'number' => ['VARCHAR(255)', "DEFAULT ''"],
+      'thumbnail' => ['TEXT', "DEFAULT ''"],
       'publisher' => ['VARCHAR(255)', 'NOT NULL'],
       'published_date' => ['DATE', 'NOT NULL'],
       'is_public' => ['BOOLEAN', 'DEFAULT FALSE'],
@@ -28,7 +28,7 @@ class Journal extends Model
   public function getUniqueKeys(): array
   {
     return [
-      ['title']
+      ['title', 'volume', 'number', 'year']
     ];
   }
 

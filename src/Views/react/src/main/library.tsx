@@ -64,6 +64,8 @@ export default function Library() {
                 <th scope="col" className="px-6 py-3">Year</th>
                 <th scope="col" className="px-6 py-3">Publisher</th>
                 <th scope="col" className="px-6 py-3">Published Date</th>
+                <th scope="col" className="px-6 py-3">Volume</th>
+                <th scope="col" className="px-6 py-3">No.</th>
                 <th scope="col" className="px-6 py-3">Department</th>
                 <th scope="col" className="px-6 py-3">Course</th>
                 <th scope="col" className="px-6 py-3">Read</th>
@@ -78,6 +80,8 @@ export default function Library() {
                   <td className="px-6 py-4">{item.year}</td>
                   <td className="px-6 py-4">{item.publisher}</td>
                   <td className="px-6 py-4">{item.published_date}</td>
+                  <td className="px-6 py-4">{item.volume}</td>
+                  <td className="px-6 py-4">{item.number}</td>
                   <td className="px-6 py-4">{item.department}</td>
                   <td className="px-6 py-4">{item.course}</td>
                   <td className="px-6 py-4 text-center">{item.read} times</td>

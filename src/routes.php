@@ -29,10 +29,10 @@ Router::GET('/admin/theses', [ViewController::class, 'adminThesisList']);
 Router::GET('/admin/journal', [ViewController::class, 'adminJournalList']);
 Router::GET('/admin/departments', [ViewController::class, 'adminDepartmentList']);
 Router::GET('/admin/recent', [ViewController::class, 'adminRecentThesisDeployed']);
-Router::GET('/admin/announcements', [ViewController::class, 'adminAnnouncements']);
 Router::GET('/admin/downloads', [ViewController::class, 'adminDownloads']);
 Router::GET('/admin/students', [ViewController::class, 'adminStudentList']);
 Router::GET('/admin/teachers', [ViewController::class, 'adminTeacherAccounts']);
+Router::GET('/admin/homepage', [ViewController::class, 'adminHomepage']);
 Router::GET('/admin/settings', [ViewController::class, 'adminSettings']);
 Router::GET('/thesis', [ViewController::class, 'thesis']);
 Router::GET('/journal', [ViewController::class, 'journal']);
@@ -42,6 +42,7 @@ Router::GET('/library', [ViewController::class, 'library']);
 Router::GET('/read/thesis', [FileController::class, 'viewPdfFile']);
 Router::GET('/read/journal', [FileController::class, 'viewPdfFile']);
 Router::GET('/download/downloadable', [FileController::class, 'downloadFile']);
+Router::GET('/thumbnail', [FileController::class, 'viewThumbnail']);
 Router::GET('/settings', [ViewController::class, 'accountSettings']);
 Router::GET('/logs', [ViewController::class, 'logs']);
 
@@ -59,6 +60,7 @@ Router::GET('/api/teacher/all', [ApiController::class,'allPersonnels']);
 Router::GET('/api/favorites/all', [ApiController::class,'allFavorites']);
 Router::GET('/api/downloadables/all', [ApiController::class,'allDownloadables']);
 Router::GET('/api/downloadables/available', callable: [ApiController::class,'allAvaiableDownloadables']);
+Router::GET('/api/home/video', [ApiController::class, 'homeVideo']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);
@@ -68,12 +70,13 @@ Router::POST('/api/update', [ApiController::class, 'update']);
 Router::POST('/api/upload/pdf', [FileController::class, 'uploadPdf']);
 Router::POST('/api/upload/images', [FileController::class, 'uploadImages']);
 Router::POST('/api/upload/file', [FileController::class, 'uploadFile']);
+Router::POST('/api/thumbnail/edit', [FileController::class, 'uploadEditThumbnail']);
 Router::POST('/api/thesis/publish', [ApiController::class, 'publishThesis']);
 Router::POST('/api/journal/publish', [ApiController::class, 'publishJournal']);
 Router::POST('/api/thesis/markfavorite', [ApiController::class, 'thesisMarkFavorite']);
 Router::POST('/api/journal/markfavorite', [ApiController::class, 'journalMarkFavorite']);
 Router::POST('/api/downloadables/publish', [ApiController::class, 'publishDownloadables']);
-
+Router::POST('/api/home/video/edit', [ApiController::class, 'editHomeVideo']);
 /* PUT METHOD */
 
 /* PATCH METHOD */

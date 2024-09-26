@@ -116,12 +116,12 @@ class ViewController extends Controller
     return AdminPages::view("Recently Published - Admin", [], '/jsx/admin/recent');
   }
 
-  public function adminAnnouncements(): View|Response
+  public function adminHomepage(): View|Response
   {
     if (!Session::isAuthenticated() || Session::getUserAccountType() !== "admin") {
       return Response::redirect("/admin/login");
     }
-    return AdminPages::view("Announcements - Admin", [], '/jsx/admin/announcements');
+    return AdminPages::view("Manage Homepage - Admin", [], '/jsx/admin/homepage');
   }
 
   public function adminDownloads(): View|Response

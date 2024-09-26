@@ -28,10 +28,6 @@ class AdminPages extends View
           'label' => 'Journal List',
           'url' => '/admin/journal',
         ],
-        // [
-        //   'label' => 'Announcements',
-        //   'url' => '/admin/announcements',
-        // ],
         [
           'label' => 'Downloads',
           'url' => '/admin/downloads',
@@ -43,7 +39,11 @@ class AdminPages extends View
         [
           'label' => 'Teacher Accounts',
           'url' => '/admin/teachers',
-        ]
+        ],
+        [
+          'label' => 'Homepage',
+          'url' => '/admin/homepage',
+        ],
       ]
     );
   }

@@ -36,6 +36,36 @@ class ApiController extends Controller
     return Response::json(['message' => 'API Test Successful']);
   }
 
+  public function homeVideo(): Response
+  {
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'videolink', 'link.json']);
+    if (!file_exists($filePath) ||!is_readable($filePath)) {
+      return Response::json(['error' => 'Video link not found'], StatusCode::NOT_FOUND);
+    }
+    $data = json_decode(file_get_contents($filePath), true);
+    return Response::json(['success' => $data['videoUrl'] ?? '']);
+  }
+
+  public function editHomeVideo(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $videoUrl = $request->getBodyParam('videoUrl');
+    if (!$videoUrl) {
+      return Response::json(['error' => 'Video URL is required'], StatusCode::BAD_REQUEST);
+    }
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'videolink', 'link.json']);
+    if (!file_exists($filePath) ||!is_readable($filePath)) {
+      return Response::json(['error' => 'Video link not found'], StatusCode::NOT_FOUND);
+    }
+    $data = json_decode(file_get_contents($filePath), true);
+    $data['videoUrl'] = $videoUrl;
+    // write to file again
+    file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
+    return Response::json(['success' => $videoUrl]);
+  }
+
   public function studentInfo(Request $request): Response
   {
     $q = $request->getQueryParam("q");
@@ -539,13 +569,24 @@ class ApiController extends Controller
       if ($student) {
         $favorites = $db->fetchMany(ThesisFavorites::class, ['student_id' => $student]);
         $mapped = array_map(fn($fav) => $fav->thesis_id, $favorites);
-        $theses = array_map( fn($thesis) => [...$thesis->toArray(true), "favorite" => in_array($thesis->id, $mapped ?? [])], $valueTheses);
+        $theses = array_map( fn($thesis) => [
+          ...$thesis->toArray(true),
+          "favorite" => in_array($thesis->id, $mapped ?? []),
+          "totalViews" => $db->getRowCount(ThesisReads::class, ['thesis_id' => $thesis->getPrimaryKeyValue()]),
+        ], $valueTheses);
       } else if ($teacher) {
         $favorites = $db->fetchMany(ThesisPersonnelFavorites::class, ['personnel_id' => $teacher]);
         $mapped = array_map(fn($fav) => $fav->thesis_id, $favorites);
-        $theses = array_map( fn($thesis) => [...$thesis->toArray(true), "favorite" => in_array($thesis->getPrimaryKeyValue(), $mapped ?? [])], $valueTheses);
+        $theses = array_map( fn($thesis) => [
+          ...$thesis->toArray(true),
+          "favorite" => in_array($thesis->getPrimaryKeyValue(), $mapped ?? []),
+          "totalViews" => $db->getRowCount(ThesisReads::class, ['thesis_id' => $thesis->getPrimaryKeyValue()]),
+        ], $valueTheses);
       } else {
-        $theses = array_map(fn($t) => $t->toArray(true), $valueTheses);
+        $theses = array_map(fn($t) => [
+          ...$t->toArray(true),
+          "totalViews" => $db->getRowCount(ThesisReads::class, ['thesis_id' => $t->getPrimaryKeyValue()]),
+        ], $valueTheses);
       }
       return Response::json(['success' => $theses]);
     } catch (\Throwable $e) {
@@ -567,15 +608,26 @@ class ApiController extends Controller
       if ($student) {
         $favorites = $db->fetchMany(JournalFavorites::class, ['student_id' => $student]);
         $mapped = array_map(fn($fav) => $fav->journal_id, $favorites);
-        $theses = array_map( fn($journal) => [...$journal->toArray(true), "favorite" => in_array($journal->id, $mapped ?? [])], $valueJournals);
+        $journals = array_map( fn($journal) => [
+          ...$journal->toArray(true),
+          "favorite" => in_array($journal->id, $mapped ?? []),
+          "totalViews" => $db->getRowCount(JournalReads::class, ['journal_id' => $journal->getPrimaryKeyValue()]),
+        ], $valueJournals);
       } else if ($teacher) {
         $favorites = $db->fetchMany(JournalPersonnelFavorites::class, ['personnel_id' => $teacher]);
         $mapped = array_map(fn($fav) => $fav->journal_id, $favorites);
-        $theses = array_map( fn($journal) => [...$journal->toArray(true), "favorite" => in_array($journal->getPrimaryKeyValue(), $mapped ?? [])], $valueJournals);
+        $journals = array_map( fn($journal) => [
+          ...$journal->toArray(true),
+          "favorite" => in_array($journal->getPrimaryKeyValue(), $mapped ?? []),
+          "totalViews" => $db->getRowCount(JournalReads::class, ['journal_id' => $journal->getPrimaryKeyValue()]),
+        ], $valueJournals);
       } else {
-        $theses = array_map(fn($t) => $t->toArray(true), $valueJournals);
+        $journals = array_map(fn($j) => [
+          ...$j->toArray(true),
+          "totalViews" => $db->getRowCount(JournalReads::class, ['journal_id' => $j->getPrimaryKeyValue()]),
+        ], $valueJournals);
       }
-      return Response::json(['success' => $theses]);
+      return Response::json(['success' => $journals]);
     } catch (\Throwable $e) {
       return Response::json(['error'=> $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
     }

@@ -10,9 +10,9 @@ class Footer {
       &copy; 2024 Saint Michael College of Caraga
     </div>
     <ul class="flex flex-wrap md:flex-nowrap max-w-full justify-center gap-x-4 gap-y-2 md:justify-end md:gap-y-2 md:gap-x-8 items-center px-8 md:max-w-[700px]">
-      <li>
+      <!-- <li>
         <a href="/about">About</a>
-      </li>
+      </li> -->
       <li>
         <a href="/admin/login">Admin</a>
       </li>

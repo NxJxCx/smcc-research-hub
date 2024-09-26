@@ -1,6 +1,5 @@
 import { MainContext } from "/jsx/context";
 import clsx from "/jsx/global/clsx";
-import { Departments } from "/jsx/global/enums";
 import Modal from "/jsx/global/modal";
 import PdfViewer from "/jsx/global/pdfviewer";
 import { React, Sweetalert2 } from "/jsx/imports";
@@ -9,27 +8,31 @@ import SearchHeaderInput from "/jsx/main/search";
 function ThumbnailJournal({
   id,
   title,
-  abstract,
   author,
-  course,
   year,
+  volume,
+  number,
   favorite,
   url,
   publisher,
   publishedDate,
+  thumbnail,
+  totalViews = 0,
   onViewPdf,
   onRefresh,
 }: {
   id: string|number;
   title: string;
-  abstract: string;
   author: string;
-  course: string;
   year: number;
+  volume: number;
+  number: number;
   favorite: boolean;
   url: string;
   publisher: string;
   publishedDate: string;
+  thumbnail: string;
+  totalViews: number;
   onViewPdf?: (uri: string, title: string, author: string) => void;
   onRefresh?: () => void,
 }) {
@@ -79,34 +82,42 @@ function ThumbnailJournal({
 
   const handleView = React.useCallback(() => {
     const uri = new URL(`/read${url}&id=${id}`, window.location.origin).toString()
-    onViewPdf && onViewPdf(uri, title, author + ' (' + year + ')')
+    onViewPdf && onViewPdf(uri, title, author + ' (' + year + ') Vol. ' + volume + ' No. ' + number)
   }, [url, onViewPdf, id])
 
   return (<>
-    <div onClick={handleView} className="text-center relative cursor-pointer border rounded-lg p-4 w-[400px]">
+    <div onClick={handleView} className="text-center relative cursor-pointer border rounded-lg p-4 w-[500px]">
       {authenticated && (
         <button type="button" onClick={handleFavoriteClick} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
           {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
           {!favorite && <span className="material-symbols-outlined">bookmark</span>}
         </button>
       )}
-      <div className="h-[75px] pt-4 px-4 font-bold leading-tight">
-        {title}
+      <div className="flex flex-col md:flex-row">
+        <div className="min-w-[60mm] max-w-[60mm] min-h-[70mm] max-h-[70mm] rounded border shadow">
+          <img src={thumbnail} alt="Thumbnail" className="object-contain h-full" />
+        </div>
+        <div className="px-4 w-[400px]">
+          <div className="py-4 px-4 font-bold leading-tight">
+            {title}
+          </div>
+          <div className="pb-2 px-2 italic leading-tight">
+            Vol. {volume} No. {number}
+          </div>
+          <div className="pb-2 px-2 leading-tight min-h-[100px] text-sm">
+            ({year})
+          </div>
+          <div className="px-2 leading-tight text-gray-700 italic text-left text-sm">
+            Publisher: {publisher}
+          </div>
+          <div className="pb-2 px-2 leading-tight text-gray-700 italic text-left text-sm">
+            Published Date: {(new Date(publishedDate)).toLocaleDateString()}
+          </div>
+        </div>
       </div>
-      <div className="h-[120px] mb-2 text-justify px-4 leading-tight indent-8">
-        {abstract.substring(0, Math.min(250, abstract.length))}...
-      </div>
-      <div className="pt-4 px-2 leading-tight text-gray-700 italic">
-        {author} ({year})
-      </div>
-      <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600">
-        {course}
-      </div>
-      <div className="px-2 leading-tight text-gray-700 italic text-left">
-        Publisher: {publisher}
-      </div>
-      <div className="pb-2 px-2 leading-tight text-gray-700 italic text-left">
-        Published Date: {(new Date(publishedDate)).toLocaleDateString()}
+      <div className="py-2 px-2 text-sm italic leading-tight text-gray-600 text-right absolute right-0 bottom-0">
+        <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
+        <div className="inline pb-1 font-[500]">{totalViews}</div>
       </div>
     </div>
   </>)
@@ -123,10 +134,11 @@ export default function Thesis() {
   }, [])
 
   const [data, setData] = React.useState<any[]>([])
+  const yearList = React.useMemo(() => data.reduce((init: any[], value: any) => init.includes(value.year) ? init : [...init, value.year].toSorted((a, b) => b - a), []), [data])
 
-  const [selectedDepartment, setSelectedDepartment] = React.useState<Departments>(Departments.CCIS);
+  const [selectedYear, setSelectedYear] = React.useState<number>((new Date()).getFullYear());
 
-  const displayData = React.useMemo(() => data.filter((item: any) => item.department === selectedDepartment && (!search || item.title.includes(search)) || item.abstract.includes(search) || item.author.includes(search) || item.year.toString().includes(search)), [data, selectedDepartment, search])
+  const displayData = React.useMemo(() => data.filter((item: any) => item.year === selectedYear && (!search || item.title.includes(search)) || item.volume?.toString().includes(search) || item.number?.toString().includes(search) || item.author.includes(search) || item.year.toString().includes(search)), [data, selectedYear, search])
 
   const [page, setPage] = React.useState<number>(1)
   const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])
@@ -175,19 +187,21 @@ export default function Thesis() {
       <div className="flex-grow mt-3">
         <h1 className="text-2xl font-bold text-center">Journals</h1>
         <div className="flex flex-wrap p-4 gap-4">
-          { !!selectedDepartment && finalDisplay?.map((item: any) => (
+          { !!selectedYear && finalDisplay?.map((item: any) => (
             <ThumbnailJournal
               key={item.id}
               id={item.id}
               title={item.title}
-              abstract={item.abstract}
+              volume={item.volume}
+              number={item.number}
               author={item.author}
-              course={item.course}
+              thumbnail={item.thumbnail}
               year={item.year}
               favorite={item.favorite}
               url={item.url}
               publisher={item.publisher}
               publishedDate={item.published_date}
+              totalViews={item.totalViews}
               onViewPdf={handleViewPdf}
               onRefresh={fetchData}
             />
@@ -205,14 +219,14 @@ export default function Thesis() {
       <div className="min-w-[326px] max-w-[326px] h-[600px] flex flex-col">
         <div className="min-h-[400px] flex-grow">
           <div className="font-bold text-xl mb-4 w-full">
-            Categories
+            Year
           </div>
-          {Object.entries(Departments).map(([key, value]) => (
+          {yearList.map((value: any, key: number) => (
             <button
               key={key}
               type="button"
-              className={clsx(`flex items-center px-4 py-2 text-left`, selectedDepartment === value ? "bg-gray-200 font-bold" : "hover:bg-gray-300")}
-              onClick={() => setSelectedDepartment(value)}
+              className={clsx(`flex items-center px-4 py-2 text-left`, selectedYear.toString() === value.toString() ? "bg-gray-200 font-bold" : "hover:bg-gray-300")}
+              onClick={() => setSelectedYear(Number.parseInt(value))}
             >
               {value}
             </button>

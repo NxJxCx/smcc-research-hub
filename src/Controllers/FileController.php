@@ -35,12 +35,23 @@ class FileController extends Controller
       $docPublisher = $request->getBodyParam('publisher');
       $docPublishedDate = $request->getBodyParam('published_date');
       $docYear = $request->getBodyParam('year');
+      $docVolume = $request->getBodyParam('volume');
+      $docNumber = $request->getBodyParam('number');
       $file = $request->getFiles("pdf");
+      $thumbnail = $request->getFiles("thumbnail");
       if (!in_array($doc, ["thesis", "journal"])) {
         return Response::json(['error' => 'Invalid document type. Must be thesis or journal.'], StatusCode::BAD_REQUEST);
       }
-      if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment || !$docCourse || !$docAbstract) {
-        return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
+      if ($doc === 'thesis') {
+        if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment || !$docCourse || !$docAbstract) {
+          return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
+        }
+      } else if ($doc === 'journal') {
+        if ($doc === '') {
+          if (!$docTitle || !$docAuthor || !$docYear || !$docVolume || !$docNumber) {
+            return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
+          }
+        }
       }
       if ($file instanceof File) {
         if ($file->getError() !== UPLOAD_ERR_OK) {
@@ -65,14 +76,17 @@ class FileController extends Controller
               ]);
               $fid = $thesis->create();
             } else if ($doc === 'journal') {
+              $thumbnailName = uniqid("thumbnail_");
+              $thumbnail->moveTo(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, "thumbnail"]), $thumbnailName);
+              $thumbFileUrl = "/thumbnail?filename=$thumbnailName" . $thumbnail->getExtension();
               $journal = new Journal([
                 "title" => $docTitle,
                 "author" => $docAuthor,
                 "year" => $docYear,
-                "department" => $docDepartment,
-                "course" => $docCourse,
                 "url" => $fileUrl,
-                "abstract" => $docAbstract,
+                "volume" => $docVolume,
+                "number" => $docNumber,
+                "thumbnail" => $thumbFileUrl,
                 "publisher" => $docPublisher,
                 "published_date" => $docPublishedDate,
               ]);
@@ -188,6 +202,72 @@ class FileController extends Controller
     return Response::file($filePath, StatusCode::OK, ["Content-Disposition" => "inline; filename=\"$filename\""]);
   }
 
+
+  public function uploadEditThumbnail(Request $request): Response
+  {
+    if (!Session::isAuthenticated()) {
+      return Response::json(['error' => 'Unauthorized'], StatusCode::UNAUTHORIZED);
+    }
+    $id = $request->getBodyParam('id');
+    $filename = $request->getBodyParam('filename');
+    $thumbnail = $request->getFiles("thumbnail");
+    if (!$id || !$filename) {
+      return Response::json(['error' => 'Bad Request'], StatusCode::BAD_REQUEST);
+    }
+    $db = Database::getInstance();
+    $journal = $db->fetchOne(Journal::class, [(new Journal())->getPrimaryKey() => $id]);
+    if (!$journal) {
+      return Response::json(['error' => 'Journal not found'], StatusCode::NOT_FOUND);
+    }
+    if (!$thumbnail) {
+      return Response::json(['error' => 'Thumbnail file not provided'], StatusCode::BAD_REQUEST);
+    }
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'thumbnail', $filename]);
+    if (file_exists($filePath) && is_readable($filePath)) {
+      unlink($filePath);
+    }
+    if ($thumbnail instanceof File) {
+      if ($thumbnail->getError() !== UPLOAD_ERR_OK) {
+        return Response::json(['error' => "Error uploading file. Error Code ".$thumbnail->getError()], StatusCode::INTERNAL_SERVER_ERROR);
+      }
+      try {
+        // basename only and no extension
+        $newFilename = explode(".", $filename);
+        $newFilename = implode("", $newFilename);
+        $thumbnail->moveTo(implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'thumbnail']), $newFilename);
+        $fileUrl = "/thumbnail?filename=$newFilename" . $thumbnail->getExtension();
+        $journal->thumbnail = $fileUrl;
+        $journal->update();
+        $fid = $journal->getPrimaryKeyValue();
+        $docTitle = $journal->title;
+        $docAuthor = $journal->author;
+        $docYear = $journal->year;
+        (new AdminLogs(["admin_id" => Session::getUserId(), "activity" => "edit thumbnail: Uploaded filename: $filename ID $fid: $docTitle by $docAuthor year $docYear url $fileUrl"]))->create();
+        return Response::json(['success' => isset($fid)], StatusCode::CREATED);
+      } catch (\Throwable $e) {
+        // upload error handling
+        return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);
+      }
+    } else {
+      return Response::json(['error' => 'Only one file is allowed at a time.'], StatusCode::BAD_REQUEST);
+    }
+  }
+
+  public function viewThumbnail(Request $request): Response
+  {
+    if (!Session::isAuthenticated()) {
+      return Response::json(['error' => 'Unauthorized'], StatusCode::UNAUTHORIZED);
+    }
+    $filename = $request->getQueryParam('filename');
+    if (!$filename) {
+      return Response::json(['error' => 'Filename not provided'], StatusCode::BAD_REQUEST);
+    }
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'thumbnail', $filename]);
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+      return Response::json(['error' => 'File not found'], StatusCode::NOT_FOUND);
+    }
+    return Response::file($filePath, StatusCode::OK, ["Content-Disposition" => "inline; filename=\"$filename\""]);
+  }
 
   public function uploadFile(Request $request): Response
   {
