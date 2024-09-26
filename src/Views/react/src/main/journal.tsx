@@ -138,7 +138,7 @@ export default function Thesis() {
 
   const [selectedYear, setSelectedYear] = React.useState<number>((new Date()).getFullYear());
 
-  const displayData = React.useMemo(() => data.filter((item: any) => item.year === selectedYear && (!search || item.title.includes(search)) || item.volume?.toString().includes(search) || item.number?.toString().includes(search) || item.author.includes(search) || item.year.toString().includes(search)), [data, selectedYear, search])
+  const displayData = React.useMemo(() => data.filter((item: any) => item.year === selectedYear && ((!search || item.title.includes(search)) || item.volume?.toString().includes(search) || item.number?.toString().includes(search) || item.author.includes(search) || item.year.toString().includes(search))), [data, selectedYear, search])
 
   const [page, setPage] = React.useState<number>(1)
   const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])

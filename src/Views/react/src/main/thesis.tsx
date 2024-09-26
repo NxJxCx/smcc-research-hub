@@ -122,11 +122,10 @@ export default function Thesis() {
 
   const [selectedDepartment, setSelectedDepartment] = React.useState<Departments>(Departments.CCIS);
 
-  const displayData = React.useMemo(() => data.filter((item: any) => item.department === selectedDepartment && (!search || item.title.includes(search)) || item.abstract.includes(search) || item.author.includes(search) || item.year.toString().includes(search)), [data, selectedDepartment, search])
+  const displayData = React.useMemo(() => data.filter((item: any) => item.department?.toString() === selectedDepartment.toString() && ((!search || item.title.includes(search)) || item.abstract.includes(search) || item.author.includes(search) || item.year.toString().includes(search))), [data, selectedDepartment, search])
 
   const [page, setPage] = React.useState<number>(1)
   const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])
-
   const finalDisplay = React.useMemo(() => displayData.length === 0 ? undefined : displayData?.slice((page - 1) * 20, page * 20), [page, displayData, totalPages])
 
   const nextPage = React.useCallback(() => setPage((prev: number) => Math.min(totalPages, Math.max(totalPages === 0 ? 0 : 1, prev + 1))), [totalPages])
