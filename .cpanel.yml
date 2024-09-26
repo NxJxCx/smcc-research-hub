@@ -9,3 +9,4 @@ deployment:
     - /bin/cp -R public $DEPLOYPATH
     - /bin/cp -R src $DEPLOYPATH
     - /bin/cp -R vendor $DEPLOYPATH
+    - /bin/cp -R uploads/videolink $DEPLOYPATH/videolink
