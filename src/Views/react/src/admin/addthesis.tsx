@@ -119,6 +119,9 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
           setThesisTitle('')
           setThesisAuthor('')
           setThesisYear((new Date()).getFullYear().toString())
+          setThesisDepartment(Departments.CCIS)
+          setThesisCourse(Courses.BSIT)
+          setThesisAbstract('')
           onSuccess && onSuccess();
           setUploadProgress(0);
           onCloseModal();
@@ -151,7 +154,7 @@ export default function AddThesisForm({ open, defaultOpen, className = "", onClo
     };
 
     xhr.send(formData);
-  }, [pdf, thesisTitle, thesisAuthor, thesisYear, onSuccess])
+  }, [pdf, thesisTitle, thesisAuthor, thesisYear, thesisCourse, thesisDepartment, thesisAbstract, onSuccess])
 
   const onCancelUpload = () => {
     if (xhr) {

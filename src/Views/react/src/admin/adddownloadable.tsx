@@ -112,7 +112,7 @@ export default function AddDownloadableForm({ open, defaultOpen, className = "",
     };
 
     xhr.send(formData);
-  }, [file, fileTitle, file, onSuccess, onCloseModal])
+  }, [file, fileTitle, onSuccess, onCloseModal])
 
   const onCancelUpload = () => {
     if (xhr) {

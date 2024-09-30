@@ -8,33 +8,25 @@ import SearchHeaderInput from "/jsx/main/search";
 function ThumbnailJournal({
   id,
   title,
-  author,
+  month,
   year,
   volume,
   number,
-  favorite,
-  url,
-  publisher,
   publishedDate,
   thumbnail,
-  totalViews = 0,
-  onViewPdf,
   onRefresh,
+  onSelect,
 }: {
   id: string|number;
   title: string;
-  author: string;
+  month: string;
   year: number;
   volume: number;
   number: number;
-  favorite: boolean;
-  url: string;
-  publisher: string;
   publishedDate: string;
   thumbnail: string;
-  totalViews: number;
-  onViewPdf?: (uri: string, title: string, author: string) => void;
   onRefresh?: () => void,
+  onSelect?: (id: string|number) => void;
 }) {
   const { authenticated, authData } = React.useContext(MainContext)
 
@@ -80,47 +72,148 @@ function ThumbnailJournal({
       .catch(console.log)
   }, [id, authData])
 
-  const handleView = React.useCallback(() => {
-    const uri = new URL(`/read${url}&id=${id}`, window.location.origin).toString()
-    onViewPdf && onViewPdf(uri, title, author + ' (' + year + ') Vol. ' + volume + ' No. ' + number)
-  }, [url, onViewPdf, id])
+  // const handleView = React.useCallback(() => {
+  //   const uri = new URL(`/read${url}&id=${id}`, window.location.origin).toString()
+  //   onViewPdf && onViewPdf(uri, title, author + ' (' + year + ') Vol. ' + volume + ' No. ' + number)
+  // }, [url, onViewPdf, id])
 
   return (<>
-    <div onClick={handleView} className="text-center relative cursor-pointer border rounded-lg p-4 w-[500px]">
-      {authenticated && (
-        <button type="button" onClick={handleFavoriteClick} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
-          {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
-          {!favorite && <span className="material-symbols-outlined">bookmark</span>}
-        </button>
-      )}
-      <div className="flex flex-col md:flex-row">
+    <div onClick={() => onSelect && onSelect(id)} className="text-center relative cursor-pointer border rounded-lg p-4 w-[70mm] hover:bg-gray-200">
+      <div className="flex flex-col">
         <div className="min-w-[60mm] max-w-[60mm] min-h-[70mm] max-h-[70mm] rounded border shadow">
           <img src={thumbnail} alt="Thumbnail" className="object-contain h-full" />
         </div>
-        <div className="px-4 w-[400px]">
-          <div className="py-4 px-4 font-bold leading-tight">
-            {title}
+        <div className="px-4 mt-4">
+          <div className="pt-2 px-4 font-bold leading-tight">
+            {title}, {month}
           </div>
           <div className="pb-2 px-2 italic leading-tight">
-            Vol. {volume} No. {number}
+            Vol. {volume} No. {number} ({year})
           </div>
-          <div className="pb-2 px-2 leading-tight min-h-[100px] text-sm">
-            ({year})
-          </div>
-          <div className="px-2 leading-tight text-gray-700 italic text-left text-sm">
-            Publisher: {publisher}
-          </div>
-          <div className="pb-2 px-2 leading-tight text-gray-700 italic text-left text-sm">
+          <div className="pb-2 px-2 leading-tight text-gray-700 italic text-center text-sm">
             Published Date: {(new Date(publishedDate)).toLocaleDateString()}
           </div>
         </div>
       </div>
-      <div className="py-2 px-2 text-sm italic leading-tight text-gray-600 text-right absolute right-0 bottom-0">
-        <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
-        <div className="inline pb-1 font-[500]">{totalViews}</div>
-      </div>
     </div>
   </>)
+}
+
+function SelectedJournalPage({
+  journal,
+  theses = [],
+  search,
+  onViewPdf,
+  onBack,
+  onRefresh,
+}: Readonly<{
+  journal: any,
+  theses: any[],
+  search: string,
+  onViewPdf: (thesis: any) => void,
+  onBack: () => void,
+  onRefresh?: () => void,
+}>) {
+  const { authenticated, authData } = React.useContext(MainContext);
+
+  const selectedTheses = React.useMemo(() => theses?.filter((item: any) => (
+    (!search || item.title?.toString()?.toLowerCase()?.includes(search.toLowerCase())) || item.abstract?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || item.author?.toString().toLowerCase()?.includes(search.toLowerCase()) || item.year?.toString()?.toLowerCase()?.includes(search.toLowerCase()))
+  ) || [], [theses, search])
+
+  console.log(selectedTheses)
+  const handleFavoriteClick = React.useCallback((e: any, id: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const url = new URL('/api/thesis/markfavorite', window.location.origin);
+    const body = JSON.stringify({ id, [authData?.account]: authData?.id })
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+      },
+      body,
+    })
+      .then(response => response.json())
+      .then(({ success, error }) => {
+        if (error) {
+          Sweetalert2.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to mark thesis as favorite: '+ error,
+            toast: true,
+            showConfirmButton: false,
+            position: 'center',
+            timer: 3000,
+          })
+        } else if (!success) {
+          Sweetalert2.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to mark thesis as favorite',
+            toast: true,
+            showConfirmButton: false,
+            position: 'center',
+            timer: 3000,
+          })
+        } else {
+          onRefresh && onRefresh()
+        }
+      })
+      .catch(console.log)
+  }, [authData])
+
+  return (
+    <div className="w-full font-[Roboto] relative">
+      <button type="button" onClick={onBack} className="flex items-center justify-start">
+        <span className="material-symbols-outlined">
+          chevron_left
+        </span>
+        <span className="underline">Back</span>
+      </button>
+      <div className="flex flex-col gap-y-4 lg:gap-y-0 lg:flex-row py-16">
+        <div className="lg:w-1/2">
+          <div className="min-w-[60mm] max-w-[60mm] min-h-[70mm] max-h-[70mm] rounded border shadow mx-auto">
+            <img src={journal?.thumbnail} alt="Thumbnail" className="object-contain h-full" />
+          </div>
+        </div>
+        <div className="text-center min-w-[60mm]">
+          <h2 className="font-bold text-lg">{journal?.title}, {journal?.month}</h2>
+          <div className="font-[400] text-sm text-gray-600">Vol. {journal?.volume} No. {journal?.number} ({journal?.year})</div>
+          <div className="font-bold text-sm text-gray-600 mt-3">Published Date</div>
+          <div className="text-sm text-gray-600">{(new Date(journal?.published_date)).toLocaleDateString()}</div>
+          <div className="text-sm text-gray-600 mt-3">{theses.length} Theses</div>
+        </div>
+      </div>
+      <div className="min-h-[400px] px-2">
+        <div className="border-t">
+          <div className="-translate-y-[55%] ml-4 bg-white w-fit">Thesis</div>
+        </div>
+        <div className="mt-2 max-h-[380px] h-full overflow-y-auto w-full px-8">
+          {selectedTheses.length === 0 ? <span className="py-8">No Theses found in {!search ? 'this journal' : 'your search'}.</span> : (
+            <div className="flex flex-wrap leading-tight gap-4">
+              {selectedTheses.map((thesis: any) => (
+                <div key={thesis?.id} onClick={() => onViewPdf(thesis)} className="relative hover:bg-gray-200 hover:shadow w-1/2 p-2 cursor-pointer rounded">
+                  {authenticated && authData?.account !== 'admin' && (
+                    <button type="button" onClick={(e: any) => handleFavoriteClick(e, thesis?.id)} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
+                      {thesis?.favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
+                      {!thesis?.favorite && <span className="material-symbols-outlined">bookmark</span>}
+                    </button>
+                  )}
+                  <div className="font-bold">{thesis?.title}</div>
+                  <div className="text-sm font-[400] text-gray-600">{thesis?.author} ({thesis?.year})</div>
+                  <div className="leading-tight">
+                    <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
+                    <div className="inline pb-1 font-[500]">{thesis?.totalViews}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function Thesis() {
@@ -134,11 +227,14 @@ export default function Thesis() {
   }, [])
 
   const [data, setData] = React.useState<any[]>([])
+
+  const [selected, setSelected] = React.useState(null)
+
   const yearList = React.useMemo(() => data.reduce((init: any[], value: any) => init.includes(value.year) ? init : [...init, value.year].toSorted((a, b) => b - a), []), [data])
 
   const [selectedYear, setSelectedYear] = React.useState<number>((new Date()).getFullYear());
 
-  const displayData = React.useMemo(() => data.filter((item: any) => item.year.toString() === selectedYear.toString() && ((!search || item.title.includes(search)) || item.volume?.toString().includes(search) || item.number?.toString().includes(search) || item.author.includes(search) || item.year.toString().includes(search))), [data, selectedYear, search])
+  const displayData = React.useMemo(() => !selected ? data.filter((item: any) => item.year.toString() === selectedYear.toString() && ((!search || item.title?.toString()?.toLowerCase()?.includes(search.toLowerCase())) || item.volume?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || item.number?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || item.month?.toLowerCase()?.includes(search.toLowerCase()) || item.year?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || `${item.title?.toString()?.toLowerCase()}, ${item.month?.toString()?.toLowerCase()}`.includes(search.toLowerCase()))) : [], [data, selectedYear, search, selected])
 
   const [page, setPage] = React.useState<number>(1)
   const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])
@@ -162,10 +258,12 @@ export default function Thesis() {
       } else if (success) {
         success.sort((a: any, b: any) => (new Date(a.created_at)).getTime() > (new Date(b.created_at)).getTime() ? -1 : (new Date(a.created_at)).getTime() == (new Date(b.created_at)).getTime() ? 0 : 1);
         setData(success);
+        return success;
       }
     } catch (e) {
       console.log(e)
     }
+    return [];
   }
 
   React.useEffect(() => {
@@ -176,45 +274,70 @@ export default function Thesis() {
   const [pdfTitle, setPdfTitle] = React.useState()
   const [pdfAuthor, setPdfAuthor] = React.useState()
 
-  const handleViewPdf = React.useCallback((uri: string, title: string, author: string) => {
+  const handleViewPdf = React.useCallback((thesis: any) => {
+    const title = thesis?.title;
+    const author = thesis?.author;
+    const uri = new URL(`read${thesis?.url}`, window.location.origin).toString();
     setPdfTitle(title);
-    setPdfUrl(uri);
     setPdfAuthor(author);
+    setPdfUrl(uri);
   }, [])
+
+  const onSelect = React.useCallback((id: string|number) => {
+    setSearch('');
+    setSelected(data.find((item: any) => item.id == id))
+  }, [data]);
+
+  const handleRefresh = React.useCallback(async () => {
+    if (selected) {
+      const sel = selected.id;
+      const data: any[] = await fetchData();
+      const selectedData = data?.find(item => item.id === sel)
+      setSelected(selectedData);
+    }
+  }, [selected])
 
   return (<>
     <div className="flex py-4 px-8 mt-4">
       <div className="flex-grow mt-3">
         <h1 className="text-2xl font-bold text-center">Journals</h1>
-        <div className="flex flex-wrap p-4 gap-4">
-          { !!selectedYear && finalDisplay?.map((item: any) => (
-            <ThumbnailJournal
-              key={item.id}
-              id={item.id}
-              title={item.title}
-              volume={item.volume}
-              number={item.number}
-              author={item.author}
-              thumbnail={item.thumbnail}
-              year={item.year}
-              favorite={item.favorite}
-              url={item.url}
-              publisher={item.publisher}
-              publishedDate={item.published_date}
-              totalViews={item.totalViews}
-              onViewPdf={handleViewPdf}
-              onRefresh={fetchData}
-            />
-          )) || (
-            <div className="lg:col-span-2 xl:col-span-3 mx-auto">
-              <div className="h-[200px] mb-2">
-                <div className="border-2 border-gray-300 rounded-lg p-4">
-                  <div className="text-gray-500">No journal found.</div>
+        { !selected && (
+          <div className="flex flex-wrap p-4 gap-4">
+            {!!selectedYear && (finalDisplay?.map((item: any) => (
+              <ThumbnailJournal
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                volume={item.volume}
+                number={item.number}
+                month={item.month}
+                thumbnail={item.thumbnail}
+                year={item.year}
+                publishedDate={item.published_date}
+                onRefresh={fetchData}
+                onSelect={onSelect}
+              />
+            )) || (
+              <div className="lg:col-span-2 xl:col-span-3 mx-auto">
+                <div className="h-[200px] mb-2">
+                  <div className="border-2 border-gray-300 rounded-lg p-4">
+                    <div className="text-gray-500">No journal found.</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
+        { !!selected && !!selectedYear && (
+          <SelectedJournalPage
+            journal={selected}
+            theses={selected.theses}
+            onViewPdf={handleViewPdf}
+            search={search}
+            onBack={() => setSelected(null)}
+            onRefresh={handleRefresh}
+          />
+        )}
       </div>
       <div className="min-w-[326px] max-w-[326px] h-[600px] flex flex-col">
         <div className="min-h-[400px] flex-grow">
@@ -249,14 +372,16 @@ export default function Thesis() {
             ))}
           </div>
         </div>
-        <div className="flex-shrink text-slate-700 font-[600] mx-auto">
-          <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages === 0 ? 0 : 1)}>{"<<"}</button>
-          <button type="button" className="p-1 hover:text-yellow-700" onClick={prevPage}>{"<"} Prev</button>
-          <button type="button" className="p-1 hover:text-yellow-700" onClick={nextPage}>Next {">"}</button>
-          <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages)}>{">>"}</button>
-        </div>
+        {!selected ? (
+          <div className="flex-shrink text-slate-700 font-[600] mx-auto">
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages === 0 ? 0 : 1)}>{"<<"}</button>
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={prevPage}>{"<"} Prev</button>
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={nextPage}>Next {">"}</button>
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages)}>{">>"}</button>
+          </div>
+        ): (<div className="flex-shrink text-slate-700 font-[600] mx-auto"><div className="p-4">&nbsp;</div></div>)}
       </div>
     </div>
-    <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href="/login" className="text-sky-700 underline">login</a> to view journal.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
+    <Modal open={!!selected && !!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href="/login" className="text-sky-700 underline">login</a> to view journal/thesis.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
   </>)
 }

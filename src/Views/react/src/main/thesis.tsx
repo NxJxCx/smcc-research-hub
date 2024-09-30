@@ -82,7 +82,7 @@ function ThumbnailThesis({
 
   return (<>
     <div onClick={handleView} className="text-center relative cursor-pointer border rounded-lg p-4 w-[400px]">
-      {authenticated && (
+      {authenticated && authData?.account !== 'admin' && (
         <button type="button" onClick={handleFavoriteClick} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
           {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
           {!favorite && <span className="material-symbols-outlined">bookmark</span>}
@@ -122,7 +122,7 @@ export default function Thesis() {
 
   const [selectedDepartment, setSelectedDepartment] = React.useState<Departments>(Departments.CCIS);
 
-  const displayData = React.useMemo(() => data.filter((item: any) => item.department?.toString() === selectedDepartment.toString() && ((!search || item.title.includes(search)) || item.abstract.includes(search) || item.author.includes(search) || item.year.toString().includes(search))), [data, selectedDepartment, search])
+  const displayData = React.useMemo(() => data.filter((item: any) => item.department?.toString().toLowerCase() === selectedDepartment.toString().toLowerCase() && ((!search || item.title.toLowerCase().includes(search)) || item.abstract.toLowerCase().includes(search) || item.author.toLowerCase().includes(search) || item.year.toString().includes(search))), [data, selectedDepartment, search])
 
   const [page, setPage] = React.useState<number>(1)
   const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])
