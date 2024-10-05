@@ -518,8 +518,9 @@ class ApiController extends Controller
     }
     try {
       $journal = Database::getInstance()->fetchOne(Journal::class, [(new Journal())->getPrimaryKey() => $id]);
+      Logger::write_debug("JOURNAL IS " . (!is_null($journal) ? json_encode($journal->toArray()) : "NOTHING"));
       // remove the file associated with the journal
-      $queryString = explode("?", $journal->url)[1];
+      $queryString = explode("?", $journal->thumbnail)[1];
       $params = [];
       parse_str($queryString, $params);
       if (isset($params['filename'])) {

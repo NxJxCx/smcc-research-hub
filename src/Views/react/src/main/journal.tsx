@@ -29,49 +29,49 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     onRefresh?: () => void,
     onSelect?: (id: string | number) => void;
   }) {
-    const { authenticated, authData } = React.useContext(MainContext)
+    const { authData } = React.useContext(MainContext)
 
-    const handleFavoriteClick = React.useCallback((e: any) => {
-      e.preventDefault()
-      e.stopPropagation()
-      const url = new URL(pathname('/api/journal/markfavorite'), window.location.origin);
-      const body = JSON.stringify({ id, [authData?.account]: authData?.id })
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Accept': 'application/json; charset=UTF-8',
-        },
-        body,
-      })
-        .then(response => response.json())
-        .then(({ success, error }) => {
-          if (error) {
-            Sweetalert2.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to mark journal as favorite: ' + error,
-              toast: true,
-              showConfirmButton: false,
-              position: 'center',
-              timer: 3000,
-            })
-          } else if (!success) {
-            Sweetalert2.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to mark journal as favorite',
-              toast: true,
-              showConfirmButton: false,
-              position: 'center',
-              timer: 3000,
-            })
-          } else {
-            onRefresh && onRefresh()
-          }
-        })
-        .catch(console.log)
-    }, [id, authData])
+    // const handleFavoriteClick = React.useCallback((e: any) => {
+    //   e.preventDefault()
+    //   e.stopPropagation()
+    //   const url = new URL(pathname('/api/journal/markfavorite'), window.location.origin);
+    //   const body = JSON.stringify({ id, [authData?.account]: authData?.id })
+    //   fetch(url, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json; charset=UTF-8',
+    //       'Accept': 'application/json; charset=UTF-8',
+    //     },
+    //     body,
+    //   })
+    //     .then(response => response.json())
+    //     .then(({ success, error }) => {
+    //       if (error) {
+    //         Sweetalert2.fire({
+    //           icon: 'error',
+    //           title: 'Error',
+    //           text: 'Failed to mark journal as favorite: ' + error,
+    //           toast: true,
+    //           showConfirmButton: false,
+    //           position: 'center',
+    //           timer: 3000,
+    //         })
+    //       } else if (!success) {
+    //         Sweetalert2.fire({
+    //           icon: 'error',
+    //           title: 'Error',
+    //           text: 'Failed to mark journal as favorite',
+    //           toast: true,
+    //           showConfirmButton: false,
+    //           position: 'center',
+    //           timer: 3000,
+    //         })
+    //       } else {
+    //         onRefresh && onRefresh()
+    //       }
+    //     })
+    //     .catch(console.log)
+    // }, [id, authData])
 
     // const handleView = React.useCallback(() => {
     //   const uri = new URL(pathname(`/read${url}&id=${id}`), window.location.origin).toString()
@@ -82,7 +82,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
       <div onClick={() => onSelect && onSelect(id)} className="text-center relative cursor-pointer border rounded-lg p-4 w-[70mm] hover:bg-gray-200">
         <div className="flex flex-col">
           <div className="min-w-[60mm] max-w-[60mm] min-h-[70mm] max-h-[70mm] rounded border shadow">
-            <img src={thumbnail} alt="Thumbnail" className="object-contain h-full" />
+            <img src={pathname(thumbnail)} alt="Thumbnail" className="object-contain h-full" />
           </div>
           <div className="px-4 mt-4">
             <div className="pt-2 px-4 font-bold leading-tight">
@@ -175,7 +175,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
         <div className="flex flex-col gap-y-4 lg:gap-y-0 lg:flex-row py-16">
           <div className="lg:w-1/2">
             <div className="min-w-[60mm] max-w-[60mm] min-h-[70mm] max-h-[70mm] rounded border shadow mx-auto">
-              <img src={journal?.thumbnail} alt="Thumbnail" className="object-contain h-full" />
+              <img src={pathname(journal?.thumbnail)} alt="Thumbnail" className="object-contain h-full" />
             </div>
           </div>
           <div className="text-center min-w-[60mm]">

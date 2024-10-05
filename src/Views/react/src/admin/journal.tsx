@@ -121,7 +121,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
               value: data.thumbnail,
               content: (<>
                 <button type="button" onClick={() => handleEditThumbnail(data)} className="relative w-[70px] h-[90px] after:absolute after:left-0 after:top-0 after:w-[70px] after:h-[90px] hover:after:bg-white/40 hover:after:content-center hover:after:content-['edit'] hover:after:drop-shadow-lg hover:after:text-black">
-                  <img src={(new URL(data.thumbnail, window?.location?.origin)).toString()} alt="thumbnail" className="w-full h-full object-contain" />
+                  <img src={(new URL(pathname(data.thumbnail), window?.location?.origin)).toString()} alt="thumbnail" className="w-full h-full object-contain" />
                 </button>
               </>)
             },
@@ -268,6 +268,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                     confirmButtonText: 'Yes, delete journal!'
                   }).then(({ isConfirmed }: any) => {
                     if (isConfirmed) {
+                      console.log(pathname(`/api/journal/delete?id=${id}`))
                       fetch(pathname(`/api/journal/delete?id=${id}`), { method: 'DELETE' })
                       .then(response => response.json())
                       .then(({ success, error }) => {
