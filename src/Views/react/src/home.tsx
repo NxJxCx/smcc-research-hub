@@ -7,7 +7,7 @@ import(pathname("/jsx/imports")).then(({ React, ReactDOM, ReactPlayerYoutube }) 
   }
 
   async function fetchVideo() {
-    const url = new URL('/api/home/video', window.location.origin);
+    const url = new URL(pathname('/api/home/video'), window.location.origin);
     const response = await fetch(url);
     const { success, error } = await response.json();
     if (error) {

@@ -83,7 +83,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
 
       const xhr = new XMLHttpRequest();
       setXhr(xhr);
-      xhr.open('POST', '/api/upload/pdf', true);
+      xhr.open('POST', pathname('/api/upload/pdf'), true);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {

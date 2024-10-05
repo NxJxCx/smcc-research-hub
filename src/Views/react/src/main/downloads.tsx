@@ -29,7 +29,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2 }) =>
     }, [])
 
     const handleDownloadFile = React.useCallback((item: any) => {
-      const url = new URL(`/download${item.url}`, window.location.origin).toString()
+      const url = new URL(pathname(`/download${item.url}`), window.location.origin).toString()
       const w = window.open(url, '_blank')
       setTimeout(() => {
         if (w) {

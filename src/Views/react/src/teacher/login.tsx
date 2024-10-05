@@ -10,7 +10,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const onLogin = React.useCallback((e: React.FormEvent) => {
       e.preventDefault()
       setPending(true)
-      fetch('/api/login', {
+      fetch(pathname('/api/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
@@ -31,7 +31,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
             })
             console.log(error)
           } else if (success) {
-            window.location.replace('/');
+            window.location.replace(pathname('/'));
           }
         })
         .catch((e) => {
@@ -54,7 +54,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
 
     return (
       <div className="w-full pt-16 relative">
-        <button type="button" onClick={() => window.location.replace("/")} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
+        <button type="button" onClick={() => window.location.replace(pathname("/"))} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
         <div className="p-4">
           <form onSubmit={onLogin} className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
             <SMCCLogo className="w-[100px] aspect-square mx-auto" />

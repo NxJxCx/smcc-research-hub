@@ -30,7 +30,7 @@ export default import(pathname('/jsx/imports')).then(async ({ React, Sweetalert2
     const onResult = React.useCallback((studentName?: string, studentId?: string) => {
       if (!!studentId) {
         setPause(true);
-        fetch(`/api/student?q=exist&id=${studentId}`)
+        fetch(pathname(`/api/student?q=exist&id=${studentId}`))
         .then(response => response.json())
         .then(({ error, exists }) => {
           if (error) {
@@ -46,7 +46,7 @@ export default import(pathname('/jsx/imports')).then(async ({ React, Sweetalert2
           } else {
             if (!exists) {
               // redirect to sign up with the scanned studentId
-              window.location.replace(`/signup?student_id=${studentId}&full_name=${studentName}`);
+              window.location.replace(pathname(`/signup?student_id=${studentId}&full_name=${studentName}`));
             } else {
               Sweetalert2.fire({
                 icon: 'error',
@@ -65,7 +65,7 @@ export default import(pathname('/jsx/imports')).then(async ({ React, Sweetalert2
                   cancelButtonText: 'No',
                 }).then(({ isConfirmed }: { isConfirmed: boolean }) => {
                   if (isConfirmed) {
-                    window.location.replace(`/login?student_id=${studentId}`);
+                    window.location.replace(pathname(`/login?student_id=${studentId}`));
                   }
                 })
               });
@@ -159,7 +159,7 @@ export default import(pathname('/jsx/imports')).then(async ({ React, Sweetalert2
         <button type="button" onClick={() => window.location.replace(pathname("/"))} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
         <div className="p-4">
           <div className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
-            <SMCCLogo className="w-[100px] aspect-square mx-auto"/>
+            <SMCCLogo className="w-[100px] aspect-square mx-auto" />
             <div className="text-[24px] font-[700] text-center">Student Registration</div>
             <Scanner className="mt-4" onResult={onResult} pause={pause || !showScanner} regExFormat={[IDRegExFormat.studentName, IDRegExFormat.studentId]} />
           </div>
@@ -175,7 +175,7 @@ export default import(pathname('/jsx/imports')).then(async ({ React, Sweetalert2
         <button type="button" onClick={() => window.location.replace(pathname("/"))} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
         <div className="p-4">
           <form onSubmit={onSubmit} className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
-            <SMCCLogo className="w-[100px] aspect-square mx-auto"/>
+            <SMCCLogo className="w-[100px] aspect-square mx-auto" />
             <div className="text-[24px] font-[700] text-center">Student Registration</div>
             <div className="flex justify-center px-4">
               <input type="text" className="p-4 w-full border-2 border-gray-300 rounded-lg" placeholder="Student ID" value={student_id} disabled required />

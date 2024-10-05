@@ -16,7 +16,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const onResult = React.useCallback((studentName?: string, studentId?: string) => {
       if (!!studentId) {
         setPause(true);
-        fetch(`/api/student?q=exist&id=${studentId}`)
+        fetch(pathname(`/api/student?q=exist&id=${studentId}`))
         .then(response => response.json())
         .then(({ error, exists }) => {
           if (error) {
@@ -28,7 +28,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
           } else {
             if (!exists) {
               // redirect to sign up with the scanned studentId
-              window.location.href = `/signup?student_id=${studentId}&full_name=${studentName}`;
+              window.location.href = pathname(`/signup?student_id=${studentId}&full_name=${studentName}`);
             } else {
               setStudentId(studentId)
               setShowScanner(false);
@@ -97,7 +97,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
 
     return showScanner ? (
       <div className="w-full pt-16 relative">
-        <button type="button" onClick={() => window.location.replace("/")} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
+        <button type="button" onClick={() => window.location.replace(pathname("/"))} className="absolute top-0 left-0 ml-4 mt-4 text-sky-500 hover:text-sky-3 bg-white drop-shadow-lg pl-2 pr-3 py-1 rounded flex items-center"><span className="material-symbols-outlined">arrow_left</span> Home</button>
         <div className="p-4">
           <div className="max-w-md mx-auto flex flex-col gap-8 border border-sky-300 rounded-lg p-8 shadow-lg pt-10">
             <SMCCLogo className="w-[100px] aspect-square mx-auto" />

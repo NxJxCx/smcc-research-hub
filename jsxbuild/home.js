@@ -5,7 +5,7 @@ import(pathname("/jsx/imports")).then(({ React, ReactDOM, ReactPlayerYoutube }) 
         // return <ReactPlayer url={url} width="100%" height="100%" controls /> if you want to use videos from local or from other platforms
     }
     async function fetchVideo() {
-        const url = new URL('/api/home/video', window.location.origin);
+        const url = new URL(pathname('/api/home/video'), window.location.origin);
         const response = await fetch(url);
         const { success, error } = await response.json();
         if (error) {

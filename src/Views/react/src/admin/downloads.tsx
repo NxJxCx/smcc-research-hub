@@ -17,7 +17,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const [tableData, setTableData] = React.useState([])
 
     const fetchList = () => {
-      fetch('/api/downloadables/all')
+      fetch(pathname('/api/downloadables/all'))
         .then(response => response.json())
         .then(({ success, error }) => {
           if (error) {
@@ -47,7 +47,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                           showLoaderOnConfirm: true,
                           preConfirm: async () => {
                             try {
-                              const publishUrl = new URL('/api/downloadables/publish', window.location.origin);
+                              const publishUrl = new URL(pathname('/api/downloadables/publish'), window.location.origin);
                               const response = await fetch(publishUrl, {
                                 method: 'POST',
                                 body: JSON.stringify({ id: data.id, downloadable: true }),
@@ -106,7 +106,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                           showLoaderOnConfirm: true,
                           preConfirm: async () => {
                             try {
-                              const publishUrl = new URL('/api/downloadables/publish', window.location.origin);
+                              const publishUrl = new URL(pathname('/api/downloadables/publish'), window.location.origin);
                               const response = await fetch(publishUrl, {
                                 method: 'POST',
                                 body: JSON.stringify({ id: data.id, downloadable: false }),
@@ -157,7 +157,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                   onDownload={(id: any) => {
                     if (id === data.id) {
                       // Open the view thesis modal
-                      const downloadTab = window.open(new URL(`/download${data.url}`, window.location.origin), '_blank')
+                      const downloadTab = window.open(new URL(pathname(`/download${data.url}`), window.location.origin), '_blank')
                       setTimeout(() => {
                         if (downloadTab) {
                           downloadTab.close();
@@ -176,7 +176,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                       confirmButtonText: 'Yes, delete downloadable file!'
                     }).then(({ isConfirmed }: any) => {
                       if (isConfirmed) {
-                        fetch(`/api/downloadables/delete?id=${id}`, { method: 'DELETE' })
+                        fetch(pathname(`/api/downloadables/delete?id=${id}`), { method: 'DELETE' })
                           .then(response => response.json())
                           .then(({ success, error }) => {
                             if (!success) {

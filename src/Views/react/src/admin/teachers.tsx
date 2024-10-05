@@ -90,7 +90,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     }, [])
 
     const fetchList = () => {
-      fetch('/api/teacher/all')
+      fetch(pathname('/api/teacher/all'))
       .then(response => response.json())
       .then(({ success, error }) => {
         if (error) {
@@ -122,7 +122,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                     confirmButtonText: 'Yes, delete teacher account!'
                   }).then(({ isConfirmed }: any) => {
                     if (isConfirmed) {
-                      fetch(`/api/teacher/delete?id=${id}`, { method: 'DELETE' })
+                      fetch(pathname(`/api/teacher/delete?id=${id}`), { method: 'DELETE' })
                       .then(response => response.json())
                       .then(({ success, error }) => {
                         if (!success) {
@@ -182,7 +182,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
 
     const handleEditTeacher = React.useCallback(async (close: () => void) => {
       try {
-        const response = await fetch('/api/update', {
+        const response = await fetch(pathname('/api/update'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -228,7 +228,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
 
     const handleAddTeacher = React.useCallback(async (close: () => void) => {
       try {
-        const response = await fetch('/api/signup', {
+        const response = await fetch(pathname('/api/signup'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

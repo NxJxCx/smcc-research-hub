@@ -5,7 +5,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => 
     const logRef = React.useRef(null);
 
     const fetchLogs = React.useCallback(() => {
-      fetch('/api/logs')
+      fetch(pathname('/api/logs'))
       .then(response => response.json())
       .then(({ data }) => {
         const splitted = data.split('\n');

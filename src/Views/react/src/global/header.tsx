@@ -19,7 +19,7 @@ import(pathname("/jsx/imports")).then(async ({ React, ReactDOM }) => {
     const toggleShow = React.useCallback(() => setShow(!show), [show]);
     const pageData = React.useMemo(() => JSON.parse(document.getElementById('root')?.dataset?.pageData as string), []);
 
-    const pathname = React.useMemo(() => window.location.pathname, []);
+    const pathName = React.useMemo(() => window.location.pathname, []);
 
     React.useEffect(() => {
       if (!search) {
@@ -59,7 +59,7 @@ import(pathname("/jsx/imports")).then(async ({ React, ReactDOM }) => {
                   </div>
                 ) : (
                   <div className="px-4 flex flex-col gap-2">
-                    <a href="/login" className="text-sky-600 hover:text-sky-300">Login</a>
+                    <a href={pathname("/login")} className="text-sky-600 hover:text-sky-300">Login</a>
                   </div>
                 )
               }
@@ -70,7 +70,7 @@ import(pathname("/jsx/imports")).then(async ({ React, ReactDOM }) => {
                   <a href={item.url} className="indent-4">
                     <div className={
                       `hover:text-sky-500 transition duration-300 w-full
-                      ${(item.url === "/" && pathname === "/") || (item.url !== "/" && pathname.startsWith(item.url))
+                      ${(pathname(item.url) === pathname("/") && pathName === pathname("/")) || (pathname(item.url) !== pathname("/") && pathName.startsWith(pathname(item.url)))
                       ? "text-black border-l-4 border-sky-300 font-700"
                       : "text-gray-500 w-full"}`
                     }>
@@ -82,13 +82,13 @@ import(pathname("/jsx/imports")).then(async ({ React, ReactDOM }) => {
             }
             <li>
               { pageData?.authenticated ? (
-                  <form action="/logout" method="post">
-                    <a href="/settings" className="block px-4 py-2 hover:bg-gray-200">Settings</a>
+                  <form action={pathname("/logout")} method="post">
+                    <a href={pathname("/settings")} className="block px-4 py-2 hover:bg-gray-200">Settings</a>
                     <button type="submit" className="block px-4 pt-2 text-red-400 hover:text-red-700 w-full text-start">Sign out</button>
                   </form>
                 ) : (
                   <div className="px-4 flex flex-col gap-2">
-                    <a href="/signup" className="text-yellow-600 hover:text-sky-300">Sign Up</a>
+                    <a href={pathname("/signup")} className="text-yellow-600 hover:text-sky-300">Sign Up</a>
                   </div>
                 )
               }

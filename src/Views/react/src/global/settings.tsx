@@ -64,7 +64,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
   return function AccountSettings() {
     const { authenticated, authData } = React.useContext(MainContext)
     if (!authenticated || !authData) {
-      window.location.replace('/')
+      window.location.replace(pathname('/'))
       return null
     }
 
@@ -86,7 +86,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
       e.preventDefault()
       e.stopPropagation()
       try {
-        const response = await fetch('/api/update', {
+        const response = await fetch(pathname('/api/update'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -23,7 +23,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, ReactDOM, c
         )
       }>
         <div className="w-full max-h-[60px] h-[60px] flex items-center justify-center bg-[#21282f]">
-          <a href="/" className="flex flex-nowrap h-full w-fit items-center justify-start">
+          <a href={pathname("/")} className="flex flex-nowrap h-full w-fit items-center justify-start">
             <SMCCLogo className="aspect-square h-full py-2" />
             <h1 className="pr-3 font-[600]">RESEARCH HUB</h1>
           </a>
@@ -55,7 +55,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, ReactDOM, c
       }>
         <div className="w-full max-h-[60px] h-[60px] flex items-center justify-center bg-[#21282f]">
           <div className="flex flex-nowrap h-full w-fit items-center justify-start">
-            <img src="/images/SMCC-logo.svg" alt="SMCC Logo" className="aspect-square h-full py-2" />
+            <img src={pathname("/images/SMCC-logo.svg")} alt="SMCC Logo" className="aspect-square h-full py-2" />
             <h1 className="pr-3 font-[600]">RESEARCH HUB</h1>
           </div>
         </div>

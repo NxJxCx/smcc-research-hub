@@ -19,7 +19,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2 }) =>
     });
 
     const fetchData = React.useCallback(() => {
-      fetch('/api/dashboard/statistics')
+      fetch(pathname('/api/dashboard/statistics'))
         .then(response => response.json())
         .then(({ error, success }) => {
           if (error) {

@@ -27,7 +27,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const [tableData, setTableData] = React.useState([])
 
     const fetchList = () => {
-      fetch('/api/thesis/all')
+      fetch(pathname('/api/thesis/all'))
       .then(response => response.json())
       .then(({ success, error }) => {
         if (error) {
@@ -61,7 +61,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                           showLoaderOnConfirm: true,
                           preConfirm: async () => {
                             try {
-                              const publishUrl = new URL('/api/thesis/publish', window.location.origin);
+                              const publishUrl = new URL(pathname('/api/thesis/publish'), window.location.origin);
                               const response = await fetch(publishUrl, {
                                 method: 'POST',
                                 body: JSON.stringify({ id: data.id, is_public: true }),
@@ -120,7 +120,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                         showLoaderOnConfirm: true,
                         preConfirm: async () => {
                           try {
-                            const publishUrl = new URL('/api/thesis/publish', window.location.origin);
+                            const publishUrl = new URL(pathname('/api/thesis/publish'), window.location.origin);
                             const response = await fetch(publishUrl, {
                               method: 'POST',
                               body: JSON.stringify({ id: data.id, is_public: false }),
@@ -173,7 +173,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                       // Open the view thesis modal
                       setPdfTitle(data.title);
                       setPdfAuthor("Author/s: " + data.author + " (" + data.year + ")");
-                      setPdfUrl(new URL(`/read${data.url}`, window.location.origin).toString());
+                      setPdfUrl(new URL(pathname(`/read${data.url}`), window.location.origin).toString());
                     }
                   }}
                   onDelete={(id: any) => {
@@ -187,7 +187,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                       confirmButtonText: 'Yes, delete thesis!'
                     }).then(({ isConfirmed }: any) => {
                       if (isConfirmed) {
-                        fetch(`/api/thesis/delete?id=${id}`, { method: 'DELETE' })
+                        fetch(pathname(`/api/thesis/delete?id=${id}`), { method: 'DELETE' })
                         .then(response => response.json())
                         .then(({ success, error }) => {
                           if (!success) {

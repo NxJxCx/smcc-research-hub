@@ -81,7 +81,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
       console.log(Object.fromEntries(formData));
       const xhr = new XMLHttpRequest();
       setXhr(xhr);
-      xhr.open('POST', '/api/upload/journal', true);
+      xhr.open('POST', pathname('/api/upload/journal'), true);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {

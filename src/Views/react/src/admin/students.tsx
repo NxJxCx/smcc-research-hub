@@ -80,7 +80,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     }, [])
 
     const fetchList = () => {
-      fetch('/api/student/all')
+      fetch(pathname('/api/student/all'))
         .then(response => response.json())
         .then(({ success, error }) => {
           if (error) {
@@ -111,7 +111,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                     confirmButtonText: 'Yes, delete student account!'
                   }).then(({ isConfirmed }: any) => {
                     if (isConfirmed) {
-                      fetch(`/api/student/delete?id=${id}`, { method: 'DELETE' })
+                      fetch(pathname(`/api/student/delete?id=${id}`), { method: 'DELETE' })
                         .then(response => response.json())
                         .then(({ success, error }) => {
                           if (!success) {
@@ -171,7 +171,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const handleEditStudent = React.useCallback(async (close: () => void) => {
       console.log(formData)
       try {
-        const response = await fetch('/api/update', {
+        const response = await fetch(pathname('/api/update'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

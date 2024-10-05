@@ -1,7 +1,7 @@
 import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2 }) => {
 
   async function fetchVideo() {
-    const url = new URL('/api/home/video', window.location.origin);
+    const url = new URL(pathname('/api/home/video'), window.location.origin);
     const response = await fetch(url);
     const { success, error } = await response.json();
     if (error) {
@@ -16,7 +16,7 @@ import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2 }) => {
 
     const handleSubmit = React.useCallback(() => {
       if (edit) {
-        const url = new URL('/api/home/video/edit', window.location.origin);
+        const url = new URL(pathname('/api/home/video/edit'), window.location.origin);
         const body = JSON.stringify({ videoUrl });
         fetch(url,{
           method: 'POST',

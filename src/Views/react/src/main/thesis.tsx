@@ -35,7 +35,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     const handleFavoriteClick = React.useCallback((e: any) => {
       e.preventDefault()
       e.stopPropagation()
-      const url = new URL('/api/thesis/markfavorite', window.location.origin);
+      const url = new URL(pathname('/api/thesis/markfavorite'), window.location.origin);
       const body = JSON.stringify({ id, [authData?.account]: authData?.id })
       fetch(url, {
         method: 'POST',
@@ -75,7 +75,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     }, [id, authData])
 
     const handleView = React.useCallback(() => {
-      const uri = new URL(`/read${url}&id=${id}`, window.location.origin).toString()
+      const uri = new URL(pathname(`/read${url}&id=${id}`), window.location.origin).toString()
       onViewPdf && onViewPdf(uri, title, author + ' (' + year + ')')
     }, [url, onViewPdf, id])
 
@@ -131,7 +131,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     const prevPage = React.useCallback(() => setPage((prev: number) => Math.min(totalPages, Math.max(totalPages === 0 ? 0 : 1, prev - 1))), [totalPages])
 
     const fetchData = async () => {
-      const url = new URL('/api/thesis/public/all', window.location.origin);
+      const url = new URL(pathname('/api/thesis/public/all'), window.location.origin);
       url.searchParams.set(authData?.account, authData?.id);
       try {
         const response = await fetch(url);
@@ -236,7 +236,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
           </div>
         </div>
       </div>
-      <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href="/login" className="text-sky-700 underline">login</a> to view thesis.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
+      <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href={pathname("/login")} className="text-sky-700 underline">login</a> to view thesis.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
     </>)
   }
 });

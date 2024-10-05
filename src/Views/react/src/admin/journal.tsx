@@ -48,7 +48,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
               formData.append('filename', searchParam.get('filename') || '');
               console.log(file.type);
               formData.append('thumbnail', new Blob([file], { type: file.type }), file.name);
-              const url = new URL('/api/thumbnail/edit', window.location.origin);
+              const url = new URL(pathname('/api/thumbnail/edit'), window.location.origin);
               const xhr = new XMLHttpRequest();
               xhr.open('POST', url, true);
               xhr.onload = () => {
@@ -94,7 +94,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const handleViewPdf = React.useCallback((thesis: any) => {
       setPdfTitle(thesis.title);
       setPdfAuthor("Author/s: " + thesis.author + " (" + thesis.year + ")");
-      setPdfUrl(new URL(`/read${thesis.url}`, window.location.origin).toString());
+      setPdfUrl(new URL(pathname(`/read${thesis.url}`), window.location.origin).toString());
     }, [])
 
     const handleViewTheses = React.useCallback((row: any) => {
@@ -103,7 +103,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
 
     const fetchList = async () => {
       try {
-        const response = await fetch('/api/journal/all')
+        const response = await fetch(pathname('/api/journal/all'))
         const { success, error } = await response.json()
         if (error) {
           console.log(error);
@@ -145,7 +145,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                         showLoaderOnConfirm: true,
                         preConfirm: async () => {
                           try {
-                            const publishUrl = new URL('/api/journal/publish', window.location.origin);
+                            const publishUrl = new URL(pathname('/api/journal/publish'), window.location.origin);
                             const response = await fetch(publishUrl, {
                               method: 'POST',
                               body: JSON.stringify({ id: data.id, is_public: true }),
@@ -204,7 +204,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                       showLoaderOnConfirm: true,
                       preConfirm: async () => {
                         try {
-                          const publishUrl = new URL('/api/journal/publish', window.location.origin);
+                          const publishUrl = new URL(pathname('/api/journal/publish'), window.location.origin);
                           const response = await fetch(publishUrl, {
                             method: 'POST',
                             body: JSON.stringify({ id: data.id, is_public: false }),
@@ -268,7 +268,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                     confirmButtonText: 'Yes, delete journal!'
                   }).then(({ isConfirmed }: any) => {
                     if (isConfirmed) {
-                      fetch(`/api/journal/delete?id=${id}`, { method: 'DELETE' })
+                      fetch(pathname(`/api/journal/delete?id=${id}`), { method: 'DELETE' })
                       .then(response => response.json())
                       .then(({ success, error }) => {
                         if (!success) {
@@ -337,7 +337,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const handleAddThesis = React.useCallback(async () => {
       let inputOptions = {};
       try {
-        const url = new URL('/api/journal/theses/available', window.location.origin);
+        const url = new URL(pathname('/api/journal/theses/available'), window.location.origin);
         const response = await fetch(url)
         const { success, error } = await response.json();
         if (error) {
@@ -368,7 +368,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
               return;
             }
             try {
-              const url = new URL('/api/journal/add/thesis', window.location.origin);
+              const url = new URL(pathname('/api/journal/add/thesis'), window.location.origin);
               const response = await fetch(url, {
                 method: 'POST',
                 body: JSON.stringify({ journal_id: selected.id, thesis_id: value }),
@@ -432,7 +432,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                     // Open the view thesis modal
                     setPdfTitle(thesis.title);
                     setPdfAuthor("Author/s: " + thesis.author + " (" + thesis.year + ")");
-                    setPdfUrl(new URL(`/read${thesis.url}`, window.location.origin).toString());
+                    setPdfUrl(new URL(pathname(`/read${thesis.url}`), window.location.origin).toString());
                   }}>{thesis.title} ({thesis.year})</button>
                   <button type="button" title="Remove" className="text-red-500 text-sm ml-3" onClick={() => {
                     Sweetalert2.fire({
@@ -442,7 +442,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
                       confirmButtonColor: '#3085d6',
                     }).then(({ isConfirmed }: any) => {
                       if (isConfirmed) {
-                        const url = new URL('/api/journal/remove/thesis', window.location.origin);
+                        const url = new URL(pathname('/api/journal/remove/thesis'), window.location.origin);
                         url.searchParams.append('journal_id', selected.id);
                         url.searchParams.append('thesis_id', thesis.id);
                         fetch(url, { method: 'DELETE' })
