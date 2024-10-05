@@ -1,0 +1,1 @@
+export default import(pathname("/jsx/imports")).then((({ReactDOMServer:e})=>function(r){return e.renderToString(r)}));

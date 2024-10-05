@@ -233,6 +233,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => 
       </table>
     )
   }
+
   return {
     TableRowAction,
     Table

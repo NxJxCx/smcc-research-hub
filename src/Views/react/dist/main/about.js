@@ -1,0 +1,1 @@
+export default import(pathname("/jsx/imports")).then((({React:t})=>function(){return t.createElement("div",null,"About Us")}));
