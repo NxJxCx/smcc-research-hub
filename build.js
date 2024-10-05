@@ -1,7 +1,6 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-
 const tscOutputDir = 'jsxbuild';
 
 // Helper function to run a command and log its output

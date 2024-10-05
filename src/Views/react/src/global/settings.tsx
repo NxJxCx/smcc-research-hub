@@ -1,6 +1,6 @@
 export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2, getAsyncImport }) => {
   const { Courses, Departments, Year } = await import(pathname("/jsx/types"));
-  const { default: MainContext } = await getAsyncImport("/jsx/context");
+  const { default: { MainContext } } = await getAsyncImport("/jsx/context");
   const { default: { Input, Select } } = await getAsyncImport('/jsx/global/input');
 
   function EditAdmin({

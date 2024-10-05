@@ -83,7 +83,7 @@ class Header
                   </li>
                 </ul>
                 <div class="pt-2">
-                  <form action="/logout" method="post">
+                  <form action="<?= Router::getPathname("/logout") ?>" method="post">
                     <button type="submit" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 w-full text-start">Sign out</button>
                   </form>
                 </div>
@@ -147,7 +147,7 @@ class Header
                 </li>
               </ul>
               <div class="pt-2">
-                <form action="/logout" method="post">
+                <form action="<?= Router::getPathname("/logout") ?>" method="post">
                   <button type="submit" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 w-full text-start">Sign out</button>
                 </form>
               </div>

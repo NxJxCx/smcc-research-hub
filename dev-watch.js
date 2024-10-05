@@ -24,7 +24,7 @@ async function main() {
     // Run postcss with Tailwind CSS in watch mode
     runCommand('npx', ['postcss', './src/tailwind.css', '-o', './public/css/main.min.css', '--watch']);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for second
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait for second
 
     console.log('Running Typescript build watcher...');
     // Run TypeScript compiler in watch mode

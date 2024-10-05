@@ -1,7 +1,7 @@
 
 
 export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweetalert2, getAsyncImport }) => {
-  const { default: MainContext } = await getAsyncImport("/jsx/context");
+  const { default: { MainContext } } = await getAsyncImport("/jsx/context");
   const { default: Modal } = await getAsyncImport("/jsx/global/modal");
   const { default: PdfViewer } = await getAsyncImport("/jsx/global/pdfviewer");
   const { default: SearchHeaderInput } = await getAsyncImport("/jsx/main/search");

@@ -3,7 +3,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, ReactDOM, c
   const { default: SMCCLogo } = await getAsyncImport("/jsx/global/smcclogo");
 
   function SidebarNav({ defaultShow = true, sidebarList, toggleBtn }: { defaultShow?: boolean, sidebarList: (typeof NavItems)[], toggleBtn: HTMLButtonElement }) {
-    const pathname = React.useMemo(() => window.location.pathname, []);
+    const pathName = React.useMemo(() => window.location.pathname, []);
     const [show, setShow] = React.useState(defaultShow);
 
     React.useEffect(() => {
@@ -32,10 +32,10 @@ export default import(pathname("/jsx/imports")).then(async ({ React, ReactDOM, c
           { sidebarList.map(({ label, url }) => (
               <li key={label}>
                 <a
-                  href={url}
+                  href={pathname(url)}
                   className={
                     "flex p-4 text-sm font-medium hover:bg-sky-300 hover:text-black transition-colors duration-200 ease-in-out"
-                    + (url === pathname ? " bg-yellow-300 text-black" : " text-white")
+                    + (pathname(url) === pathName ? " bg-yellow-300 text-black" : " text-white")
                   }
                 >
                   {label}

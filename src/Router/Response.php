@@ -167,7 +167,7 @@ class Response
 
   public static function redirect(string $url, StatusCode $statusCode = StatusCode::FOUND): Response
   {
-    return new self([], $statusCode, ResponseSendType::REDIRECT, $url);
+    return new self([], $statusCode, ResponseSendType::REDIRECT, Router::getPathname($url));
   }
 
   public static function stream(callable $onStream, array $args = [], int $interval = 5, StatusCode $statusCode = StatusCode::FOUND): Response

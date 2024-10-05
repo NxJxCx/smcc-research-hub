@@ -1,7 +1,6 @@
 
 
 export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2 }) => {
-
   return function DashboardPage() {
     const [statistics, setStatistics] = React.useState({
       theses: 0,

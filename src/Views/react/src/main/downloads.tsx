@@ -12,7 +12,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2 }) =>
           Sweetalert2.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to fetch downloadables: ' + error,
+            text: 'Please login to display downloadables',
             toast: true,
             showConfirmButton: false,
             position: 'center',
