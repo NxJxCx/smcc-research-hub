@@ -119,7 +119,7 @@ class Template
         <aside id="sidebar-nav" class="min-w-[250px] bg-[#262e36] max-h-screen h-screen" data-sidebar-list="<?= htmlspecialchars(json_encode($sidebarListData)); ?>">
         <nav class="text-slate-50 bg-[#262e36] max-w-[250px] h-full relative w-[250px]">
           <div class="w-full max-h-[60px] h-[60px] flex items-center justify-center bg-[#21282f]">
-            <a href="/" class="flex flex-nowrap h-full w-fit items-center justify-start">
+            <a href="<?= Router::getPathname("/") ?>" class="flex flex-nowrap h-full w-fit items-center justify-start">
               <div class="aspect-square h-full py-2">
                 <svg class="w-full h-full" width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                   <rect width="130" height="130" fill="url(#pattern0_3_3868)"/>

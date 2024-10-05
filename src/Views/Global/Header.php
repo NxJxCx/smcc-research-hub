@@ -2,6 +2,7 @@
 
 namespace Smcc\ResearchHub\Views\Global;
 
+use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Router\Session;
 
 class Header
@@ -12,7 +13,7 @@ class Header
     <header class="font-[Quicksand] sticky top-0 left-0 h-[96px] w-full bg-white z-10">
       <div class="relative w-full h-full *:h-full flex justify-between items-center p-2 shadow">
         <h1 class="font-[700] text-[32px] leading-[35.2px] text-[#2487CE] flex-grow pl-2 md:pl-4 lg:pl-8 xl:pl-16 flex items-center">
-          <a href="/" class="hover:opacity-80 hover:drop-shadow-lg cursor-pointer flex flex-start items-center gap-x-2">
+          <a href="<?= Router::getPathname("/") ?>" class="hover:opacity-80 hover:drop-shadow-lg cursor-pointer flex flex-start items-center gap-x-2">
             <div class="w-fit min-w-[50px] max-w-[70px] aspect-square">
               <svg class="w-full h-full" width="130" height="130" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <rect width="130" height="130" fill="url(#pattern0_3_3868)" />
@@ -34,9 +35,9 @@ class Header
           $menuItems = json_decode($menuItems, true);
           foreach ($menuItems as $menuItem) {
           ?>
-            <a href="<?= $menuItem['url']; ?>" class="flex items-center justify-center font-[400] text-[16px] leading-[24px] tracking-[0.5px]
+            <a href="<?= Router::getPathname($menuItem['url']); ?>" class="flex items-center justify-center font-[400] text-[16px] leading-[24px] tracking-[0.5px]
               <?php
-              if ($menuItem['url'] === $_SERVER['REQUEST_URI'] || ($menuItem["url"] !== "/" && str_starts_with($_SERVER['REQUEST_URI'], $menuItem['url']))) {
+              if (Router::getPathname($menuItem['url']) === $_SERVER['REQUEST_URI'] || (Router::getPathname($menuItem["url"]) !== Router::getPathname("/") && str_starts_with($_SERVER['REQUEST_URI'], Router::getPathname($menuItem['url'])))) {
                 echo "text-[#2487CE] hover:text-gray-500 border-b-[2px] border-[#2487CE] hover:border-gray-500";
               } else {
                 echo "text-black hover:text-gray-500";
@@ -78,7 +79,7 @@ class Header
                 </div>
                 <ul class="py-2 text-sm text-gray-700">
                   <li>
-                    <a href="/settings" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
+                    <a href="<?= Router::getPathname("/settings") ?>" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
                   </li>
                 </ul>
                 <div class="pt-2">
@@ -92,8 +93,8 @@ class Header
           <?php
           } else {
           ?>
-            <p class="text-sm"><a href="/signup">Sign Up</a></p>
-            <p class="text-sm"><a href="/login">Login</a></p>
+            <p class="text-sm"><a href="<?= Router::getPathname("/signup") ?>">Sign Up</a></p>
+            <p class="text-sm"><a href="<?= Router::getPathname("/login") ?>">Login</a></p>
           <?php
           }
           ?>
@@ -142,7 +143,7 @@ class Header
               </div>
               <ul class="py-2 text-sm text-gray-700">
                 <li>
-                  <a href="/admin/settings" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
+                  <a href="<?= Router::getPathname("/admin/settings") ?>" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
                 </li>
               </ul>
               <div class="pt-2">

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Pages;
 
+use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Views\Global\Template;
 use Smcc\ResearchHub\Views\Global\View;
 
@@ -17,7 +18,7 @@ class Error500Page extends View
       ?>
         <div id="notfound">
           <div class="notfound">
-            <div class="notfound-404 error-500"></div>
+            <div class="notfound-404 error-500" style="background-image: url('<?= Router::getPathname("/images/error-icon.png") ?>');"></div>
             <h1>500</h1>
             <h2>Oops! Something went wrong</h2>
             <p>An error occured. Please try again later.</p>
@@ -26,7 +27,7 @@ class Error500Page extends View
                 <?= $data['message']; ?>
               </p>
             <?php } ?>
-            <a href="/">Back to homepage</a>
+            <a href="<?= Router::getPathname("/") ?>">Back to homepage</a>
           </div>
         </div>
       <?php

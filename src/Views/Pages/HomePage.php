@@ -29,7 +29,7 @@ class HomePage extends View
     </div>
   </div>
   <div class="flex flex-col justify-center items-center my-10">
-    <a href="/thesis">
+    <a href="<?= Router::getPathname("/thesis") ?>">
       <button type="button" class="mx-auto hover:drop-shadow-lg hover:scale-110 font-[Poppins] font-[400] text-center text-[22px] leading-[33px] w-[220px] h-[48px] bg-[#2487CE] rounded-[5px] text-white">
           Explore
       </button>
