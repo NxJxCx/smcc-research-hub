@@ -3,7 +3,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
   const { CellAlign, Courses, Departments, TableCellType, TableColumn, Year } = await import(pathname("/jsx/types"));
   const { default: { Input, Select } } = await getAsyncImport("/jsx/global/input");
   const { default: Modal } = await getAsyncImport("/jsx/global/modal");
-  const { Table, TableRowAction } = await getAsyncImport("/jsx/admin/table");
+  const { default: { Table, TableRowAction } } = await getAsyncImport("/jsx/admin/table");
 
   const columns: (typeof TableColumn)[] = [
     { label: "Student ID", key: "student_id", sortable: true, filterable: true, cellType: TableCellType.Number, align: CellAlign.Center },

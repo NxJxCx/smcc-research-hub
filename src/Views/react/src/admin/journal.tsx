@@ -3,7 +3,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
   const { default: AddJournalForm } = await getAsyncImport("/jsx/admin/addjournal");
   const { default: Modal } = await getAsyncImport("/jsx/global/modal");
   const { default: PdfViewer } = await getAsyncImport("/jsx/global/pdfviewer");
-  const { Table, TableRowAction } = await getAsyncImport("/jsx/admin/table");
+  const { default: { Table, TableRowAction } } = await getAsyncImport("/jsx/admin/table");
 
   const columns: (typeof TableColumn)[] = [
     { label: "#", key: "id", sortable: true, filterable: true, cellType: TableCellType.Number, align: CellAlign.Center },

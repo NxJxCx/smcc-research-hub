@@ -1,11 +1,11 @@
 export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2, getAsyncImport }) => {
-  const { CellAlign, TableCellType, TableColumn } = await import(pathname("/jsx/types"));
+  const { CellAlign, TableCellType } = await import(pathname("/jsx/types"));
   const { default: AddThesisForm } = await getAsyncImport("/jsx/admin/addthesis");
   const { default: Modal } = await getAsyncImport("/jsx/global/modal");
   const { default: PdfViewer } = await getAsyncImport("/jsx/global/pdfviewer");
-  const { Table, TableRowAction } = await getAsyncImport("/jsx/admin/table");
+  const { default: { Table, TableRowAction } } = await getAsyncImport("/jsx/admin/table");
 
-  const columns: (typeof TableColumn)[] = [
+  const columns = [
     { label: "#", key: "id", sortable: true, filterable: true, cellType: TableCellType.Number, align: CellAlign.Center },
     { label: "Date Created", key: "created_at", sortable: true, cellType: TableCellType.Date, align: CellAlign.Center },
     { label: "Title", key: "title", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },

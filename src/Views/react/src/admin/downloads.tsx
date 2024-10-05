@@ -1,7 +1,7 @@
 export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2, getAsyncImport }) => {
   const { CellAlign, TableCellType, TableColumn } = await import(pathname("/jsx/types"));
   const { default: AddDownloadableForm } = await getAsyncImport("/jsx/admin/adddownloadable");
-  const { Table, TableRowAction } = await getAsyncImport("/jsx/admin/table");
+  const { default: { Table, TableRowAction } } = await getAsyncImport("/jsx/admin/table");
 
   const columns: (typeof TableColumn)[] = [
     { label: "#", key: "id", sortable: true, filterable: true, cellType: TableCellType.Number, align: CellAlign.Center },

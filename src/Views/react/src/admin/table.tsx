@@ -1,5 +1,5 @@
 export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => {
-  const { CellAlign, SortOrder, TableCellType, TableColumn, TableProps, TableRow } = await import(pathname("/jsx/types"));
+  const { CellAlign, SortOrder, TableCellType } = await import(pathname("/jsx/types"));
 
   function TableRowAction({ id, onView, onEdit, onDelete, onDownload }: { id: string|number, onView?: (id: string|number) => void, onEdit?: (id: string|number) => void, onDelete?: (id: string|number) => void, onDownload?: (id: string|number) => void }) {
     return (
@@ -38,7 +38,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => 
 
   const EntriesList = [5, 10, 25, 50, 100, 200, 500, 1000]
 
-  function Table({ columns, items, search, children, defaultSortOrder, defaultSortColumn, onShowEntries = (entries: number) => {}, onSortColumn = (column: string) => {}, onSortOrder = (order: typeof SortOrder) => {}, onSearch = (search: string) => {}, ...props }: typeof TableProps) {
+  function Table({ columns, items, search, children, defaultSortOrder, defaultSortColumn, onShowEntries = (entries: number) => {}, onSortColumn = (column: string) => {}, onSortOrder = (order: any) => {}, onSearch = (search: string) => {}, ...props }: any) {
     const [searchString, setSearch] = React.useState(search || "")
     const [showEntries, setShowEntries] = React.useState(5)
     const [sortColumn, setSortColumn] = React.useState(defaultSortColumn || (columns?.[0].sortable ? columns[0].key : ""))
@@ -83,7 +83,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => 
       if (!!searchString) {
         const result = sortedItems.filter((item) =>
           Object.entries(item).some(([key, value]: [key: string, value: any]) => {
-            const col = columns.find((column: typeof TableColumn) => column.key === key);
+            const col = columns.find((column: any) => column.key === key);
             if (col?.cellType === TableCellType.Number || col?.cellType === TableCellType.String) {
               return value.toString().toLowerCase().includes(searchString.toLowerCase());
             } else if (col?.cellType === TableCellType.Date) {
@@ -155,7 +155,6 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => 
     }, [])
 
     const onPageInputChange = React.useCallback((e: any) => Number(e.target.value) >= page && Number(e.target.value) <= totalPages && !Number.isNaN(Number.parseInt(e.target.value)) ? setPage(Number.parseInt(e.target.value)) : setPage(0), [page]);
-
     return (
       <table className="w-full h-full border-collapse bg-[#262E37] font-[Montserrat] font-[500] text-[14px] leading-[17.07px]" {...props}>
         <thead>
@@ -193,7 +192,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => 
           </tr>
           <tr className="bg-[#323B46] h-[50px]">
             {
-              columns.map((column: typeof TableColumn) => (
+              columns.map((column: any) => (
                 <th key={column.key} className={clsx(" text-white text-xs px-6 py-2", column.sortable ? "cursor-pointer relative hover:bg-[#454f5c]" : "")} onClick={() => toggleSort(column.sortable, column.key)}>
                   {column.label}
                   {column.sortable && <div className="absolute right-1 top-0 h-full w-fit flex justify-end items-center"><div className={clsx("material-symbols-outlined h-fit w-full text-[20px]", column.key === sortColumn ? sortOrder === SortOrder.Ascending ? "rotate-[180deg]" : "" : "opacity-20 hover:opacity-50")}>sort</div></div>}
@@ -204,10 +203,10 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx }) => 
         </thead>
         <tbody>
           {
-            finalItems.map((row: typeof TableRow, index: number) => (
+            finalItems.map((row: any, index: number) => (
               <tr key={"rowtable_" + index} className="h-[65px]">
                 {
-                  columns.map((column: typeof TableColumn) => (
+                  columns.map((column: any) => (
                     <td key={column.key} className={`text-white text-xs px-4 py-2 ${column.align === CellAlign.Center ? "text-center" : column.align === CellAlign.Right ? "text-right" : "text-left"}`}>
                       {column.cellType === TableCellType.Number && Number.parseFloat(row[column.key])}
                       {column.cellType === TableCellType.Date && new Date(row[column.key]).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
