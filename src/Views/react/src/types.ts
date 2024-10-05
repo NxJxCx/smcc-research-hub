@@ -1,10 +1,93 @@
 
-export const IDRegExFormat = {
-  studentId: new RegExp("^20\\d{7}$"),
-  studentName: new RegExp("^[A-ZÑ]+(?: [A-ZÑ]+)*?(?: [A-ZÑ]\\. )?(?:[A-ZÑ]+(?: [A-ZÑ]+)*)?(?: (?:III|IV|V|VI|VII|VIII|IX|X))?$"),
-  fullStudentID: new RegExp(
-    "^[A-ZÑ]+(?: [A-ZÑ]+)*?(?: [A-ZÑ]\\. )?(?:[A-ZÑ]+(?: [A-ZÑ]+)*)?(?: (?:III|IV|V|VI|VII|VIII|IX|X))?$\\r?\\n^20\\d{7}$"
-  )
+export interface DashboardStatistics {
+  theses: number,
+  journals: number,
+  publishedTheses: number,
+  publishedJournals: number,
+  students: number,
+  teachers: number,
+  weeklyThesisReads: number,
+  weeklyJournalReads: number,
+}
+
+export interface NavItems {
+  label: string,
+  url: string,
+  icon: string,
+}
+
+export interface TabLabel {
+  label: string,
+  key: string
+}
+
+export interface TabContextProps {
+  activeTabKey: string
+}
+
+export interface NavItems {
+  label: string,
+  url: string
+}
+
+export interface LogMessage {
+  type: LogType,
+  message: string,
+}
+
+export enum LogType {
+  USER_INFO = "USER INFO",
+  USER_ERROR = "USER ERROR",
+  USER_WARNING = "USER WARNING",
+  USER_DEBUG = "USER DEBUG",
+}
+
+export enum TableCellType {
+  Number = "number",
+  Date = "date",
+  String = "string",
+  Custom = "custom",
+}
+
+export enum CellAlign {
+  Left = "left",
+  Center = "center",
+  Right = "right",
+}
+
+export interface TableColumn {
+  label: string,
+  key: string,
+  cellType?: TableCellType,
+  sortable?: boolean,
+  filterable?: boolean,
+  align?: CellAlign,
+}
+
+export enum SortOrder {
+  Ascending = "asc",
+  Descending = "desc",
+}
+
+type TableCell = string | number | React.ReactNode;
+
+export interface TableRow {
+  [key: string]: TableCell,
+}
+
+export type ShowEntries = 5 | 10 | 25 | 50 | 100 | 200 | 500 | 1000
+
+export type TableProps = {
+  columns: TableColumn[],
+  items: TableRow[],
+  search?: string,
+  defaultSortOrder?: SortOrder,
+  defaultSortColumn?: string,
+  onShowEntries?: (entries: number) => void,
+  onSortColumn?: (column: string) => void,
+  onSortOrder?: (order: SortOrder) => void,
+  onSearch?: (search: string) => void,
+  children?: React.ReactNode
 }
 
 export enum Year {
@@ -13,7 +96,6 @@ export enum Year {
   ThirdYear = '3',
   FourthYear = '4',
 }
-
 
 // College of Computing and Information Science
 // -Bachelor of Science in Information Technology
@@ -134,11 +216,4 @@ export const DepartmentCourses: { [key: Departments|string]: Courses[] } = {
     Courses.HNCII,
     Courses.SCSNCI,
   ]
-}
-
-
-export default {
-  Year,
-  Courses,
-  Departments,
 }

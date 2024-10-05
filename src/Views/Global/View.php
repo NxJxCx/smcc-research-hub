@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Global;
 
+use Smcc\ResearchHub\Router\Router;
+
 interface ViewBase {
   public function render(): void;
   public function getTitle(): string;
@@ -22,7 +24,7 @@ class View implements ViewBase {
   {
     $this->title = $title;
     $this->data = $data;
-    $this->reactAppPath = $reactAppPath;
+    $this->reactAppPath = Router::getPathname($reactAppPath);
   }
 
   /**

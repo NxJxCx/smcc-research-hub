@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Global;
 
+use Smcc\ResearchHub\Router\Router;
+
 class Head
 {
   static public function default(string $title)
@@ -14,7 +16,7 @@ class Head
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
-      <title><?php echo $title . " - " . APP_TITLE; ?></title>
+      <title><?= $title . " - " . APP_TITLE; ?></title>
 
       <!-- Google font -->
       <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,8 +27,8 @@ class Head
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
       <!-- Tailwind Minified CSS -->
-      <link type="text/css" rel="stylesheet" href="/css/style.css" />
-      <link type="text/css" rel="stylesheet" href="/css/main.min.css" />
+      <link type="text/css" rel="stylesheet" href="<?= Router::getPathname('/css/style.css') ?>" />
+      <link type="text/css" rel="stylesheet" href="<?= Router::getPathname('/css/main.min.css') ?>" />
     </head>
 <?php
   }

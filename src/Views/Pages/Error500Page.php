@@ -23,7 +23,7 @@ class Error500Page extends View
             <p>An error occured. Please try again later.</p>
             <?php if (DISPLAY_ERRORS) { ?>
               <p class="error-message">
-                <?php echo $data['message']; ?>
+                <?= $data['message']; ?>
               </p>
             <?php } ?>
             <a href="/">Back to homepage</a>

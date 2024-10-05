@@ -1,9 +1,9 @@
-import { React } from '/jsx/imports';
-
-export default function AboutUs() {
-  return (
-    <div>
-      About Us
-    </div>
-  )
-}
+export default import(pathname("/jsx/imports")).then(({ React }) => {
+  return function AboutUs() {
+    return (
+      <div>
+        About Us
+      </div>
+    )
+  }
+});

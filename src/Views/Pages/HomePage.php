@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Pages;
 
+use Smcc\ResearchHub\Router\Router;
 use Smcc\ResearchHub\Views\Global\Template;
 use Smcc\ResearchHub\Views\Global\View;
 
@@ -23,7 +24,7 @@ class HomePage extends View
     <div class="w-full h-full relative pt-[2%]">
       <div id="home-video-container" class="w-full h-full px-[10%] py-[5%] aspect-video"></div>
       <div class="absolute left-0 top-0 -z-[10] w-full h-full">
-        <image src="/images/desktop.svg" class="w-full h-full" />
+        <image src="<?= Router::getPathname('/images/desktop.svg') ?>" class="w-full h-full" />
       </div>
     </div>
   </div>

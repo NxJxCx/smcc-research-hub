@@ -34,7 +34,7 @@ class Header
           $menuItems = json_decode($menuItems, true);
           foreach ($menuItems as $menuItem) {
           ?>
-            <a href="<?php echo $menuItem['url']; ?>" class="flex items-center justify-center font-[400] text-[16px] leading-[24px] tracking-[0.5px]
+            <a href="<?= $menuItem['url']; ?>" class="flex items-center justify-center font-[400] text-[16px] leading-[24px] tracking-[0.5px]
               <?php
               if ($menuItem['url'] === $_SERVER['REQUEST_URI'] || ($menuItem["url"] !== "/" && str_starts_with($_SERVER['REQUEST_URI'], $menuItem['url']))) {
                 echo "text-[#2487CE] hover:text-gray-500 border-b-[2px] border-[#2487CE] hover:border-gray-500";
@@ -42,7 +42,7 @@ class Header
                 echo "text-black hover:text-gray-500";
               }
               ?>">
-              <?php echo $menuItem['label']; ?>
+              <?= $menuItem['label']; ?>
             </a>
           <?php
           }
@@ -53,7 +53,7 @@ class Header
             </span>
           </button> -->
         </nav>
-        <nav id="responsive-nav-small" data-navlist="<?php echo htmlspecialchars(json_encode($menuItems)); ?>">
+        <nav id="responsive-nav-small" data-navlist="<?= htmlspecialchars(json_encode($menuItems)); ?>">
         </nav>
         <div class="relative hidden xl:flex items-center justify-end mx-4 gap-x-4 whitespace-nowrap flex-grow">
           <?php
@@ -66,15 +66,15 @@ class Header
                   account_circle
                 </span>
                 <span class="text-sm ml-2">
-                  <?php echo Session::getUserFullName(); ?>
+                  <?= Session::getUserFullName(); ?>
                 </span>
               </button>
 
               <!-- Dropdown menu -->
               <div id="profile-avatar-dropdown" class="absolute top-full left-0 w-full mt-2 z-20 hidden bg-sky-50 divide-y divide-slate-300 rounded-lg shadow-lg scale-y-0 transition-transform ease-in-out delay-10 duration-200 origin-top border">
                 <div class="px-4 py-3 text-sm text-gray-900">
-                  <div><?php echo Session::getUserFullName(); ?></div>
-                  <div class="font-medium truncate capitalize"><?php echo Session::getUserAccountType(); ?></div>
+                  <div><?= Session::getUserFullName(); ?></div>
+                  <div class="font-medium truncate capitalize"><?= Session::getUserAccountType(); ?></div>
                 </div>
                 <ul class="py-2 text-sm text-gray-700">
                   <li>
@@ -130,15 +130,15 @@ class Header
                 account_circle
               </span>
               <span class="text-sm ml-2">
-                <?php echo Session::getUserFullName(); ?>
+                <?= Session::getUserFullName(); ?>
               </span>
             </button>
 
             <!-- Dropdown menu -->
             <div id="profile-avatar-dropdown" class="absolute top-full left-0 w-full mt-3 z-20 hidden bg-sky-50 divide-y divide-slate-300 rounded-lg shadow-lg scale-y-0 transition-transform ease-in-out delay-10 duration-200 origin-top border">
               <div class="px-4 py-3 text-sm text-gray-900">
-                <div><?php echo Session::getUserFullName(); ?></div>
-                <div class="font-medium truncate capitalize"><?php echo Session::getUserAccountType(); ?></div>
+                <div><?= Session::getUserFullName(); ?></div>
+                <div class="font-medium truncate capitalize"><?= Session::getUserAccountType(); ?></div>
               </div>
               <ul class="py-2 text-sm text-gray-700">
                 <li>

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 define('APP_TITLE', $_ENV['APP_TITLE'] ?? 'SMCC Research Hub');
+define('URI_PREFIX', $_ENV['URI_PREFIX'] ?? "");
 
 define('MYSQL_HOST', $_ENV['MYSQL_HOST'] ?? 'localhost');
 define('MYSQL_PORT', $_ENV['MYSQL_POST'] ?? '3306');

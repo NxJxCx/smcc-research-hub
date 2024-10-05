@@ -30,7 +30,7 @@ class Router
   public function __construct()
   {
     $this->method = $_SERVER['REQUEST_METHOD'];
-    $this->uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $this->uri = self::getUriPath();
     $this->query = json_decode(json_encode($_GET), true);
 
     $contentType = $_SERVER['CONTENT_TYPE'] ?? 'Not Set';
@@ -56,9 +56,11 @@ class Router
       $this->publicAssets();
       // check static files
       $paths = array_keys(Router::$Router__routes['STATIC']);
+      Logger::write_debug("PATHS: ". json_encode($paths));
       $matchingPaths = array_filter($paths, function ($path) {
         return str_starts_with($this->uri, $path);
       });
+      Logger::write_debug("STATIC: " . json_encode($matchingPaths));
       if ($matchingPath = reset($matchingPaths)) {
         // static folder found
         $this->staticPage(Router::$Router__routes['STATIC'][$matchingPath][0], strlen($matchingPath), Router::$Router__routes['STATIC'][$matchingPath][1]);
@@ -94,7 +96,8 @@ class Router
           Logger::write_info("{$_SERVER['REQUEST_URI']} (HTTP Response: 200)");
           exit; // if it is a view, exit here
         } else {
-          throw new Exception("Invalid route configuration for route: {$this->uri}");
+          $uri = $this->uri;
+          throw new Exception("Invalid route configuration for route: {$uri}");
         }
       }
       // 404 Not Found
@@ -143,6 +146,21 @@ class Router
       echo 'Error 500 Internal Server Error';
       exit;
     }
+  }
+
+  public static function getPathname(string $pathname) {
+    return URI_PREFIX ? (str_starts_with(URI_PREFIX, "/")
+      ? URI_PREFIX . $pathname
+      : "/" . URI_PREFIX . $pathname)
+    : $pathname;
+  }
+
+  public static function getUriPath()
+  {
+    // trim the URI_PREFIX from the $this->uri
+    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $prefix = URI_PREFIX ? (str_starts_with(URI_PREFIX, "/") ? URI_PREFIX : "/" . URI_PREFIX) : false;
+    return $prefix ? str_replace($prefix, '', $uri) : $uri;
   }
 
   private function publicAssets(): void

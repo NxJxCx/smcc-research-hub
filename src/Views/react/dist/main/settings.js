@@ -1,1 +1,1 @@
-import t from"/jsx/global/settings";export default t;
+export default import(pathname("/jsx/imports")).then((({getAsyncImport:t})=>t("/jsx/global/settings")));

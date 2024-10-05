@@ -1,1 +1,1 @@
-import{ReactDOMServer as r}from"/jsx/imports";export default function t(t){return r.renderToString(t)}
+export default import(pathname("/jsx/imports")).then((({ReactDOMServer:e})=>function(r){return e.renderToString(r)}));

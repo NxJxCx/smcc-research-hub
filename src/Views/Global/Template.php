@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Views\Global;
 
+use Smcc\ResearchHub\Router\Router;
+
 class Template
 {
   static public function default(string $title, callable $method, ?array $data = [], ?string $reactFileName = null)
@@ -14,13 +16,19 @@ class Template
       <main
         id="root"
         class="relative w-full"
-        data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+        data-page-data="<?= htmlspecialchars(json_encode($data)); ?>"
       >
         <?php if (is_callable($method)) { $method($data); }?>
       </main>
       <?php Footer::default(); ?>
+      <script>
+        window.URI_PREFIX = `<?= Router::getPathname("") ?>`;
+        window.pathname = function(path_name) {
+          return `${window.URI_PREFIX}${path_name}`;
+        }
+      </script>
       <?php if (!empty($reactFileName)) { ?>
-        <script type="module" src="<?php echo $reactFileName; ?>"></script>
+        <script type="module" src="<?= $reactFileName; ?>"></script>
       <?php } ?>
     </body>
   <?php
@@ -35,14 +43,20 @@ class Template
       <main
         id="root"
         class="relative w-full"
-        data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+        data-page-data="<?= htmlspecialchars(json_encode($data)); ?>"
       >
         <?php if (is_callable($method)) { $method($data); }?>
       </main>
       <?php Footer::default(); ?>
-      <script type="module" src="/jsx/global/header"></script>
+      <script>
+        window.URI_PREFIX = `<?= Router::getPathname("") ?>`;
+        window.pathname = function(path_name) {
+          return `${window.URI_PREFIX}${path_name}`;
+        }
+      </script>
+      <script type="module" src="<?= Router::getPathname('/jsx/global/header') ?>"></script>
       <?php if (!empty($reactFileName)) { ?>
-      <script type="module" src="<?php echo $reactFileName; ?>"></script>
+      <script type="module" src="<?= $reactFileName; ?>"></script>
       <?php } ?>
     </body>
   <?php
@@ -56,11 +70,17 @@ class Template
       <main
         id="root"
         class="relative w-full min-h-[calc(100vh-100px)]"
-        data-react-app="<?php echo htmlspecialchars($reactAppPath); ?>"
-        data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+        data-react-app="<?= htmlspecialchars($reactAppPath); ?>"
+        data-page-data="<?= htmlspecialchars(json_encode($data)); ?>"
       ></main>
       <?php Footer::default(); ?>
-      <script type="module" src="/jsx/main"></script>
+      <script>
+        window.URI_PREFIX = `<?= Router::getPathname("") ?>`;
+        window.pathname = function(path_name) {
+          return `${window.URI_PREFIX}${path_name}`;
+        }
+      </script>
+      <script type="module" src="<?= Router::getPathname('/jsx/main') ?>"></script>
     </body>
   <?php
   }
@@ -74,12 +94,18 @@ class Template
       <main
         id="root"
         class="relative w-full min-h-[calc(100vh - 160px)]"
-        data-react-app="<?php echo htmlspecialchars(string: $reactAppPath); ?>"
-        data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+        data-react-app="<?= htmlspecialchars($reactAppPath); ?>"
+        data-page-data="<?= htmlspecialchars(json_encode($data)); ?>"
       ></main>
       <?php Footer::default(); ?>
-      <script type="module" src="/jsx/global/header"></script>
-      <script type="module" src="/jsx/main"></script>
+      <script>
+        window.URI_PREFIX = `<?= Router::getPathname("") ?>`;
+        window.pathname = function(path_name) {
+          return `${window.URI_PREFIX}${path_name}`;
+        }
+      </script>
+      <script type="module" src="<?= Router::getPathname('/jsx/global/header') ?>"></script>
+      <script type="module" src="<?= Router::getPathname('/jsx/main') ?>"></script>
     </body>
   <?php
   }
@@ -90,7 +116,7 @@ class Template
   ?>
     <body>
       <div class="container-fluid relative flex max-h-screen overflow-hidden w-full">
-        <aside id="sidebar-nav" class="min-w-[250px] bg-[#262e36] max-h-screen h-screen" data-sidebar-list="<?php echo htmlspecialchars(json_encode($sidebarListData)); ?>">
+        <aside id="sidebar-nav" class="min-w-[250px] bg-[#262e36] max-h-screen h-screen" data-sidebar-list="<?= htmlspecialchars(json_encode($sidebarListData)); ?>">
         <nav class="text-slate-50 bg-[#262e36] max-w-[250px] h-full relative w-[250px]">
           <div class="w-full max-h-[60px] h-[60px] flex items-center justify-center bg-[#21282f]">
             <a href="/" class="flex flex-nowrap h-full w-fit items-center justify-start">
@@ -118,15 +144,21 @@ class Template
           <div
             id="root"
             class="w-full min-h-[calc(100vh-160px)]"
-            data-react-app="<?php echo htmlspecialchars($reactAppPath); ?>"
-            data-page-data="<?php echo htmlspecialchars(json_encode($data)); ?>"
+            data-react-app="<?= htmlspecialchars($reactAppPath); ?>"
+            data-page-data="<?= htmlspecialchars(json_encode($data)); ?>"
           ></div>
           <?php Footer::default(); ?>
         </main>
       </div>
-      <script type="module" src="/jsx/admin/sidebar"></script>
-      <script type="module" src="/jsx/admin/header"></script>
-      <script type="module" src="/jsx/main"></script>
+      <script>
+        window.URI_PREFIX = `<?= Router::getPathname("") ?>`;
+        window.pathname = function(path_name) {
+          return `${window.URI_PREFIX}${path_name}`;
+        }
+      </script>
+      <script type="module" src="<?= Router::getPathname('/jsx/admin/sidebar') ?>"></script>
+      <script type="module" src="<?= Router::getPathname('/jsx/admin/header') ?>"></script>
+      <script type="module" src="<?= Router::getPathname('/jsx/main') ?>"></script>
     </body>
   <?php
   }

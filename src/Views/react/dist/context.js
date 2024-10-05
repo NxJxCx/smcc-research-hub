@@ -1,1 +1,1 @@
-import{React as t}from"/jsx/imports";export const MainContext=t.createContext({});
+export const MainContext=import(pathname("/jsx/imports")).then((({React:t})=>t.createContext({})));

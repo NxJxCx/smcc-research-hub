@@ -1,33 +1,32 @@
-import {
-  React,
-  ReactDOM,
-  ReactPlayerYoutube, // ReactPlayer,
-} from '/jsx/imports';
 
-function VideoPlayer({ url }: { url: string }) {
-  return <ReactPlayerYoutube url={url} width="100%" height="100%" controls />
-  // return <ReactPlayer url={url} width="100%" height="100%" controls /> if you want to use videos from local or from other platforms
-}
-async function fetchVideo() {
-  const url = new URL('/api/home/video', window.location.origin);
-  const response = await fetch(url);
-  const { success, error } = await response.json();
-  if (error) {
-    throw new Error(error);
+
+import(pathname("/jsx/imports")).then(({ React, ReactDOM, ReactPlayerYoutube }) => {
+  function VideoPlayer({ url }: { url: string }) {
+    return <ReactPlayerYoutube url={url} width="100%" height="100%" controls />
+    // return <ReactPlayer url={url} width="100%" height="100%" controls /> if you want to use videos from local or from other platforms
   }
-  return success;
-}
 
-function Video() {
-  const [videoUrl, setVideoUrl] = React.useState('');
-  React.useEffect(() => {
-    fetchVideo().then(setVideoUrl)
-    .catch(console.log);
-  }, [])
+  async function fetchVideo() {
+    const url = new URL('/api/home/video', window.location.origin);
+    const response = await fetch(url);
+    const { success, error } = await response.json();
+    if (error) {
+      throw new Error(error);
+    }
+    return success;
+  }
 
-  return <VideoPlayer url={videoUrl} />
-}
+  function Video() {
+    const [videoUrl, setVideoUrl] = React.useState('');
+    React.useEffect(() => {
+      fetchVideo().then(setVideoUrl)
+      .catch(console.log);
+    }, [])
 
-// @ts-ignore
-const root = ReactDOM.createRoot(document.getElementById("home-video-container"))
-root.render(<Video />)
+    return <VideoPlayer url={videoUrl} />
+  }
+
+  // @ts-ignore
+  const root = ReactDOM.createRoot(document.getElementById("home-video-container"))
+  root.render(<Video />)
+});
