@@ -43,24 +43,51 @@ class ApiController extends Controller
     return Response::json(['success' => $data ?? []]);
   }
 
-  public function editHomeVideo(Request $request): Response
+  public function editHomeAnnouncement(Request $request): Response
   {
     if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
       return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
     }
-    $videoUrl = $request->getBodyParam('videoUrl');
-    if (!$videoUrl) {
-      return Response::json(['error' => 'Video URL is required'], StatusCode::BAD_REQUEST);
+    $announcementId = $request->getBodyParam('id');
+    if (!$announcementId) {
+      return Response::json(['error' => 'ID is required'], StatusCode::BAD_REQUEST);
     }
-    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'videolink', 'link.json']);
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'announcements', 'announcements.json']);
     if (!file_exists($filePath) ||!is_readable($filePath)) {
-      return Response::json(['error' => 'Video link not found'], StatusCode::NOT_FOUND);
+      return Response::json(['error' => 'Announcements Records not found'], StatusCode::NOT_FOUND);
     }
     $data = json_decode(file_get_contents($filePath), true);
-    $data['videoUrl'] = $videoUrl;
-    // write to file again
-    file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
-    return Response::json(['success' => $videoUrl]);
+    foreach($data as $n => $item) {
+      if (strval($item['id']) === strval($announcementId)) {
+        $data[$n] = [...($request->getBody())];
+        // write to file again
+        file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
+        return Response::json(['success' => 'Announcement Edited']);
+      }
+    }
+    return Response::json(['error' => 'Announcement not found'], StatusCode::NOT_FOUND);
+  }
+
+  public function addHomeAnnouncement(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $announcementId = $request->getBodyParam('id');
+    if (!$announcementId) {
+      return Response::json(['error' => 'ID is required'], StatusCode::BAD_REQUEST);
+    }
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'announcements', 'announcements.json']);
+    if (!file_exists($filePath) ||!is_readable($filePath)) {
+      return Response::json(['error' => 'Announcements Records not found'], StatusCode::NOT_FOUND);
+    }
+    $data = json_decode(file_get_contents($filePath), true);
+    $data[] = [...($request->getBody())];
+    if (file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT))) {
+      // write to file again
+      return Response::json(['success' => 'Announcement Posted']);
+    }
+    return Response::json(['error' => 'Announcement failed to post'], StatusCode::NOT_FOUND);
   }
 
   public function studentInfo(Request $request): Response

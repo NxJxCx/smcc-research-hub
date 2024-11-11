@@ -78,7 +78,8 @@ Router::POST('/api/journal/publish', [ApiController::class, 'publishJournal']);
 Router::POST('/api/journal/add/thesis', [ApiController::class, 'journalAddThesis']);
 Router::POST('/api/thesis/markfavorite', [ApiController::class, 'thesisMarkFavorite']);
 Router::POST('/api/downloadables/publish', [ApiController::class, 'publishDownloadables']);
-Router::POST('/api/home/video/edit', [ApiController::class, 'editHomeVideo']);
+Router::POST('/api/home/announcement/edit', [ApiController::class, 'editHomeAnnouncement']);
+Router::POST('/api/home/announcement/add', [ApiController::class, 'addHomeAnnouncement']);
 /* PUT METHOD */
 
 /* PATCH METHOD */

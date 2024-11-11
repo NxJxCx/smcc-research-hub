@@ -16,6 +16,9 @@ class HomePage extends View
       $this->getTitle(),
       function () {
 ?>
+  <div class="flex flex-col justify-center items-center my-10 gap-y-8" id="home-announcement-container">
+    <div class="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-blue-500 border-solid rounded-full animate-spin"></div>
+  </div>
   <div class="flex flex-col justify-center items-center text-center my-8 font-[Poppins] font-[600] text-[48px] leading-[72px] text-[#16507B]">
     <h1>Where Knowledge Meets</h1>
     <h1>Innovation</h1>
@@ -26,8 +29,6 @@ class HomePage extends View
           Explore
       </button>
     </a>
-  </div>
-  <div class="flex flex-col justify-center items-center my-10 gap-y-2" id="home-announcement-container">
   </div>
   <div class="mt-[200px]">
     &nbsp;
