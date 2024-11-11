@@ -1,0 +1,12 @@
+[
+    {
+        "type": "text",
+        "title": "HELLO WORLD",
+        "message": "Welcome!\nHello World!"
+    },
+    {
+        "type": "video",
+        "title": "SMCC VIDEO",
+        "url": "https:\/\/www.youtube.com\/watch?v=i4EHBe7Fltc"
+    }
+]

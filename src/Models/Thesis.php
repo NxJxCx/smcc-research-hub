@@ -15,6 +15,7 @@ class Thesis extends Model
       'year' => ['YEAR', 'NOT NULL'],
       'department' => ['VARCHAR(255)', 'NOT NULL'],
       'course' => ['VARCHAR(255)', 'NOT NULL'],
+      'adviser' => ['VARCHAR(255)', "DEFAULT ''"],
       'url' => ['TEXT', 'NOT NULL'],
       'abstract' => ['TEXT', 'NOT NULL'],
       'is_public' => ['BOOLEAN', 'DEFAULT FALSE'],

@@ -61,7 +61,7 @@ Router::GET('/api/teacher/all', [ApiController::class,'allPersonnels']);
 Router::GET('/api/favorites/all', [ApiController::class,'allFavorites']);
 Router::GET('/api/downloadables/all', [ApiController::class,'allDownloadables']);
 Router::GET('/api/downloadables/available', callable: [ApiController::class,'allAvaiableDownloadables']);
-Router::GET('/api/home/video', [ApiController::class, 'homeVideo']);
+Router::GET('/api/home/announcements', [ApiController::class, 'homeAnnouncements']);
 
 /* POST METHOD */
 Router::POST('/logout', [ApiController::class, 'logout']);

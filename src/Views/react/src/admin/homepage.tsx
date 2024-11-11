@@ -1,15 +1,14 @@
-import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2 }) => {
-
-  async function fetchVideo() {
-    const url = new URL(pathname('/api/home/video'), window.location.origin);
-    const response = await fetch(url);
-    const { success, error } = await response.json();
-    if (error) {
-      throw new Error(error);
-    }
-    return success;
+async function fetchVideo() {
+  const url = new URL(pathname('/api/home/video'), window.location.origin);
+  const response = await fetch(url);
+  const { success, error } = await response.json();
+  if (error) {
+    throw new Error(error);
   }
+  return success;
+}
 
+export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2 }) => {
   return function HomepageManagementPage() {
     const [edit, setEdit] = React.useState(false);
     const [videoUrl, setVideoUrl] = React.useState('');

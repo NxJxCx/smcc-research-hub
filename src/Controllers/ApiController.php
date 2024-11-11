@@ -33,14 +33,14 @@ class ApiController extends Controller
     return Response::json(['message' => 'API Test Successful']);
   }
 
-  public function homeVideo(): Response
+  public function homeAnnouncements(): Response
   {
-    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'videolink', 'link.json']);
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'announcements', 'announcements.json']);
     if (!file_exists($filePath) ||!is_readable($filePath)) {
-      return Response::json(['error' => 'Video link not found'], StatusCode::NOT_FOUND);
+      return Response::json(['error' => 'Announcements not found'], StatusCode::NOT_FOUND);
     }
     $data = json_decode(file_get_contents($filePath), true);
-    return Response::json(['success' => $data['videoUrl'] ?? '']);
+    return Response::json(['success' => $data ?? []]);
   }
 
   public function editHomeVideo(Request $request): Response
