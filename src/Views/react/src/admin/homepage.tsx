@@ -10,7 +10,12 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
     if (error) {
       throw new Error(error);
     }
-    return success;
+    return [...(success.toSorted(
+      (a: Announcement, b: Announcement) => {
+        const ae = (new Date(a.expires)).getTime();
+        const be = (new Date(b.expires)).getTime();
+        return ae > be ? -1 : ae < be ? 1 : 0;
+      }))];
   }
 
   function genHexString(len = 24) {

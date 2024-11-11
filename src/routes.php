@@ -91,7 +91,7 @@ Router::DELETE('/api/journal/remove/thesis', [ApiController::class, 'deleteJourn
 Router::DELETE('/api/student/delete', [ApiController::class, 'deleteStudent']);
 Router::DELETE('/api/teacher/delete', [ApiController::class, 'deletePersonnel']);
 Router::DELETE('/api/downloadables/delete', [ApiController::class, 'deleteDownloadable']);
-Router::POST('/api/home/announcement/delete', [ApiController::class, 'deleteHomeAnnouncement']);
+Router::DELETE('/api/home/announcement/delete', [ApiController::class, 'deleteHomeAnnouncement']);
 
 /* ERROR PAGES */
 Router::NOTFOUND([ViewController::class, 'notFound']);
