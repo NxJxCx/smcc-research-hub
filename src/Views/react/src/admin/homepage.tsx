@@ -464,7 +464,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
                 <div className="text-xl py-3 px-4  border-b text-blue-500 font-semibold flex justify-between flex-nowrap">
                   <h2>{announcement.title}</h2>
                   <div className="flex flex-nowrap gap-x-2">
-                    <button type="button" onClick={() => onDelete(announcement)} className="text-sm bg-red-100 hover:bg-red-200 text-black shadow">Delete</button>
+                    <button type="button" onClick={() => onDelete(announcement)} className="px-2 text-sm bg-red-100 hover:bg-red-200 text-black shadow">Delete</button>
                     <button type="button" onClick={() => onEditModal(announcement)} className="text-sm bg-yellow-100 hover:bg-yellow-200 text-black shadow">Edit</button>
                   </div>
                 </div>
@@ -481,7 +481,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
                 <div className="text-xl py-3 px-4 border-b  text-blue-500 font-semibold flex justify-between flex-nowrap">
                   <h2>{announcement.title}</h2>
                   <div className="flex flex-nowrap gap-x-2">
-                    <button type="button" onClick={() => onDelete(announcement)} className="text-sm bg-red-100 hover:bg-red-200 text-black shadow">Delete</button>
+                    <button type="button" onClick={() => onDelete(announcement)} className="px-2 text-sm bg-red-100 hover:bg-red-200 text-black shadow">Delete</button>
                     <button type="button" onClick={() => onEditModal(announcement)} className="text-sm bg-yellow-100 hover:bg-yellow-200 text-black shadow">Edit</button>
                   </div>
                 </div>
