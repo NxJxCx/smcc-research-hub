@@ -90,6 +90,29 @@ class ApiController extends Controller
     return Response::json(['error' => 'Announcement failed to post'], StatusCode::NOT_FOUND);
   }
 
+  public function deleteHomeAnnouncement(Request $request): Response
+  {
+    if (!RouterSession::isAuthenticated() || RouterSession::getUserAccountType() !== 'admin') {
+      return Response::json(['error' => 'Not authenticated.'], StatusCode::UNAUTHORIZED);
+    }
+    $announcementId = $request->getBodyParam('id');
+    if (!$announcementId) {
+      return Response::json(['error' => 'ID is required'], StatusCode::BAD_REQUEST);
+    }
+    $filePath = implode(DIRECTORY_SEPARATOR, [UPLOADS_PATH, 'announcements', 'announcements.json']);
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+      return Response::json(['error' => 'Announcements Records not found'], StatusCode::NOT_FOUND);
+    }
+    $data = json_decode(file_get_contents($filePath), true);
+    $data = [...(array_filter($data, function($d) use($announcementId) {
+      return strval($d['id']) !== strval($announcementId);
+    }))];
+    if (file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT))) {
+      // write to file again
+      return Response::json(['success' => 'Announcement Posted']);
+    }
+    return Response::json(['error' => 'Announcement failed to post'], StatusCode::NOT_FOUND);
+  }
   public function studentInfo(Request $request): Response
   {
     $q = $request->getQueryParam("q");

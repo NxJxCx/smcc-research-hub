@@ -411,6 +411,47 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
       }
     }, []);
 
+    const onDelete = React.useCallback((data: Announcement) => {
+      Sweetalert2.fire({
+        title: 'Delete Announcement',
+        text: "Are you sure you want to delete this announcement?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete announcement!'
+      }).then(({ isConfirmed }: any) => {
+        if (isConfirmed) {
+          const url = new URL(pathname("/api/announcement/delete"), window.location.origin);
+          const body = JSON.stringify({ id: data.id });
+          fetch(url,{
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body,
+          })
+            .then(response => response.json())
+            .then(({ success, error }) => {
+              if (error) {
+                throw new Error(error)
+              }
+              Sweetalert2.fire({
+                icon:'success',
+                title: 'Announcement Deleted',
+                text: success,
+                toast: true,
+                showConfirmButton: false,
+                position: 'center',
+                timer: 2000,
+              })
+              fetchAnnouncements().then(setAnnouncements).catch(console.log)
+            })
+            .catch(console.error)
+        }
+      });
+    }, []);
+
     return (
       <div className="w-full min-h-[calc(100vh-160px)] h-fit bg-[#37414e] p-4 min-w-fit">
         <h1 className="text-white text-2xl my-2">Manage Homepage</h1>
@@ -422,7 +463,10 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
               <div key={announcement.id} className="w-[500px] md:w-[700px] lg:w-[1000px] min-w-[500px] bg-gray-100 border-l-2 border-blue-500 rounded">
                 <div className="text-xl py-3 px-4  border-b text-blue-500 font-semibold flex justify-between flex-nowrap">
                   <h2>{announcement.title}</h2>
-                  <div><button type="button" onClick={() => onEditModal(announcement)} className="text-sm bg-yellow-100 hover:bg-yellow-200 text-black shadow">Edit</button></div>
+                  <div className="flex flex-nowrap gap-x-2">
+                    <button type="button" onClick={() => onDelete(announcement)} className="text-sm bg-red-100 hover:bg-red-200 text-black shadow">Delete</button>
+                    <button type="button" onClick={() => onEditModal(announcement)} className="text-sm bg-yellow-100 hover:bg-yellow-200 text-black shadow">Edit</button>
+                  </div>
                 </div>
                 <div className="text-center p-3 text-slate-900 my-3">
                   {announcement.message?.split("\n").map((v: any) => <>{v}<br /></> || "")}
