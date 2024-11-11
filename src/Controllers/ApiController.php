@@ -109,9 +109,9 @@ class ApiController extends Controller
     }))];
     if (file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT))) {
       // write to file again
-      return Response::json(['success' => 'Announcement Posted']);
+      return Response::json(['success' => 'Announcement Removed']);
     }
-    return Response::json(['error' => 'Announcement failed to post'], StatusCode::NOT_FOUND);
+    return Response::json(['error' => 'Announcement failed to remove'], StatusCode::NOT_FOUND);
   }
   public function studentInfo(Request $request): Response
   {

@@ -422,7 +422,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
         confirmButtonText: 'Yes, delete announcement!'
       }).then(({ isConfirmed }: any) => {
         if (isConfirmed) {
-          const url = new URL(pathname("/api/announcement/delete"), window.location.origin);
+          const url = new URL(pathname("/api/home/announcement/delete"), window.location.origin);
           const body = JSON.stringify({ id: data.id });
           fetch(url,{
             method: 'DELETE',
