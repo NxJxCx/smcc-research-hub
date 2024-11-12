@@ -1,7 +1,7 @@
 interface Announcement { id: string, type: "text"|"video", title: string, url?: string, message?:string, expires: string }
 
 
-export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, ReactPlayerYoutube }) => {
+export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, ReactPlayerYoutube, parseMarkup, purifyHTML }) => {
 
   async function fetchAnnouncements() {
     const url = new URL(pathname('/api/home/announcements'), window.location.origin);
@@ -89,7 +89,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
                 })
                 .then((step3: any) => {
                   if (step3.isConfirmed && step3.value) {
-                    const message = step3.value;
+                    const message = purifyHTML(step3.value);
                     // Set the expiration date
                     Sweetalert2.fire({
                       title: "Set Expiration Date",
@@ -237,7 +237,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
           }
         }
       });
-    }, []);
+    }, [purifyHTML]);
 
     const onEditModal = React.useCallback((data: Announcement) => {
       if (data.type === "text") {
@@ -264,7 +264,8 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
             })
             .then((step3: any) => {
               if (step3.isConfirmed && step3.value) {
-                const message = step3.value;
+                const message = purifyHTML(step3.value);
+                console.log(message);
                 // Set the expiration date
                 Sweetalert2.fire({
                   title: "Set Expiration Date",
@@ -414,7 +415,7 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
             }
           });
       }
-    }, []);
+    }, [purifyHTML]);
 
     const onDelete = React.useCallback((data: Announcement) => {
       Sweetalert2.fire({
@@ -473,8 +474,8 @@ export default import(pathname("/jsx/imports")).then(({ React, Sweetalert2, Reac
                     <button type="button" onClick={() => onEditModal(announcement)} className="px-2 text-sm bg-yellow-100 hover:bg-yellow-200 text-black shadow">Edit</button>
                   </div>
                 </div>
-                <div className="text-center p-3 text-slate-900 my-3">
-                  {announcement.message?.split("\n").map((v: any) => <>{v}<br /></> || "")}
+                <div className="text-center p-3 text-slate-900 my-3 announcement">
+                  {parseMarkup(announcement.message)?.split("\n").map((v: any) => <><span dangerouslySetInnerHTML={{ __html: v }} /><br /></> || "")}
                 </div>
                 <div className="text-left py-1 text-slate-700 my-3 text-sm italic px-3 border-t">
                   {checkExpired(announcement.expires) ? <span className="text-red-700 font-bold">EXPIRED</span> : <>Expires on {(new Date(announcement.expires)).toLocaleDateString('en-PH', { month: "long", day: "numeric", year: "numeric" })}</>}

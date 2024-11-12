@@ -1,1 +1,0 @@
-export default import(pathname("/jsx/imports")).then((({React:t})=>{const e=t.createContext({});return{MainContext:e,Context:function({children:a,pageData:r={},rootDOM:n}){const[o,s]=t.useState(JSON.parse(r||"{}"));return t.useEffect((()=>{s(JSON.parse(n?.dataset?.pageData||"{}"))}),[n?.dataset?.pageData]),t.createElement(e.Provider,{value:o},a)}}}));

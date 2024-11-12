@@ -1,7 +1,6 @@
 const { spawn } = require('child_process');
-const path = require('path');
 const fs = require('fs');
-const tscOutputDir = 'jsxbuild';
+const tscOutputDir = './src/Views/react/dist';
 
 // Helper function to run a command and log its output
 function runCommand(command, args = [], options = {}) {
@@ -32,9 +31,9 @@ async function main() {
 
     await new Promise((resolve) => setTimeout(resolve, 8000)); // Wait for 8 second before starting other watchers
 
-    console.log('Compiling ESM React Modules watcher...');
+    // console.log('Compiling ESM React Modules watcher...');
     // Run the custom compile script in watch mode
-    runCommand('node', ['compile.js']);
+    // runCommand('node', ['compile.js']);
 }
 
 // Execute the main function

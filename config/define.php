@@ -25,7 +25,7 @@ define('JWT_SECRET_KEY', $_ENV['JWT_SECRET_KEY'] ?? 'researchhub_secret_key');
 // set DISPLAY_ERRORS to false if in production environment to hide error messages
 define('DISPLAY_ERRORS', $_ENV['DISPLAY_ERRORS'] ?? true);
 
-define('MIMETYPES', [
+define('MIMETYPES', value: [
   '' => 'application/octet-stream',
   '.txt' => 'text/plain',
   '.jpg' => 'image/jpeg',

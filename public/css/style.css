@@ -113,3 +113,63 @@
     padding-top: 110px;
   }
 }
+
+/* Apply styles only within elements with the class "announcement" */
+
+/* Bold (b) */
+.announcement b {
+  font-weight: bold;
+}
+
+/* Italic (i) */
+.announcement i {
+  font-style: italic;
+}
+
+/* Header (h1) */
+.announcement h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  color: #212529; /* Default dark color */
+}
+
+/* Image (img) */
+.announcement img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Anchor (a) */
+.announcement a {
+  color: #007bff; /* Default primary color */
+  text-decoration: none; /* By default, remove underline */
+}
+
+.announcement a:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+/* Unordered List (ul) */
+.announcement ul {
+  list-style-type: disc; /* Default bullet style */
+  margin-left: 1.5rem;
+}
+
+/* Ordered List (ol) */
+.announcement ol {
+  list-style-type: decimal; /* Numbered list */
+  margin-left: 1.5rem;
+}
+
+/* Underline (u) */
+.announcement u {
+  text-decoration: underline;
+}
+
+/* Strikethrough (s) */
+.announcement strike {
+  text-decoration: line-through;
+}

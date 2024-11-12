@@ -1,14 +1,14 @@
 // @ts-nocheck
-import { Scanner as ReactQrScanner } from "https://esm.sh/@yudiel/react-qr-scanner@2.0.4";
-import confetti from "https://esm.sh/canvas-confetti@1.9.3";
-import clsx from "https://esm.sh/clsx@2.1.1";
-import ReactDOM from "https://esm.sh/react-dom@18.3.1/client";
-import ReactDOMServer from "https://esm.sh/react-dom@18.3.1/server";
-import * as ReactPDF from "https://esm.sh/react-pdf@9.1.0";
-import ReactPlayer from "https://esm.sh/react-player@2.16.0";
-import ReactPlayerYoutube from "https://esm.sh/react-player@2.16.0/youtube";
-import React from "https://esm.sh/react@18.3.1";
-import Sweetalert2 from "https://esm.sh/sweetalert2@11.12.4";
+import { Scanner as ReactQrScanner } from "@yudiel/react-qr-scanner";
+import clsx from "clsx";
+import React from "react";
+import ReactDOM from "react-dom";
+import ReactDOMServer from "react-dom/server";
+import * as ReactPDF from "react-pdf";
+import ReactPlayer from "react-player";
+import ReactPlayerYoutube from "react-player/youtube";
+import sanitizeHTML from "sanitize-html";
+import Sweetalert2 from "sweetalert2";
 
 async function getAsyncImport(path: string): Promise<any>
 {
@@ -21,8 +21,71 @@ ReactPDF.pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString()
 
+function parseMarkup(inputString: string): string {
+  if (!inputString) return "";
+
+
+  // Replace custom markup tags with corresponding HTML tags
+  inputString = inputString.replace(/\[b\](.*?)\[\/b\]/g, '<b>$1</b>');        // Bold
+  inputString = inputString.replace(/\[i\](.*?)\[\/i\]/g, '<i>$1</i>');        // Italic
+  inputString = inputString.replace(/\[h\](.*?)\[\/h\]/g, "<h1>$1</h1>");      // Header
+  inputString = inputString.replace(/\[u\](.*?)\[\/u\]/g, '<u>$1</u>');        // Underline
+  inputString = inputString.replace(/\[s\](.*?)\[\/s\]/g, '<strike>$1</strike>'); // Strikethrough
+  inputString = inputString.replace(/\[c\](.*?)\[\/c\]/g, '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center;">$1</div>'); // center
+  inputString = inputString.replace(/\[r\](.*?)\[\/r\]/g, '<div style="display: flex; justify-content: end; align-items: center; height: 100vh; text-align: right;">$1</div>'); // right align
+  inputString = inputString.replace(/\[l\](.*?)\[\/l\]/g, '<div style="display: flex; justify-content: start; align-items: center; height: 100vh; text-align: left;">$1</div>'); // left align
+
+  // Image tag replacement
+  inputString = inputString.replace(/\[img=(https?:\/\/[^ ]+)\](.*?)\[\/img\]/g, '<img src="$1" alt="$2" />'); // Image
+
+  // Anchor (link) tag replacement
+  inputString = inputString.replace(/\[a=([^\]]+)\](.*?)\[\/a\]/g, (match, url, text) => {
+    // Handle relative and absolute URLs
+    let href = url.trim();
+
+    if (href.startsWith('http://') || href.startsWith('https://')) {
+      // Keep the absolute link as it is
+      return `<a href="${href}" target="_blank">${text}</a>`;
+    } else if (href.startsWith('/') || href.startsWith('./')) {
+      // Prepend the origin for relative paths
+      href = window.location.origin + href;
+      return `<a href="${href}" target="_blank">${text}</a>`;
+    } else {
+      // If it doesn't start with http/https, assume it's a relative link and prepend "https://"
+      href = 'https://' + href;
+      return `<a href="${href}" target="_blank">${text}</a>`;
+    }
+  });
+
+
+  // Function to handle unordered and ordered lists with nested [ul] and [ol]
+  function replaceListTags(input, tag) {
+    const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)\\[\\/(${tag})\\]`, 'g');
+    return input.replace(regex, (match, content) => {
+      // Recursively replace [ul] and [ol] within list items
+      content = content
+        .replace(/\[li\](.*?)\[\/li\]/g, '<li>$1</li>'); // Replace [li] with <li>
+      return `<${tag}>${content}</${tag}>`; // Wrap the list content in <ul> or <ol>
+    });
+  }
+
+  // Replace [ul] and [ol] with corresponding HTML tags
+  inputString = replaceListTags(inputString, 'ul');
+  inputString = replaceListTags(inputString, 'ol');
+
+  // Return the transformed HTML
+  return inputString;
+}
+
+function purifyHTML(inputString: string) {
+  const clean = sanitizeHTML(inputString, {
+    allowedTags: [], // No tags allowed, effectively removing all HTML
+  });
+  console.log(clean);
+  return clean;
+}
 export {
-  clsx, confetti, getAsyncImport, React,
+  clsx, getAsyncImport, parseMarkup, purifyHTML, React,
   ReactDOM, ReactDOMServer, ReactPDF, ReactPlayer,
   ReactPlayerYoutube,
   ReactQrScanner, Sweetalert2
@@ -32,13 +95,14 @@ const imports = {
   React,
   ReactDOM,
   ReactDOMServer,
-  confetti,
   ReactPlayer,
   ReactPlayerYoutube,
   ReactQrScanner,
   Sweetalert2,
   ReactPDF,
   getAsyncImport,
-  clsx
+  clsx,
+  purifyHTML,
+  parseMarkup
 }
 export default imports

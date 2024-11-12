@@ -1,6 +1,6 @@
 
 
-import(pathname("/jsx/imports")).then(({ React, ReactDOM, ReactPlayerYoutube }) => {
+import(pathname("/jsx/imports")).then(({ React, ReactDOM, ReactPlayerYoutube, parseMarkup }) => {
   function VideoPlayer({ url }: { url: string }) {
     return <ReactPlayerYoutube url={url} width="100%" height="100%" controls />
     // return <ReactPlayer url={url} width="100%" height="100%" controls /> if you want to use videos from local or from other platforms
@@ -55,8 +55,8 @@ import(pathname("/jsx/imports")).then(({ React, ReactDOM, ReactPlayerYoutube }) 
         {announcement.type === "text" && !checkExpired(announcement.expires) && (
           <div className="w-[500px] md:w-[700px] lg:w-[1000px] min-w-[500px] bg-gray-100 border-l-2 border-blue-500 rounded">
             <div className="text-xl py-3 px-4  border-b text-blue-500 font-semibold"><h2>{announcement.title}</h2></div>
-            <div className="text-center p-3 text-slate-900 my-3">
-              {announcement.message?.split("\n").map((v: any) => <>{v}<br /></> || "")}
+            <div className="text-center p-3 text-slate-900 my-3 announcement">
+              {parseMarkup(announcement.message)?.split("\n").map((v: any) => <><span dangerouslySetInnerHTML={{ __html: v }} /><br /></> || "")}
             </div>
           </div>
         )}

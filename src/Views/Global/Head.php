@@ -29,6 +29,22 @@ class Head
       <!-- Tailwind Minified CSS -->
       <link type="text/css" rel="stylesheet" href="<?= Router::getPathname('/css/style.css') ?>" />
       <link type="text/css" rel="stylesheet" href="<?= Router::getPathname('/css/main.min.css') ?>" />
+      <script type="importmap">
+        {
+          "imports": {
+            "react": "https://esm.sh/react@18.3.1",
+            "react-dom": "https://esm.sh/react-dom@18.3.1/client",
+            "react-dom/server": "https://esm.sh/react-dom@18.3.1/server",
+            "@yudiel/react-qr-scanner": "https://esm.sh/@yudiel/react-qr-scanner@2.0.4",
+            "clsx": "https://esm.sh/clsx@2.1.1",
+            "react-pdf": "https://esm.sh/react-pdf@9.1.0",
+            "react-player": "https://esm.sh/react-player@2.16.0",
+            "react-player/youtube": "https://esm.sh/react-player@2.16.0/youtube",
+            "sweetalert2": "https://esm.sh/sweetalert2@11.12.4",
+            "sanitize-html": "https://esm.sh/sanitize-html@2.13.1"
+          }
+        }
+      </script>
     </head>
 <?php
   }

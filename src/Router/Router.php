@@ -188,7 +188,6 @@ class Router
   {
     $filePath = implode(DIRECTORY_SEPARATOR, [$diskPath, substr($this->uri, $offset + 1)]);
     $info = pathinfo($filePath);
-
     if (empty($info['extension'])) {
       // no file extension
       // then try adding $ignoreExtension to the end of the path

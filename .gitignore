@@ -6,4 +6,5 @@
 /uploads/**/*.log
 /uploads/downloadable/**/*.*
 /uploads/thumbnail/**/*.*
+/src/Pages/react/dist
 .env*.local
