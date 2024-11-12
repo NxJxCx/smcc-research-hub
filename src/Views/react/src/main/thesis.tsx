@@ -5,8 +5,14 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
   const { default: PdfViewer } = await getAsyncImport("/jsx/global/pdfviewer");
   const { default: SearchHeaderInput } = await getAsyncImport("/jsx/main/search");
 
+  enum ViewLayout {
+    GRID = "grid",
+    LIST = "list",
+  }
+
   function ThumbnailThesis({
     id,
+    viewLayout,
     title,
     abstract,
     author,
@@ -19,6 +25,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     onRefresh,
   }: {
     id: string|number;
+    viewLayout: ViewLayout;
     title: string;
     abstract: string;
     author: string;
@@ -79,32 +86,55 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
       onViewPdf && onViewPdf(uri, title, author + ' (' + year + ')')
     }, [url, onViewPdf, id])
 
-    return (<>
-      <div onClick={handleView} className="text-center relative cursor-pointer border rounded-lg p-4 w-[400px]">
-        {authenticated && authData?.account !== 'admin' && (
-          <button type="button" onClick={handleFavoriteClick} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
-            {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
-            {!favorite && <span className="material-symbols-outlined">bookmark</span>}
-          </button>
-        )}
-        <div className="h-[75px] pt-4 px-4 font-bold leading-tight">
-          {title}
+    if (viewLayout === ViewLayout.GRID) {
+      return (<>
+        <div onClick={handleView} className="text-center relative cursor-pointer border rounded-lg p-4 w-[400px]">
+          {authenticated && authData?.account !== 'admin' && (
+            <button type="button" onClick={handleFavoriteClick} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
+              {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
+              {!favorite && <span className="material-symbols-outlined">bookmark</span>}
+            </button>
+          )}
+          <div className="h-[75px] pt-4 px-4 font-bold leading-tight">
+            {title}
+          </div>
+          <div className="h-[150px] mb-2 text-justify px-4 leading-tight indent-8">
+            {abstract.substring(0, Math.min(320, abstract.length))}...
+          </div>
+          <div className="pt-4 px-2 leading-tight text-gray-700 italic">
+            {author} ({year})
+          </div>
+          <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600">
+            {course}
+          </div>
+          <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600 text-right">
+            <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
+            <div className="inline pb-1 font-[500]">{totalViews}</div>
+          </div>
         </div>
-        <div className="h-[150px] mb-2 text-justify px-4 leading-tight indent-8">
-          {abstract.substring(0, Math.min(320, abstract.length))}...
+      </>)
+    } else {
+      // list view
+      return (<>
+        <div onClick={handleView} className="px-4 lg:px-8 py-2 cursor-pointer flex justify-between items-center gap-x-4 w-full bg-gray-200 hover:bg-gray-50 rounded flex-nowrap">
+          <div className="flex-grow px-4 font-bold leading-tight">
+            {title}
+          </div>
+          <div className="flex-shrink px-2 text-sm italic text-gray-600 text-right flex flex-nowrap items-center h-full gap-x-1">
+            <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
+            <div className="pb-1 font-[500]">{totalViews}</div>
+          </div>
+          <div className="flex-shrink">
+            {authenticated && authData?.account !== 'admin' && (
+              <button type="button" onClick={handleFavoriteClick} className="hover:text-yellow-500">
+                {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
+                {!favorite && <span className="material-symbols-outlined">bookmark</span>}
+              </button>
+            )}
+          </div>
         </div>
-        <div className="pt-4 px-2 leading-tight text-gray-700 italic">
-          {author} ({year})
-        </div>
-        <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600">
-          {course}
-        </div>
-        <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600 text-right">
-          <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
-          <div className="inline pb-1 font-[500]">{totalViews}</div>
-        </div>
-      </div>
-    </>)
+      </>)
+    }
   }
 
   return function Thesis() {
@@ -118,10 +148,27 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     }, [])
 
     const [data, setData] = React.useState([])
+    const [viewLayout, setViewLayout] = React.useState(ViewLayout.GRID) // "grid" | "list" (ViewLayout)
+
+    const yearsList = React.useMemo(() => {
+      const allYears = data?.map((v: any) => Number.parseInt(v.year)) || [];
+      if (!allYears.includes((new Date()).getFullYear())) {
+        allYears.push((new Date()).getFullYear());
+      }
+      const minYear = Math.min(...allYears);
+      const maxYear = Math.max(...allYears);
+      return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i).reverse();
+    }, [data]);
 
     const [selectedDepartment, setSelectedDepartment] = React.useState(Departments.CCIS);
+    const [selectedYears, setSelectedYears] = React.useState(Object.fromEntries(Object.keys(Departments).map((dep) => [Departments[dep], (new Date()).getFullYear().toString()])));
 
-    const displayData = React.useMemo(() => data.filter((item: any) => item.department?.toString().toLowerCase() === selectedDepartment.toString().toLowerCase() && ((!search || item.title.toLowerCase().includes(search)) || item.abstract.toLowerCase().includes(search) || item.author.toLowerCase().includes(search) || item.year.toString().includes(search))), [data, selectedDepartment, search])
+    const displayData = React.useMemo(() => data.filter(
+      (item: any) => item.department?.toString().toLowerCase() === selectedDepartment.toString().toLowerCase()
+        && ((!search || item.title.toLowerCase().includes(search)) || item.abstract.toLowerCase().includes(search) || item.author.toLowerCase().includes(search) || item.year.toString().includes(search))
+        && (!!selectedYears[item.department?.toString()] && selectedYears[item.department?.toString()].toString() === item.year?.toString())
+      )
+    , [data, selectedDepartment, selectedYears, search])
 
     const [page, setPage] = React.useState(1)
     const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])
@@ -162,16 +209,20 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
       setPdfTitle(title);
       setPdfUrl(uri);
       setPdfAuthor(author);
-    }, [])
+    }, []);
 
     return (<>
       <div className="flex py-4 px-8 mt-4">
         <div className="flex-grow mt-3">
-          <h1 className="text-2xl font-bold text-center">Theses/Capstone</h1>
+          <div className="relative">
+            <h1 className="text-2xl font-bold text-center">Theses/Capstone</h1>
+            <button type="button" onClick={() => setViewLayout(viewLayout === ViewLayout.LIST ? ViewLayout.GRID : ViewLayout.LIST)} title="Switch View Layout" className="absolute right-2 top-1/4 aspect-square text-slate-600/90 hover:text-slate-800/90 hover:bg-black/10 rounded p-1"><span className="material-symbols-outlined">{viewLayout === ViewLayout.LIST ? "view_list" : "grid_view"}</span></button>
+          </div>
           <div className="flex flex-wrap p-4 gap-4">
             { !!selectedDepartment && finalDisplay?.map((item: any) => (
               <ThumbnailThesis
                 key={item.id}
+                viewLayout={viewLayout}
                 id={item.id}
                 title={item.title}
                 abstract={item.abstract}
@@ -196,21 +247,6 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
           </div>
         </div>
         <div className="min-w-[326px] max-w-[326px] h-[600px] flex flex-col">
-          <div className="min-h-[400px] flex-grow">
-            <div className="font-bold text-xl mb-4 w-full">
-              Categories
-            </div>
-            {Object.entries(Departments).map(([key, value]) => (
-              <button
-                key={key}
-                type="button"
-                className={clsx(`flex items-center px-4 py-2 text-left`, selectedDepartment === value ? "bg-gray-200 font-bold" : "hover:bg-gray-300")}
-                onClick={() => setSelectedDepartment(value)}
-              >
-                {value as any}
-              </button>
-            ))}
-          </div>
           <div className="flex-shrink text-slate-700 font-[600] w-full mb-3">
             <SearchHeaderInput search={search} onSearch={onSearch} />
           </div>
@@ -233,6 +269,30 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
             <button type="button" className="p-1 hover:text-yellow-700" onClick={prevPage}>{"<"} Prev</button>
             <button type="button" className="p-1 hover:text-yellow-700" onClick={nextPage}>Next {">"}</button>
             <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages)}>{">>"}</button>
+          </div>
+          <div className="min-h-[400px] flex-grow pt-2 border-t">
+            <div className="font-bold text-xl mb-4 w-full">
+              Categories
+            </div>
+            {Object.entries(Departments).map(([key, value]: any) => (
+              <div key={key} className="flex items-center px-4 py-2 text-left flex-nowrap relative">
+                <button
+                  key={key}
+                  type="button"
+                  className={clsx(`flex items-center pl-4 py-2 pr-[70px] text-left text-sm flex-nowrap flex-grow`, selectedDepartment === value ? "font-bold" : "")}
+                  onClick={() => setSelectedDepartment(value)}
+                >
+                  {value}
+                </button>
+                <select className="max-w-16 p-1 text-sm absolute right-4 top-1/4" value={selectedYears[value?.toString()] || ""} onChange={(e) => !!Object.keys(selectedYears).includes && setSelectedYears((prev: any) => ({...prev, [value.toString()]: e.target.value}))}>
+                  {yearsList.map((yr: number) => (
+                    <option key={"year__" + yr} value={yr}>
+                      {yr}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
           </div>
         </div>
       </div>

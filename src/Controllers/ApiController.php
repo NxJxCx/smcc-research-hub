@@ -113,6 +113,50 @@ class ApiController extends Controller
     }
     return Response::json(['error' => 'Announcement failed to remove'], StatusCode::NOT_FOUND);
   }
+
+  public function homeMostViews(Request $request): Response
+  {
+    try {
+      $db = Database::getInstance();
+      $thesisStudents = $db->getAllRows(ThesisReads::class);
+      $thesisPersonnels = $db->getAllRows(ThesisPersonnelReads::class);
+      $allThesisReads = array_merge($thesisStudents, $thesisPersonnels);
+      $frequencies = [];
+      foreach ($allThesisReads as $read) {
+        $thesisId = $read->thesis_id;
+        $thesis = $db->fetchOne(Thesis::class, [(new Thesis())->getPrimaryKey() => $thesisId]);
+        if ($thesis) {
+          if (!isset($frequencies[strval($thesisId)])) {
+            $frequencies[strval($thesisId)] = [
+              'id' => $thesisId,
+              'title' => $thesis->title,
+              'views' => 1,
+              'url' => $thesis->url,
+              'author' => $thesis->author,
+              'year' => $thesis->year,
+            ];
+          } else {
+            $frequencies[strval($thesisId)]['views']++;
+          }
+        }
+      }
+      $results = [];
+      for($i = 0; $i < 5; $i++) {
+        if (!empty($frequencies)) {
+          $keys = array_keys($frequencies);
+          $max_key = array_reduce($keys, function ($prev, $kf) use ($frequencies) {
+            return $prev === "0" ? $kf : ($frequencies[$kf]['views'] > $frequencies[$prev]['views'] ? $kf : $prev);
+          }, "0");
+          $results[] = $frequencies[$max_key];
+          unset($frequencies[$max_key]);
+        } else break;
+      }
+      return Response::json(['success' => $results]);
+    } catch (\Exception $e) {
+      return Response::json(['error' => $e->getMessage()]);
+    }
+  }
+
   public function studentInfo(Request $request): Response
   {
     $q = $request->getQueryParam("q");
