@@ -31,9 +31,9 @@ function parseMarkup(inputString: string): string {
   inputString = inputString.replace(/\[h\](.*?)\[\/h\]/g, "<h1>$1</h1>");      // Header
   inputString = inputString.replace(/\[u\](.*?)\[\/u\]/g, '<u>$1</u>');        // Underline
   inputString = inputString.replace(/\[s\](.*?)\[\/s\]/g, '<strike>$1</strike>'); // Strikethrough
-  inputString = inputString.replace(/\[c\](.*?)\[\/c\]/g, '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center;">$1</div>'); // center
-  inputString = inputString.replace(/\[r\](.*?)\[\/r\]/g, '<div style="display: flex; justify-content: end; align-items: center; height: 100vh; text-align: right;">$1</div>'); // right align
-  inputString = inputString.replace(/\[l\](.*?)\[\/l\]/g, '<div style="display: flex; justify-content: start; align-items: center; height: 100vh; text-align: left;">$1</div>'); // left align
+  inputString = inputString.replace(/\[c\](.*?)\[\/c\]/g, '<div class="center">$1</div>'); // center
+  inputString = inputString.replace(/\[r\](.*?)\[\/r\]/g, '<div class="left">$1</div>'); // right align
+  inputString = inputString.replace(/\[l\](.*?)\[\/l\]/g, '<div class="right">$1</div>'); // left align
 
   // Image tag replacement
   inputString = inputString.replace(/\[img=(https?:\/\/[^ ]+)\](.*?)\[\/img\]/g, '<img src="$1" alt="$2" />'); // Image

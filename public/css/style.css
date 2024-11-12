@@ -173,3 +173,31 @@
 .announcement strike {
   text-decoration: line-through;
 }
+
+
+/* Center Align */
+.announcement .center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+/* Right Align */
+.announcement .right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100vh;
+  text-align: right;
+}
+
+/* Left Align */
+.announcement .left {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  text-align: left;
+}
