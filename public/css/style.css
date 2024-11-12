@@ -137,7 +137,7 @@
 
 /* Image (img) */
 .announcement img {
-  max-width: 100%;
+  max-width: 300px;
   height: auto;
   display: block;
 }
@@ -180,7 +180,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   text-align: center;
 }
 
@@ -189,7 +188,6 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  height: 100vh;
   text-align: right;
 }
 
@@ -198,6 +196,5 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  height: 100vh;
   text-align: left;
 }
