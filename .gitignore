@@ -9,4 +9,4 @@
 .env*.local
 
 
-/src/Pages/react/dist
+/src/Views/react/dist
