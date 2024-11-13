@@ -14,6 +14,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     id,
     viewLayout,
     title,
+    adviser,
     abstract,
     author,
     course,
@@ -27,6 +28,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     id: string|number;
     viewLayout: ViewLayout;
     title: string;
+    adviser: string;
     abstract: string;
     author: string;
     course: string;
@@ -103,6 +105,9 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
           </div>
           <div className="pt-4 px-2 leading-tight text-gray-700 italic">
             {author} ({year})
+          </div>
+          <div className="pt-4 px-2 leading-tight text-gray-700 italic">
+            Adviser: {adviser}
           </div>
           <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600">
             {course}
@@ -225,6 +230,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
                 viewLayout={viewLayout}
                 id={item.id}
                 title={item.title}
+                adviser={item.adviser}
                 abstract={item.abstract}
                 author={item.author}
                 course={item.course}

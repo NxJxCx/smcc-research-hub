@@ -14,6 +14,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     const [thesisDepartment, setThesisDepartment] = React.useState(Departments.CCIS);
     const [thesisCourse, setThesisCourse] = React.useState(Courses.BSIT);
     const [thesisAbstract, setThesisAbstract] = React.useState('');
+    const [thesisAdviser, setThesisAdviser] = React.useState('');
     const [pdf, setPdf] = React.useState()
     const [pdfUrl, setPdfUrl] = React.useState()
     const [showModal, setShowModal] = React.useState(false)
@@ -79,6 +80,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
       formData.append('department', thesisDepartment);
       formData.append('course', thesisCourse);
       formData.append('abstract', thesisAbstract);
+      formData.append('adviser', thesisAdviser);
       formData.append('pdf', new Blob([pdf], { type: "application/pdf" }), pdf.name);
 
       const xhr = new XMLHttpRequest();
@@ -155,7 +157,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
       };
 
       xhr.send(formData);
-    }, [pdf, thesisTitle, thesisAuthor, thesisYear, thesisCourse, thesisDepartment, thesisAbstract, onSuccess])
+    }, [pdf, thesisTitle, thesisAuthor, thesisYear, thesisCourse, thesisDepartment, thesisAbstract, thesisAdviser, onSuccess])
 
     const onCancelUpload = () => {
       if (xhr) {
@@ -189,6 +191,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
             <Select className="max-w-[180px] text-black" items={yearsList} label="Year" name="year" value={thesisYear} onChange={(e: any) => setThesisYear(e.target.value)} disabled={isFormDisabled} required />
             <Select className="max-w-[180px] text-black" items={[{ label: "-- Select Department --", value: "" }, ...departmentList]} label="Department" name="department" value={thesisDepartment} onChange={(e: any) => { setThesisDepartment(e.target.value); setThesisCourse(""); }} disabled={isFormDisabled} required />
             <Select className="max-w-[370px] text-black" items={[{ label: "-- Select Course --", value: "" }, ...courseList]} label="Course" name="course" value={thesisCourse} onChange={(e: any) => setThesisCourse(e.target.value)} disabled={isFormDisabled} required />
+            <Input className="max-w-[370px] text-black" label="Adviser" name="adviser" value={thesisAdviser} onChange={(e: any) => setThesisAdviser(e.target.value)} disabled={isFormDisabled} required />
             <TextArea className="max-w-[370px] text-black" label="Abstract" rows={3} name="abstract" value={thesisAbstract} onChange={(e: any) => setThesisAbstract(e.target.value)} disabled={isFormDisabled} required />
           </div>
           <div className="flex items-center justify-center w-full px-4 mt-4">

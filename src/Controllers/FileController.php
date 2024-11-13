@@ -30,6 +30,7 @@ class FileController extends Controller
       $docMonth = $request->getBodyParam('month');
       $docDepartment = $request->getBodyParam('department');
       $docCourse = $request->getBodyParam('course');
+      $docAdviser = $request->getBodyParam('adviser');
       $docAbstract = $request->getBodyParam('abstract');
       $docPublishedDate = $request->getBodyParam('published_date');
       $docYear = $request->getBodyParam('year');
@@ -41,7 +42,7 @@ class FileController extends Controller
         return Response::json(['error' => 'Invalid document type. Must be thesis or journal.'], StatusCode::BAD_REQUEST);
       }
       if ($doc === 'thesis') {
-        if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment || !$docCourse || !$docAbstract) {
+        if (!$docTitle || !$docAuthor || !$docYear || !$docDepartment || !$docCourse || !$docAbstract || !$docAdviser) {
           return Response::json(['error' => 'All fields are required.'], StatusCode::BAD_REQUEST);
         }
         if ($file instanceof File) {
@@ -61,6 +62,7 @@ class FileController extends Controller
                 "year" => $docYear,
                 "department" => $docDepartment,
                 "course" => $docCourse,
+                "adviser" => $docAdviser,
                 "abstract" => $docAbstract,
                 "url" => $fileUrl,
               ]);
