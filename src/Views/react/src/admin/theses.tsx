@@ -13,6 +13,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
     { label: "Year", key: "year", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
     { label: "Department", key: "department", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
     { label: "Course", key: "course", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
+    { label: "Adviser", key: "adviser", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
     { label: "Reads", key: "reads", sortable: true, cellType: TableCellType.Number, align: CellAlign.Center },
     { label: "Status", key: "is_public", sortable: true, cellType: TableCellType.Custom, align: CellAlign.Center },
     { label: "Action", key: "action", sortable: false, cellType: TableCellType.Custom, align: CellAlign.Center },
@@ -41,6 +42,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
               year: data.year,
               department: data.department,
               course: data.course,
+              adviser: data.adviser,
               reads: data.reads || 0,
               is_public: {
                 value: !data.is_public ? 'No' : 'Yes',
