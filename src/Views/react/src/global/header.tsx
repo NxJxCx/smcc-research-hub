@@ -67,7 +67,7 @@ import(pathname("/jsx/imports")).then(async ({ React, ReactDOM }) => {
             {
               navList.map((item) => (
                 <li key={item.label}>
-                  <a href={item.url} className="indent-4">
+                  <a href={pathname(item.url)} className="indent-4">
                     <div className={
                       `hover:text-sky-500 transition duration-300 w-full
                       ${(pathname(item.url) === pathname("/") && pathName === pathname("/")) || (pathname(item.url) !== pathname("/") && pathName.startsWith(pathname(item.url)))

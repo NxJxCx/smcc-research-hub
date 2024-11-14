@@ -4,25 +4,16 @@ declare(strict_types=1);
 
 namespace Smcc\ResearchHub\Models;
 
-class PublishedThesisJournal extends Model
+class JournalPersonnelFavorites extends Model
 {
   public function getColumns(): array
   {
     return [
       'id' => ['BIGINT', 'NOT NULL', 'AUTO_INCREMENT'],
-      'journal_id' => ['BIGINT', 'NOT NULL'],
       'thesis_id' => ['BIGINT', 'NOT NULL'],
-      'is_public' => ['BOOLEAN', 'DEFAULT FALSE'],
+      'personnel_id' => ['BIGINT', 'NOT NULL'],
       'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],
       'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
-    ];
-  }
-
-  public function getUniqueKeys(): array
-  {
-    return [
-      ['thesis_id'],
-      ['journal_id', 'thesis_id']
     ];
   }
 
@@ -30,8 +21,7 @@ class PublishedThesisJournal extends Model
   {
     return [
       'thesis_id' => [Thesis::class, 'CASCADE', 'CASCADE'],
-      'journal_id' => [Journal::class, 'CASCADE', 'CASCADE'],
+      'personnel_id' => [Personnel::class, 'CASCADE', 'CASCADE'],
     ];
   }
-
 }

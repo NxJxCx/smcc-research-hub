@@ -1,131 +1,59 @@
-
-
 export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweetalert2, getAsyncImport }) => {
+  const { Departments } = await import(pathname("/jsx/types"));
   const { default: { MainContext } } = await getAsyncImport("/jsx/context");
   const { default: Modal } = await getAsyncImport("/jsx/global/modal");
   const { default: PdfViewer } = await getAsyncImport("/jsx/global/pdfviewer");
   const { default: SearchHeaderInput } = await getAsyncImport("/jsx/main/search");
 
-  function ThumbnailJournal({
-    id,
-    title,
-    month,
-    year,
-    volume,
-    number,
-    publishedDate,
-    thumbnail,
-    onRefresh,
-    onSelect,
-  }: {
-    id: string | number;
-    title: string;
-    month: string;
-    year: number;
-    volume: number;
-    number: number;
-    publishedDate: string;
-    thumbnail: string;
-    onRefresh?: () => void,
-    onSelect?: (id: string | number) => void;
-  }) {
-    const { authData } = React.useContext(MainContext)
-
-    // const handleFavoriteClick = React.useCallback((e: any) => {
-    //   e.preventDefault()
-    //   e.stopPropagation()
-    //   const url = new URL(pathname('/api/journal/markfavorite'), window.location.origin);
-    //   const body = JSON.stringify({ id, [authData?.account]: authData?.id })
-    //   fetch(url, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json; charset=UTF-8',
-    //       'Accept': 'application/json; charset=UTF-8',
-    //     },
-    //     body,
-    //   })
-    //     .then(response => response.json())
-    //     .then(({ success, error }) => {
-    //       if (error) {
-    //         Sweetalert2.fire({
-    //           icon: 'error',
-    //           title: 'Error',
-    //           text: 'Failed to mark journal as favorite: ' + error,
-    //           toast: true,
-    //           showConfirmButton: false,
-    //           position: 'center',
-    //           timer: 3000,
-    //         })
-    //       } else if (!success) {
-    //         Sweetalert2.fire({
-    //           icon: 'error',
-    //           title: 'Error',
-    //           text: 'Failed to mark journal as favorite',
-    //           toast: true,
-    //           showConfirmButton: false,
-    //           position: 'center',
-    //           timer: 3000,
-    //         })
-    //       } else {
-    //         onRefresh && onRefresh()
-    //       }
-    //     })
-    //     .catch(console.log)
-    // }, [id, authData])
-
-    // const handleView = React.useCallback(() => {
-    //   const uri = new URL(pathname(`/read${url}&id=${id}`), window.location.origin).toString()
-    //   onViewPdf && onViewPdf(uri, title, author + ' (' + year + ') Vol. ' + volume + ' No. ' + number)
-    // }, [url, onViewPdf, id])
-
-    return (<>
-      <div onClick={() => onSelect && onSelect(id)} className="text-center relative cursor-pointer border rounded-lg p-4 w-[70mm] hover:bg-gray-200">
-        <div className="flex flex-col">
-          <div className="min-w-[60mm] max-w-[60mm] min-h-[70mm] max-h-[70mm] rounded border shadow">
-            <img src={pathname(thumbnail)} alt="Thumbnail" className="object-contain h-full" />
-          </div>
-          <div className="px-4 mt-4">
-            <div className="pt-2 px-4 font-bold leading-tight">
-              {title}, {month}
-            </div>
-            <div className="pb-2 px-2 italic leading-tight">
-              Vol. {volume} No. {number} ({year})
-            </div>
-            <div className="pb-2 px-2 leading-tight text-gray-700 italic text-center text-sm">
-              Published Date: {(new Date(publishedDate)).toLocaleDateString()}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>)
+  function getDateString(date: string) {
+    const newDate = new Date(date);
+    return newDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   }
 
-  function SelectedJournalPage({
-    journal,
-    theses = [],
-    search,
+  enum ViewLayout {
+    GRID = "grid",
+    LIST = "list",
+  }
+
+  function ThumbnailJournal({
+    id,
+    viewLayout,
+    title,
+    abstract,
+    author,
+    course,
+    year,
+    published_date,
+    favorite,
+    url,
+    totalViews = 0,
     onViewPdf,
-    onBack,
     onRefresh,
-  }: Readonly<{
-    journal: any,
-    theses: any[],
-    search: string,
-    onViewPdf: (thesis: any) => void,
-    onBack: () => void,
+  }: {
+    id: string|number;
+    viewLayout: ViewLayout;
+    title: string;
+    abstract: string;
+    author: string;
+    course: string;
+    year: number;
+    published_date: string;
+    favorite: boolean;
+    url: string;
+    totalViews?: number;
+    onViewPdf?: (uri: string, title: string, author: string) => void;
     onRefresh?: () => void,
-  }>) {
-    const { authenticated, authData } = React.useContext(MainContext);
+  }) {
+    const { authenticated, authData } = React.useContext(MainContext)
 
-    const selectedTheses = React.useMemo(() => theses?.filter((item: any) => (
-      (!search || item.title?.toString()?.toLowerCase()?.includes(search.toLowerCase())) || item.abstract?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || item.author?.toString().toLowerCase()?.includes(search.toLowerCase()) || item.year?.toString()?.toLowerCase()?.includes(search.toLowerCase()))
-    ) || [], [theses, search])
-
-    console.log(selectedTheses)
-    const handleFavoriteClick = React.useCallback((e: any, id: string) => {
+    const handleFavoriteClick = React.useCallback((e: any) => {
       e.preventDefault()
       e.stopPropagation()
-      const url = new URL(pathname('/api/thesis/markfavorite'), window.location.origin);
+      const url = new URL(pathname('/api/journal/markfavorite'), window.location.origin);
       const body = JSON.stringify({ id, [authData?.account]: authData?.id })
       fetch(url, {
         method: 'POST',
@@ -141,7 +69,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
             Sweetalert2.fire({
               icon: 'error',
               title: 'Error',
-              text: 'Failed to mark thesis as favorite: ' + error,
+              text: 'Failed to mark journal as favorite: '+ error,
               toast: true,
               showConfirmButton: false,
               position: 'center',
@@ -151,7 +79,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
             Sweetalert2.fire({
               icon: 'error',
               title: 'Error',
-              text: 'Failed to mark thesis as favorite',
+              text: 'Failed to mark journal as favorite',
               toast: true,
               showConfirmButton: false,
               position: 'center',
@@ -162,62 +90,68 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
           }
         })
         .catch(console.log)
-    }, [authData])
+    }, [id, authData])
 
-    return (
-      <div className="w-full font-[Roboto] relative">
-        <button type="button" onClick={onBack} className="flex items-center justify-start">
-          <span className="material-symbols-outlined">
-            chevron_left
-          </span>
-          <span className="underline">Back</span>
-        </button>
-        <div className="flex flex-col gap-y-4 lg:gap-y-0 lg:flex-row py-16">
-          <div className="lg:w-1/2">
-            <div className="min-w-[60mm] max-w-[60mm] min-h-[70mm] max-h-[70mm] rounded border shadow mx-auto">
-              <img src={pathname(journal?.thumbnail)} alt="Thumbnail" className="object-contain h-full" />
-            </div>
+    const handleView = React.useCallback(() => {
+      const uri = new URL(pathname(`/read${url}&id=${id}`), window.location.origin).toString()
+      onViewPdf && onViewPdf(uri, title, author + ' (' + year + ')')
+    }, [url, onViewPdf, id])
+
+    if (viewLayout === ViewLayout.GRID) {
+      return (<>
+        <div onClick={handleView} className="text-center relative cursor-pointer border rounded-lg p-4 w-[400px]">
+          {authenticated && authData?.account !== 'admin' && (
+            <button type="button" onClick={handleFavoriteClick} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
+              {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
+              {!favorite && <span className="material-symbols-outlined">bookmark</span>}
+            </button>
+          )}
+          <div className="h-[75px] pt-4 px-4 font-bold leading-tight">
+            {title}
           </div>
-          <div className="text-center min-w-[60mm]">
-            <h2 className="font-bold text-lg">{journal?.title}, {journal?.month}</h2>
-            <div className="font-[400] text-sm text-gray-600">Vol. {journal?.volume} No. {journal?.number} ({journal?.year})</div>
-            <div className="font-bold text-sm text-gray-600 mt-3">Published Date</div>
-            <div className="text-sm text-gray-600">{(new Date(journal?.published_date)).toLocaleDateString()}</div>
-            <div className="text-sm text-gray-600 mt-3">{theses.length} Theses</div>
+          <div className="h-[150px] mb-2 text-justify px-4 leading-tight indent-8">
+            {abstract.substring(0, Math.min(320, abstract.length))}...
+          </div>
+          <div className="pt-4 px-2 leading-tight text-gray-700 italic">
+            {author} ({year})
+          </div>
+          <div className="pt-4 px-2 leading-tight text-gray-700 italic">
+            Published Date: {published_date}
+          </div>
+          <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600">
+            {course}
+          </div>
+          <div className="pb-2 px-2 text-sm italic leading-tight text-gray-600 text-right">
+            <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
+            <div className="inline pb-1 font-[500]">{totalViews}</div>
           </div>
         </div>
-        <div className="min-h-[400px] px-2">
-          <div className="border-t">
-            <div className="-translate-y-[55%] ml-4 bg-white w-fit">Thesis</div>
+      </>)
+    } else {
+      // list view
+      return (<>
+        <div onClick={handleView} className="px-4 lg:px-8 py-2 cursor-pointer flex justify-between items-center gap-x-4 w-full bg-gray-200 hover:bg-gray-50 rounded flex-nowrap">
+          <div className="flex-grow px-4 font-bold leading-tight">
+            {title}
           </div>
-          <div className="mt-2 max-h-[380px] h-full overflow-y-auto w-full px-8">
-            {selectedTheses.length === 0 ? <span className="py-8">No Theses found in {!search ? 'this journal' : 'your search'}.</span> : (
-              <div className="flex flex-wrap leading-tight gap-4">
-                {selectedTheses.map((thesis: any) => (
-                  <div key={thesis?.id} onClick={() => onViewPdf(thesis)} className="relative hover:bg-gray-200 hover:shadow w-1/2 p-2 cursor-pointer rounded">
-                    {authenticated && authData?.account !== 'admin' && (
-                      <button type="button" onClick={(e: any) => handleFavoriteClick(e, thesis?.id)} className="absolute right-2 top-3 z-20 hover:text-yellow-500">
-                        {thesis?.favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
-                        {!thesis?.favorite && <span className="material-symbols-outlined">bookmark</span>}
-                      </button>
-                    )}
-                    <div className="font-bold">{thesis?.title}</div>
-                    <div className="text-sm font-[400] text-gray-600">{thesis?.author} ({thesis?.year})</div>
-                    <div className="leading-tight">
-                      <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
-                      <div className="inline pb-1 font-[500]">{thesis?.totalViews}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="flex-shrink px-2 text-sm italic text-gray-600 text-right flex flex-nowrap items-center h-full gap-x-1">
+            <div className="material-symbols-outlined aspect-square text-sm mr-1 font-bold">visibility</div>
+            <div className="pb-1 font-[500]">{totalViews}</div>
+          </div>
+          <div className="flex-shrink">
+            {authenticated && authData?.account !== 'admin' && (
+              <button type="button" onClick={handleFavoriteClick} className="hover:text-yellow-500">
+                {favorite && <span className="material-symbols-outlined text-green-700">bookmark_star</span>}
+                {!favorite && <span className="material-symbols-outlined">bookmark</span>}
+              </button>
             )}
           </div>
         </div>
-      </div>
-    )
+      </>)
+    }
   }
 
-  return function Thesis() {
+  return function Journal() {
     const { authenticated, authData } = React.useContext(MainContext)
     const [search, setSearch] = React.useState((new URLSearchParams((new URL(window.location.href)).search)).get('search') || '')
     const searchParams = React.useMemo(() => new URLSearchParams((new URL(window.location.href)).search), []);
@@ -228,18 +162,30 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     }, [])
 
     const [data, setData] = React.useState([])
+    const [viewLayout, setViewLayout] = React.useState(ViewLayout.GRID) // "grid" | "list" (ViewLayout)
 
-    const [selected, setSelected] = React.useState(null)
+    const yearsList = React.useMemo(() => {
+      const allYears = data?.map((v: any) => Number.parseInt(v.year)) || [];
+      if (!allYears.includes((new Date()).getFullYear())) {
+        allYears.push((new Date()).getFullYear());
+      }
+      const minYear = Math.min(...allYears);
+      const maxYear = Math.max(...allYears);
+      return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i).reverse();
+    }, [data]);
 
-    const yearList = React.useMemo(() => data.reduce((init: any[], value: any) => init.includes(value.year) ? init : [...init, value.year].toSorted((a: any, b: any) => b - a), []), [data])
+    const [selectedDepartment, setSelectedDepartment] = React.useState(Departments.CCIS);
+    const [selectedYears, setSelectedYears] = React.useState(Object.fromEntries(Object.keys(Departments).map((dep) => [Departments[dep], (new Date()).getFullYear().toString()])));
 
-    const [selectedYear, setSelectedYear] = React.useState((new Date()).getFullYear());
-
-    const displayData = React.useMemo(() => !selected ? data.filter((item: any) => item.year.toString() === selectedYear.toString() && ((!search || item.title?.toString()?.toLowerCase()?.includes(search.toLowerCase())) || item.volume?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || item.number?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || item.month?.toLowerCase()?.includes(search.toLowerCase()) || item.year?.toString()?.toLowerCase()?.includes(search.toLowerCase()) || `${item.title?.toString()?.toLowerCase()}, ${item.month?.toString()?.toLowerCase()}`.includes(search.toLowerCase()))) : [], [data, selectedYear, search, selected])
+    const displayData = React.useMemo(() => data.filter(
+      (item: any) => item.department?.toString().toLowerCase() === selectedDepartment.toString().toLowerCase()
+        && ((!search || item.title.toLowerCase().includes(search)) || item.abstract.toLowerCase().includes(search) || item.author.toLowerCase().includes(search) || item.year.toString().includes(search))
+        && (!!selectedYears[item.department?.toString()] && selectedYears[item.department?.toString()].toString() === item.year?.toString())
+      )
+    , [data, selectedDepartment, selectedYears, search])
 
     const [page, setPage] = React.useState(1)
     const totalPages = React.useMemo(() => Math.ceil(displayData.length / 20), [displayData])
-
     const finalDisplay = React.useMemo(() => displayData.length === 0 ? undefined : displayData?.slice((page - 1) * 20, page * 20), [page, displayData, totalPages])
 
     const nextPage = React.useCallback(() => setPage((prev: number) => Math.min(totalPages, Math.max(totalPages === 0 ? 0 : 1, prev + 1))), [totalPages])
@@ -259,12 +205,10 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
         } else if (success) {
           success.sort((a: any, b: any) => (new Date(a.created_at)).getTime() > (new Date(b.created_at)).getTime() ? -1 : (new Date(a.created_at)).getTime() == (new Date(b.created_at)).getTime() ? 0 : 1);
           setData(success);
-          return success;
         }
       } catch (e) {
         console.log(e)
       }
-      return [];
     }
 
     React.useEffect(() => {
@@ -275,87 +219,49 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
     const [pdfTitle, setPdfTitle] = React.useState()
     const [pdfAuthor, setPdfAuthor] = React.useState()
 
-    const handleViewPdf = React.useCallback((thesis: any) => {
-      const title = thesis?.title;
-      const author = thesis?.author;
-      const uri = new URL(`read${thesis?.url}`, window.location.origin).toString();
+    const handleViewPdf = React.useCallback((uri: string, title: string, author: string) => {
       setPdfTitle(title);
-      setPdfAuthor(author);
       setPdfUrl(uri);
-    }, [])
-
-    const onSelect = React.useCallback((id: string | number) => {
-      setSearch('');
-      setSelected(data.find((item: any) => item.id == id))
-    }, [data]);
-
-    const handleRefresh = React.useCallback(async () => {
-      if (selected) {
-        const sel = selected.id;
-        const data: any[] = await fetchData();
-        const selectedData = data?.find(item => item.id === sel)
-        setSelected(selectedData);
-      }
-    }, [selected])
+      setPdfAuthor(author);
+    }, []);
 
     return (<>
       <div className="flex py-4 px-8 mt-4">
         <div className="flex-grow mt-3">
-          <h1 className="text-2xl font-bold text-center">Journals</h1>
-          {!selected && (
-            <div className="flex flex-wrap p-4 gap-4">
-              {!!selectedYear && (finalDisplay?.map((item: any) => (
-                <ThumbnailJournal
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  volume={item.volume}
-                  number={item.number}
-                  month={item.month}
-                  thumbnail={item.thumbnail}
-                  year={item.year}
-                  publishedDate={item.published_date}
-                  onRefresh={fetchData}
-                  onSelect={onSelect}
-                />
-              )) || (
-                  <div className="lg:col-span-2 xl:col-span-3 mx-auto">
-                    <div className="h-[200px] mb-2">
-                      <div className="border-2 border-gray-300 rounded-lg p-4">
-                        <div className="text-gray-500">No journal found.</div>
-                      </div>
-                    </div>
+          <div className="relative">
+            <h1 className="text-2xl font-bold text-center">Journals</h1>
+            <button type="button" onClick={() => setViewLayout(viewLayout === ViewLayout.LIST ? ViewLayout.GRID : ViewLayout.LIST)} title="Switch View Layout" className="absolute right-2 top-1/4 aspect-square text-slate-600/90 hover:text-slate-800/90 hover:bg-black/10 rounded p-1"><span className="material-symbols-outlined">{viewLayout === ViewLayout.LIST ? "view_list" : "grid_view"}</span></button>
+          </div>
+          <div className="flex flex-wrap p-4 gap-4">
+            { !!selectedDepartment && finalDisplay?.map((item: any) => (
+              <ThumbnailJournal
+                key={item.id}
+                viewLayout={viewLayout}
+                id={item.id}
+                title={item.title}
+                abstract={item.abstract}
+                author={item.author}
+                course={item.course}
+                year={item.year}
+                published_date={getDateString(item.published_date)}
+                favorite={item.favorite}
+                url={item.url}
+                totalViews={item.totalViews}
+                onViewPdf={handleViewPdf}
+                onRefresh={fetchData}
+              />
+            )) || (
+              <div className="lg:col-span-2 xl:col-span-3 mx-auto">
+                <div className="h-[200px] mb-2">
+                  <div className="border-2 border-gray-300 rounded-lg p-4">
+                    <div className="text-gray-500">No journals found.</div>
                   </div>
-                ))}
-            </div>
-          )}
-          {!!selected && !!selectedYear && (
-            <SelectedJournalPage
-              journal={selected}
-              theses={selected.theses}
-              onViewPdf={handleViewPdf}
-              search={search}
-              onBack={() => setSelected(null)}
-              onRefresh={handleRefresh}
-            />
-          )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div className="min-w-[326px] max-w-[326px] h-[600px] flex flex-col">
-          <div className="min-h-[400px] flex-grow">
-            <div className="font-bold text-xl mb-4 w-full">
-              Year
-            </div>
-            {yearList.map((value: any, key: number) => (
-              <button
-                key={key}
-                type="button"
-                className={clsx(`flex items-center px-4 py-2 text-left`, selectedYear.toString() === value.toString() ? "bg-gray-200 font-bold" : "hover:bg-gray-300")}
-                onClick={() => setSelectedYear(Number.parseInt(value))}
-              >
-                {value}
-              </button>
-            ))}
-          </div>
           <div className="flex-shrink text-slate-700 font-[600] w-full mb-3">
             <SearchHeaderInput search={search} onSearch={onSearch} />
           </div>
@@ -373,17 +279,39 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
               ))}
             </div>
           </div>
-          {!selected ? (
-            <div className="flex-shrink text-slate-700 font-[600] mx-auto">
-              <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages === 0 ? 0 : 1)}>{"<<"}</button>
-              <button type="button" className="p-1 hover:text-yellow-700" onClick={prevPage}>{"<"} Prev</button>
-              <button type="button" className="p-1 hover:text-yellow-700" onClick={nextPage}>Next {">"}</button>
-              <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages)}>{">>"}</button>
+          <div className="flex-shrink text-slate-700 font-[600] mx-auto">
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages === 0 ? 0 : 1)}>{"<<"}</button>
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={prevPage}>{"<"} Prev</button>
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={nextPage}>Next {">"}</button>
+            <button type="button" className="p-1 hover:text-yellow-700" onClick={() => setPage(totalPages)}>{">>"}</button>
+          </div>
+          <div className="min-h-[400px] flex-grow pt-2 border-t">
+            <div className="font-bold text-xl mb-4 w-full">
+              Categories
             </div>
-          ) : (<div className="flex-shrink text-slate-700 font-[600] mx-auto"><div className="p-4">&nbsp;</div></div>)}
+            {Object.entries(Departments).map(([key, value]: any) => (
+              <div key={key} className="flex items-center px-4 py-2 text-left flex-nowrap relative">
+                <button
+                  key={key}
+                  type="button"
+                  className={clsx(`flex items-center pl-4 py-2 pr-[70px] text-left text-sm flex-nowrap flex-grow`, selectedDepartment === value ? "font-bold" : "")}
+                  onClick={() => setSelectedDepartment(value)}
+                >
+                  {value}
+                </button>
+                <select className="max-w-16 p-1 text-sm absolute right-4 top-1/4" value={selectedYears[value?.toString()] || ""} onChange={(e) => !!Object.keys(selectedYears).includes && setSelectedYears((prev: any) => ({...prev, [value.toString()]: e.target.value}))}>
+                  {yearsList.map((yr: number) => (
+                    <option key={"year__" + yr} value={yr}>
+                      {yr}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <Modal open={!!selected && !!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href={pathname("/login")} className="text-sky-700 underline">login</a> to view journal/thesis.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
+      <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href={pathname("/login")} className="text-sky-700 underline">login</a> to view journal.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
     </>)
   }
 });

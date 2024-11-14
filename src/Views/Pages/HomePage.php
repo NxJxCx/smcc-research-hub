@@ -17,7 +17,8 @@ class HomePage extends View
       function () {
 ?>
   <div class="relative min-h-[150px]">
-    <aside class="relative mx-auto mb-3 lg:mx-0 lg:absolute right-2 top-4 min-w-[400px] max-w-[500px] p-3" id="most-view-container"></aside>
+    <aside class="relative mx-auto mb-3 lg:mx-0 lg:absolute right-2 top-4 min-w-[400px] max-w-[500px] p-3" id="most-view-container-theses"></aside>
+    <aside class="relative mx-auto mb-3 lg:mx-0 lg:absolute left-2 top-4 min-w-[400px] max-w-[500px] p-3" id="most-view-container-journals"></aside>
     <div class="flex flex-col justify-center items-center my-10 gap-y-8" id="home-announcement-container">
       <div class="w-16 h-16 border-4 border-t-4 border-gray-300 border-t-blue-500 border-solid rounded-full animate-spin"></div>
     </div>
