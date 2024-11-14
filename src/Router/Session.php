@@ -77,7 +77,7 @@ class Session
     return false;
   }
 
-  public static function create(string $account, int $id, string $full_name): bool
+  public static function create(string $account, mixed $id, string $full_name): bool
   {
     $db = Database::getInstance();
     Logger::write_debug("creating jwt token for");
