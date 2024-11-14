@@ -185,8 +185,8 @@ import(pathname("/jsx/imports")).then(async ({ React, ReactDOM, ReactPlayerYoutu
   mostViewsThesesRoot.render(<MostViewsTheses />)
 
   // @ts-ignore
-  const mostViewsJournalsRoot = ReactDOM.createRoot(document.getElementById("most-view-container-journals"))
-  mostViewsJournalsRoot.render(<MostViewsJournals />)
+  // const mostViewsJournalsRoot = ReactDOM.createRoot(document.getElementById("most-view-container-journals"))
+  // mostViewsJournalsRoot.render(<MostViewsJournals />)
 
   // @ts-ignore
   const root = ReactDOM.createRoot(document.getElementById("home-announcement-container"))
