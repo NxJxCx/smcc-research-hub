@@ -11,7 +11,7 @@ class JournalPersonnelFavorites extends Model
     return [
       'id' => ['BIGINT', 'NOT NULL', 'AUTO_INCREMENT'],
       'thesis_id' => ['BIGINT', 'NOT NULL'],
-      'personnel_id' => ['BIGINT', 'NOT NULL'],
+      'personnel_id' => ['VARCHAR(255)', 'NOT NULL'],
       'created_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP'],
       'updated_at' => ['TIMESTAMP', 'NOT NULL', 'DEFAULT CURRENT_TIMESTAMP', 'ON UPDATE CURRENT_TIMESTAMP'],
     ];
