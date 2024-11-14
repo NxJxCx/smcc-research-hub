@@ -224,42 +224,41 @@ class ApiController extends Controller
 
   public function signup(Request $request): Response
   {
-    $body = $request->getBody();
     try {
       // Check if inputs are provided
-      if (!isset($body['account']) || !isset($body['username']) || !isset($body['full_name']) || !isset($body['password']) || !isset($body['email'])) {
-        return Response::json(['error' => 'Missing required inputs. ' . json_encode($body)], StatusCode::BAD_REQUEST);
+      if (!$request->getBodyParam('account') || !$request->getBodyParam('username') || !$request->getBodyParam('full_name') || !$request->getBodyParam('password') || !$request->getBodyParam('email')) {
+        return Response::json(['error' => 'Missing required inputs. ' . json_encode($request->getBody())], StatusCode::BAD_REQUEST);
       }
 
       // Validate account type (admin, personnel, student)
-      if (!in_array($body['account'], ['admin', 'personnel', 'student'])) {
+      if (!in_array($request->getBodyParam('account'), ['admin', 'personnel', 'student'])) {
         return Response::json(['error' => 'Invalid account type.'], StatusCode::BAD_REQUEST);
       }
 
-      $accountType = $body['account'];
+      $accountType = $request->getBodyParam('account');
       // Validate and sanitize inputs here
       $data = match ($accountType) {
         'admin' => [
-          'admin_user' => $body['username'],
-          'full_name' => $body['full_name'],
-          'email' => $body['email'],
-          'password' => password_hash($body['password'], PASSWORD_DEFAULT),
+          'admin_user' => $request->getBodyParam('username'),
+          'full_name' => $request->getBodyParam('full_name'),
+          'email' => $request->getBodyParam('email'),
+          'password' => password_hash($request->getBodyParam('password'), PASSWORD_DEFAULT),
         ],
         'personnel' => [
-          'personnel_id' => $body['username'],
-          'full_name' => $body['full_name'],
-          'email' => $body['email'],
-          'department' => $body['department'],
-          'password' => password_hash($body['password'], PASSWORD_DEFAULT),
+          'personnel_id' => $request->getBodyParam('username'),
+          'full_name' => $request->getBodyParam('full_name'),
+          'email' => $request->getBodyParam('email'),
+          'department' => $request->getBodyParam('department'),
+          'password' => password_hash($request->getBodyParam('password'), PASSWORD_DEFAULT),
         ],
         'student' => [
-          'student_id' => $body['username'],
-          'full_name' => $body['full_name'],
-          'email' => $body['email'],
-          'password' => password_hash($body['password'], PASSWORD_DEFAULT),
-          'department' => $body['department'],
-          'course' => $body['course'],
-          'year' => intval($body['year']),
+          'student_id' => $request->getBodyParam('username'),
+          'full_name' => $request->getBodyParam('full_name'),
+          'email' => $request->getBodyParam('email'),
+          'password' => password_hash($request->getBodyParam('password'), PASSWORD_DEFAULT),
+          'department' => $request->getBodyParam('department'),
+          'course' => $request->getBodyParam('course'),
+          'year' => intval($request->getBodyParam('year')),
         ],
       };
       switch ($accountType) {
@@ -270,9 +269,10 @@ class ApiController extends Controller
           break;
         case 'personnel':
           $db = Database::getInstance();
-          if ($db->fetchOne(Personnel::class, ['personnel_id' => $data['personnel_id']])) {
+          if ($db->fetchOne(Personnel::class, [(new Personnel())->getPrimaryKey() => $data['personnel_id']])) {
             return Response::json(['success' => false, 'error' => 'Employee ID already registered.']);
           }
+          Logger::write_info(json_encode(['REgistering_data' => $data, 'accountType' => $accountType]));
           $model = new Personnel($data);
           $id = $model->create(true);
           (new AdminLogs(['admin_id' => RouterSession::getUserId(), 'activity' => "Personnel ID: {$id}, fullname: {$model->full_name} has newly been registered"]))->create();
@@ -288,13 +288,13 @@ class ApiController extends Controller
           try {
             $id = $model->create(true);
             // Logger::write_debug("ID Registered is: {$id}");
-            (new StudentLogs(['student_id' => $id, 'activity' => "Student ID: {$id}, fullname: {$body['full_name']} has newly been registered"]))->create();
+            (new StudentLogs(['student_id' => $id, 'activity' => "Student ID: {$id}, fullname: {$request->getBodyParam('full_name')} has newly been registered"]))->create();
           } catch (\PDOException $e) {
             return Response::json(['success' => false, 'error' => $e->getMessage()]);
           }
           break;
       }
-      Logger::write_info("Account registered: accountType={$accountType}, databaseId={$id}, full_name={$body['full_name']}");
+      Logger::write_info("Account registered: accountType={$accountType}, databaseId={$id}, full_name={$request->getBodyParam('full_name')}");
       return Response::json(['success' => true]);
     } catch (\Throwable $e) {
       return Response::json(['error' => $e->getMessage()], StatusCode::INTERNAL_SERVER_ERROR);

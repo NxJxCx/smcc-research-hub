@@ -7,7 +7,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
   const { default: { Table, TableRowAction } } = await getAsyncImport("/jsx/admin/table");
 
   const columns: (typeof TableColumn)[] = [
-    { label: "Teacher ID", key: "personnel_id", sortable: true, filterable: true, cellType: TableCellType.Number, align: CellAlign.Center },
+    { label: "Teacher ID", key: "personnel_id", sortable: true, filterable: true, cellType: TableCellType.String, align: CellAlign.Center },
     { label: "Full Name", key: "full_name", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
     { label: "Email Address", key: "email", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
     { label: "Department", key: "department", sortable: true, cellType: TableCellType.String, align: CellAlign.Center },
@@ -228,6 +228,14 @@ export default import(pathname("/jsx/imports")).then(async ({ React, Sweetalert2
 
     const handleAddTeacher = React.useCallback(async (close: () => void) => {
       try {
+        if (!formData.username || !formData.department || !formData.email) {
+          Sweetalert2.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Fill in required fields.',
+          })
+          return;
+        }
         const response = await fetch(pathname('/api/signup'), {
           method: 'POST',
           headers: {
