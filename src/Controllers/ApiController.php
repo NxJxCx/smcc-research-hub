@@ -158,23 +158,23 @@ class ApiController extends Controller
       // journals
       $journalStudents = $db->getAllRows(JournalReads::class);
       $journalPersonnels = $db->getAllRows(JournalPersonnelReads::class);
-      $allThesisReads = array_merge($thesisStudents, $thesisPersonnels);
+      $allJournalReads = array_merge($journalStudents, $journalPersonnels);
       $frequencies = [];
-      foreach ($allThesisReads as $read) {
-        $thesisId = $read->thesis_id;
-        $thesis = $db->fetchOne(Thesis::class, [(new Thesis())->getPrimaryKey() => $thesisId]);
-        if ($thesis) {
-          if (!isset($frequencies[strval($thesisId)])) {
-            $frequencies[strval($thesisId)] = [
-              'id' => $thesisId,
-              'title' => $thesis->title,
+      foreach ($allJournalReads as $read) {
+        $journalId = $read->journal_id;
+        $journal = $db->fetchOne(Journal::class, [(new Journal())->getPrimaryKey() => $thesisId]);
+        if ($journal) {
+          if (!isset($frequencies[strval($journalId)])) {
+            $frequencies[strval($journalId)] = [
+              'id' => $journalId,
+              'title' => $journal->title,
               'views' => 1,
-              'url' => $thesis->url,
-              'author' => $thesis->author,
-              'year' => $thesis->year,
+              'url' => $journal->url,
+              'author' => $journal->author,
+              'year' => $journal->year,
             ];
           } else {
-            $frequencies[strval($thesisId)]['views']++;
+            $frequencies[strval($journalId)]['views']++;
           }
         }
       }
@@ -919,7 +919,6 @@ class ApiController extends Controller
     }
     return Response::json(['error'=> 'Bad Request'], StatusCode::BAD_REQUEST);
   }
-
 
   public function allDownloadables(): Response
   {
