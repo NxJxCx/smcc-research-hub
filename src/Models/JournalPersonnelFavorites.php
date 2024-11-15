@@ -20,7 +20,7 @@ class JournalPersonnelFavorites extends Model
   public function getForeignConstraints(): array
   {
     return [
-      'thesis_id' => [Thesis::class, 'CASCADE', 'CASCADE'],
+      'thesis_id' => [Journal::class, 'CASCADE', 'CASCADE'],
       'personnel_id' => [Personnel::class, 'CASCADE', 'CASCADE'],
     ];
   }
