@@ -186,7 +186,7 @@ class FileController extends Controller
               break;
             }
             case "journal": {
-              $readDocument = in_array('thesis', $parts)
+              $readDocument = in_array('journal', haystack: $parts)
                 ? new JournalReads([
                   'journal_id' => $id,
                   'student_id' => Session::getUserId(),
