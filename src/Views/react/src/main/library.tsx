@@ -62,10 +62,6 @@ export default import(pathname("/jsx/imports")).then(async ({ React, getAsyncImp
                   <th scope="col" className="px-6 py-3">Title</th>
                   <th scope="col" className="px-6 py-3">Authors</th>
                   <th scope="col" className="px-6 py-3">Year</th>
-                  <th scope="col" className="px-6 py-3">Publisher</th>
-                  <th scope="col" className="px-6 py-3">Published Date</th>
-                  <th scope="col" className="px-6 py-3">Volume</th>
-                  <th scope="col" className="px-6 py-3">No.</th>
                   <th scope="col" className="px-6 py-3">Department</th>
                   <th scope="col" className="px-6 py-3">Course</th>
                   <th scope="col" className="px-6 py-3">Read</th>
@@ -76,12 +72,8 @@ export default import(pathname("/jsx/imports")).then(async ({ React, getAsyncImp
                   <tr key={item.id + '_' + item.type} className="bg-white border-b cursor-pointer hover:bg-sky-100" onClick={() => handleViewPdf(item.id, item.url, item.title, item.author + ' (' + item.year + ')')}>
                     <th scope="row" className="px-6 py-4">{item.type}</th>
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{item.title}</td>
-                    <td className="px-6 py-4">{item.authors}</td>
+                    <td className="px-6 py-4">{item.author}</td>
                     <td className="px-6 py-4">{item.year}</td>
-                    <td className="px-6 py-4">{item.publisher}</td>
-                    <td className="px-6 py-4">{item.published_date}</td>
-                    <td className="px-6 py-4">{item.volume}</td>
-                    <td className="px-6 py-4">{item.number}</td>
                     <td className="px-6 py-4">{item.department}</td>
                     <td className="px-6 py-4">{item.course}</td>
                     <td className="px-6 py-4 text-center">{item.read} times</td>

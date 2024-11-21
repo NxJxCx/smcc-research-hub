@@ -224,7 +224,6 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
       setPdfUrl(uri);
       setPdfAuthor(author);
     }, []);
-
     return (<>
       <div className="flex py-4 px-8 mt-4">
         <div className="flex-grow mt-3">
@@ -311,7 +310,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
           </div>
         </div>
       </div>
-      <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href={pathname("/login")} className="text-sky-700 underline">login</a> to view journal.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
+      <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); fetchData().catch(console.log); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href={pathname("/login")} className="text-sky-700 underline">login</a> to view journal.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
     </>)
   }
 });

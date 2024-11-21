@@ -182,7 +182,7 @@ class Database implements BaseDatabase
       $sql = "SELECT * FROM {$model->getTableName()} WHERE " . implode(' AND ', array_map(fn ($key) => "$key = :$key", array_keys($conditions), []));
       $stmt = $this->db->prepare($sql);
       foreach ($conditions as $key => $value) {
-        $stmt->bindValue(":$key", $value);
+        $stmt->bindValue(":$key", strval($value));
       }
       if ($stmt->execute()) {
         $obj = $stmt->fetchObject($modelClass);

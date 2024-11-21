@@ -85,6 +85,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
 
     const handleView = React.useCallback(() => {
       const uri = new URL(pathname(`/read${url}&id=${id}`), window.location.origin).toString()
+      console.log("URL:", uri.toString())
       onViewPdf && onViewPdf(uri, title, author + ' (' + year + ')')
     }, [url, onViewPdf, id])
 
@@ -206,6 +207,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
       fetchData().catch()
     }, [])
 
+
     const [pdfUrl, setPdfUrl] = React.useState()
     const [pdfTitle, setPdfTitle] = React.useState()
     const [pdfAuthor, setPdfAuthor] = React.useState()
@@ -302,7 +304,7 @@ export default import(pathname("/jsx/imports")).then(async ({ React, clsx, Sweet
           </div>
         </div>
       </div>
-      <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href={pathname("/login")} className="text-sky-700 underline">login</a> to view thesis.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
+      <Modal open={!!pdfUrl} onClose={() => { setPdfUrl(undefined); setPdfTitle(undefined); setPdfAuthor(undefined); fetchData().catch(console.log); }} content={authenticated ? <PdfViewer src={pdfUrl} /> : <div className="w-full text-center min-h-[150px] pt-16">Please <a href={pathname("/login")} className="text-sky-700 underline">login</a> to view thesis.</div>} header={pdfTitle} showCancelButton={false} showConfirmButton={false} footer={pdfAuthor} />
     </>)
   }
 });
